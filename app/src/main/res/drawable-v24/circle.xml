@@ -3,7 +3,7 @@
     android:layout_width="100dp"
     android:layout_height="100dp"
     android:shape="oval"
-    android:tint="#FBFFFFFF">
+    android:tint="#E3CBB1">
 
     <solid android:color="#FFFFFF" />
     <padding
