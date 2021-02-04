@@ -72,7 +72,6 @@
         android:layout_height="96dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/introCookie"
-        tools:layout_editor_absoluteY="253dp"
-        tools:ignore="MissingConstraints" />
+        app:srcCompat="@drawable/introCookie"
+        tools:layout_editor_absoluteY="253dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
