@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerView"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F2E7DC"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="70dp"
+            android:background="#cccccc"></LinearLayout>
+
+        <TextView
+            android:id="@+id/nav_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="98dp"
+            android:onClick="OnClick"
+            android:text="카테고리"
+            android:textColor="@color/black"
+            android:textSize="14sp"></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="140dp"
+            android:background="#cccccc"></LinearLayout>
+
+        <TextView
+            android:id="@+id/nav_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="168dp"
+            android:onClick="OnClick"
+            android:text="검색"
+            android:textColor="@color/black"
+            android:textSize="14sp"></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="210dp"
+            android:background="#cccccc"></LinearLayout>
+
+        <TextView
+            android:id="@+id/nav_tracker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="238dp"
+            android:onClick="OnClick"
+            android:text="트래커"
+            android:textColor="@color/black"
+            android:textSize="14sp"></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="280dp"
+            android:background="#cccccc"></LinearLayout>
+
+        <TextView
+            android:id="@+id/nav_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="308dp"
+            android:onClick="OnClick"
+            android:text="환경설정"
+            android:textColor="@color/black"
+            android:textSize="14sp"></TextView>
+    </RelativeLayout>
+</LinearLayout>
