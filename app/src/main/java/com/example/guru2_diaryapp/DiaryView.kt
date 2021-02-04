@@ -5,11 +5,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 
 class DiaryView : AppCompatActivity() {
+    lateinit var diary_text : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.diary_view)
+
+        diary_text = findViewById(R.id.diaryText)
+
+        // 일기 편집 화면
+        diary_text.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, DiaryViewEdit::class.java)
+            startActivity(intent)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
