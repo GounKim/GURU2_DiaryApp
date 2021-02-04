@@ -22,8 +22,8 @@ class CategoryFragment : Fragment() {
     var name = ""
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         category_tv = getView()!!.findViewById(R.id.fragment_tv)
         category_tv.text = name
