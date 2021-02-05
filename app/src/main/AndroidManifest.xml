@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp">
-        <activity android:name=".Tracker"></activity>
+        <activity android:name=".category.CategoryActivity"></activity>
+        <activity android:name=".Category" />
+        <activity android:name=".Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
         <activity android:name=".MainTimelineView" />
@@ -19,10 +21,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!--뒤로가기-->
-        <activity android:name=".diaryView.DiaryViewEdit"
-            android:parentActivityName=".diaryView.DiaryView"/>
+        </activity> <!-- 뒤로가기 -->
+        <activity
+            android:name=".diaryView.DiaryViewEdit"
+            android:parentActivityName=".diaryView.DiaryView" />
     </application>
 
 </manifest>

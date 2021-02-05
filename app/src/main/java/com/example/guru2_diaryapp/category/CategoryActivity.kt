@@ -10,7 +10,8 @@ import androidx.viewpager.widget.ViewPager
 import com.example.guru2_diaryapp.R
 import com.google.android.material.tabs.TabLayout
 
-class Category : AppCompatActivity() {
+class CategoryActivity : AppCompatActivity() {
+
     private lateinit var mContext : Context
     lateinit var category_text : TextView
     lateinit var category_logo : ImageView
@@ -19,7 +20,7 @@ class Category : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.category)
+        setContentView(R.layout.activity_category)
 
         mContext = applicationContext
 
