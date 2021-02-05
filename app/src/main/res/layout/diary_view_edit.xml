@@ -10,7 +10,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/diary_frame"
+        app:layout_constraintBottom_toTopOf="@+id/diary_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -38,24 +38,32 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/diary_frame"
+    <LinearLayout
+        android:id="@+id/diary_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/diary_bnv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/diary_et"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="일기를 작성하세요"
+            android:layout_height="316dp"
+            android:layout_margin="10dp"
             android:gravity="top"
-            android:layout_margin="10dp"/>
+            android:hint="일기를 작성하세요" />
 
-    </FrameLayout>
+        <ImageView
+            android:id="@+id/image_preview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:srcCompat="@drawable/ic_baseline_photo_24"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/diary_bnv"
