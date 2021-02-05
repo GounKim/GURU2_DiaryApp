@@ -4,19 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat
-import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.guru2_diaryapp.R
-import com.example.guru2_diaryapp.diaryView.DiaryView
+import com.example.guru2_diaryapp.category.CategoryActivity
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -75,7 +70,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         tvShortDiary.setOnClickListener {
-            val intent = Intent(this, SelectActivity::class.java)
+            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             startActivity(intent)
         }
     }
@@ -102,7 +97,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.nav_category -> {
-                val intent = Intent(this, com.example.guru2_diaryapp.category.Category::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.category.CategoryActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_tracker -> {
@@ -114,11 +109,8 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, DiaryView::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 startActivity(intent)
-            }
-            else -> {
-                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
             }
         }
         drawerLayout.closeDrawers()
