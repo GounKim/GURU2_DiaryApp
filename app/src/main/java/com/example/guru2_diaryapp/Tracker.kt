@@ -21,7 +21,7 @@ class Tracker : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
-
+        //트래커 표도 항목 추가할 때마다 늘어나게 해야하는지
         h1_mon = findViewById(R.id.h1_mon); h2_mon = findViewById(R.id.h2_mon); h3_mon = findViewById(R.id.h3_mon)
         h4_mon = findViewById(R.id.h4_mon); h5_mon = findViewById(R.id.h5_mon); h6_mon = findViewById(R.id.h6_mon);
         h1_tue = findViewById(R.id.h1_tue); h2_tue = findViewById(R.id.h2_tue); h3_tue = findViewById(R.id.h3_tue);
@@ -40,7 +40,7 @@ class Tracker : AppCompatActivity() {
         dbManager = DBManager(this,"habit_lists",null,1)
         dbManager = DBManager(this,"habit_check_lists",null,1)
 
-        
+        sqLiteDatabase = dbManager.readableDatabase
 
 
     }

@@ -145,7 +145,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit1"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
@@ -239,7 +238,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit2"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
@@ -333,7 +331,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit3"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
@@ -426,7 +423,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit4"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
@@ -520,7 +516,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit5"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
@@ -614,7 +609,6 @@
                 android:layout_margin="1dp"
                 android:layout_weight="5"
                 android:background="@color/white"
-                android:text="habbit6"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/black" />
