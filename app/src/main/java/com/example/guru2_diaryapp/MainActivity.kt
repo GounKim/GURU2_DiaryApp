@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.nav_category -> {
-                val intent = Intent(this, Category::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.category.Category::class.java)
                 startActivity(intent)
             }
             R.id.nav_tracker -> {
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, SelectActivity::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 startActivity(intent)
             }
             else -> {
