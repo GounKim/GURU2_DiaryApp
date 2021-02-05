@@ -1,13 +1,13 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.category
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
+import com.example.guru2_diaryapp.R
 import com.google.android.material.tabs.TabLayout
 
 class Category : AppCompatActivity() {

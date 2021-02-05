@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DiaryViewEdit">
+    tools:context=".diaryView.DiaryViewEdit">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -47,11 +47,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-        <TextView
-            android:id="@+id/diary_text"
+        <EditText
+            android:id="@+id/diary_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="text 예시"
+            android:hint="일기를 작성하세요"
+            android:gravity="top"
             android:layout_margin="10dp"/>
 
     </FrameLayout>

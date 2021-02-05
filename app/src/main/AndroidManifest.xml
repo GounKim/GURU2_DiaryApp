@@ -20,6 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--뒤로가기-->
+        <activity android:name=".diaryView.DiaryViewEdit"
+            android:parentActivityName=".diaryView.DiaryView"/>
     </application>
 
 </manifest>

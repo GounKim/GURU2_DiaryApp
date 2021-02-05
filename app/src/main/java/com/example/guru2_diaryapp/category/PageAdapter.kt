@@ -1,9 +1,9 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.category
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.guru2_diaryapp.category.CategoryFragment
 
 // ViewPager를 관리해줄 Adapter
 class PageAdapter(fm : FragmentManager) : FragmentStatePagerAdapter(fm){
