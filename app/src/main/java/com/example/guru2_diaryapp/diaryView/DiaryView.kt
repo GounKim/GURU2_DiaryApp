@@ -33,9 +33,9 @@ class DiaryView : AppCompatActivity() {
         }
 
         // 편집화면에서 등록한 이미지 가져오기
-        val byteArray = intent.getByteArrayExtra("image")
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-        diary_image.setImageBitmap(bitmap);
+        //val byteArray = intent.getByteArrayExtra("image")
+        //val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
+        //diary_image.setImageBitmap(bitmap);
 
         // 일기 편집 화면으로 이동
         // 잘 작동되는지 테스트 필요

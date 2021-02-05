@@ -16,6 +16,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.R
+import com.example.guru2_diaryapp.diaryView.DiaryView
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                val intent = Intent(this, DiaryView::class.java)
                 startActivity(intent)
             }
             else -> {
