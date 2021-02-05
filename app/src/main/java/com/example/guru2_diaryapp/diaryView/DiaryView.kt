@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,7 @@ class DiaryView : AppCompatActivity() {
 
         // 편집화면에서 작성한 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
-        if(diary_text == "") { // 가져온 것이 아무것도 없다면
+        if(diary_text == null) { // 가져온 것이 아무것도 없다면
             diary_tv.text = "등록된 일기가 없습니다"
         }
         else {
@@ -33,9 +34,18 @@ class DiaryView : AppCompatActivity() {
         }
 
         // 편집화면에서 등록한 이미지 가져오기
-        //val byteArray = intent.getByteArrayExtra("image")
-        //val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-        //diary_image.setImageBitmap(bitmap);
+        val byteArray = intent.getByteArrayExtra("diary_image")
+        if(byteArray == null)
+        {
+            diary_image.visibility = View.INVISIBLE
+        }
+        else
+        {
+            diary_image.visibility = View.VISIBLE
+            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
+            diary_image.setImageBitmap(bitmap);
+        }
+
 
         // 일기 편집 화면으로 이동
         // 잘 작동되는지 테스트 필요

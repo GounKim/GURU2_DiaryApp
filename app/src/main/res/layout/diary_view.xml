@@ -55,8 +55,7 @@
             android:id="@+id/diary_image"
             android:layout_width="300dp"
             android:layout_height="400dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_baseline_photo_24"/>
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 

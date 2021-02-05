@@ -86,18 +86,26 @@ class DiaryViewEdit : AppCompatActivity() {
     override fun onBackPressed() {
         svaeDiary(diary_et.text.toString())
 
-        val stream = ByteArrayOutputStream()
-        val bitmap = (image_preview.getDrawable() as BitmapDrawable).bitmap
-        val scale = (1024 / bitmap.width.toFloat())
-        val image_w = (bitmap.width * scale).toInt()
-        val image_h = (bitmap.height * scale).toInt()
-        val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
-        resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val byteArray: ByteArray = stream.toByteArray()
-
         var intent = Intent(this, DiaryView::class.java)
         intent.putExtra("diary_content", diary_et.text.toString())
-        intent.putExtra("diary_image", byteArray)
+
+        if(image_preview.getDrawable() == null)
+        {
+
+        }
+        else
+        {
+            val stream = ByteArrayOutputStream()
+            val bitmap = (image_preview.getDrawable() as BitmapDrawable).bitmap
+            val scale = (1024 / bitmap.width.toFloat())
+            val image_w = (bitmap.width * scale).toInt()
+            val image_h = (bitmap.height * scale).toInt()
+            val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
+            resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val byteArray: ByteArray = stream.toByteArray()
+            intent.putExtra("diary_image", byteArray)
+        }
+
         startActivity(intent)
         Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         // 뒤로가는 동작이 되지 않으면 아래의 코드도 넣기

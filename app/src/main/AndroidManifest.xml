@@ -35,6 +35,7 @@
             android:parentActivityName=".diaryView.DiaryView">
         </activity>
         <activity android:name=".diaryView.DiaryView"></activity>
+        <activity android:name=".category.Category"></activity>
     </application>
 
 </manifest>
