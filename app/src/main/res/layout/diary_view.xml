@@ -56,7 +56,11 @@
             android:layout_width="300dp"
             android:layout_height="400dp"
             android:layout_gravity="center"
+<<<<<<< HEAD
             android:src="@drawable/ic_baseline_photo_24"/>
+=======
+            tools:srcCompat="@tools:sample/avatars" />
+>>>>>>> origin/Goun
 
 
     </LinearLayout>
