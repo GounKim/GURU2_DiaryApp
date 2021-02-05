@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         tvShortDiary.setOnClickListener {
-            val intent = Intent(this, SelectActivity::class.java)
+            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             startActivity(intent)
         }
     }
@@ -115,9 +115,6 @@ class MainActivity : AppCompatActivity(),
             R.id.nav_settings -> {
                 val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 startActivity(intent)
-            }
-            else -> {
-                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
             }
         }
         drawerLayout.closeDrawers()
