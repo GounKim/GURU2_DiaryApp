@@ -14,7 +14,7 @@ class DBManager(
 
         //항목 리스트 테이블
         db?.execSQL("CREATE TABLE habit_lists ("+
-                "habit_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "habit_id INTEGER PRIMARY KEY ," +
                 "habit TEXT NOT NULL UNIQUE," +
                 "sort_num INTEGER);")
 
@@ -35,12 +35,12 @@ class DBManager(
 
         //카테고리 리스트 테이블
         db?.execSQL("CREATE TABLE diary_categorys" +
-                "(category_id INTEGER PRIMARY AUTOINCREMENT," +
+                "(category_id INTEGER PRIMARY KEY," +
                 "category_name TEXT);")
 
         //다이어리 글 저장 테이블
         db?.execSQL("CREATE TABLE diary_posts" +
-                "(post_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "(post_id INTEGER PRIMARY KEY ," +
                 "reporting_date INTEGER NOT NULL," +
                 "category_id TEXT," +
                 "content TEXT," +
@@ -48,7 +48,7 @@ class DBManager(
                 "ON DELETE SET NULL);")
 
         //이미지 경로 저장 테이블
-        db?.execSQL("CREATE TABLE diary_imgs(img_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+        db?.execSQL("CREATE TABLE diary_imgs(img_id INTEGER PRIMARY KEY ," +
                 "post_id INTEGER,img_dir TEXT NOT NULL," +
                 "CONSTRAINT post_id_fk FOREIGN KEY (post_id) REFERENCES diary_posts (post_id)" +
                 "ON DELETE CASCADE);")

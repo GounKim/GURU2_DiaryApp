@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp
 
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Gravity.CENTER
@@ -26,9 +27,17 @@ class MainActivity : AppCompatActivity() {
     lateinit var bottomTextBox: LinearLayout
     lateinit var blindLayout : LinearLayout
 
+    lateinit var sqlitedb: SQLiteDatabase
+    lateinit var dbManager: DBManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        dbManager = DBManager(this,"cookieDiary",null,1)
+        sqlitedb = dbManager.writableDatabase
+        sqlitedb.close()
+        dbManager.close()
 
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
