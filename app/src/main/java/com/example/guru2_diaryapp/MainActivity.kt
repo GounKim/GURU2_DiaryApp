@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp;
 
+import android.database.sqlite.SQLiteDatabase
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +8,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,6 +27,8 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_NONE
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_SINGLE
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -36,9 +43,17 @@ class MainActivity : AppCompatActivity(),
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
 
+    lateinit var sqlitedb: SQLiteDatabase
+    lateinit var dbManager: DBManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        dbManager = DBManager(this,"cookieDiary",null,1)
+        sqlitedb = dbManager.writableDatabase
+        sqlitedb.close()
+        dbManager.close()
 
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
@@ -140,3 +155,4 @@ class MainActivity : AppCompatActivity(),
         }
     }
 }
+
