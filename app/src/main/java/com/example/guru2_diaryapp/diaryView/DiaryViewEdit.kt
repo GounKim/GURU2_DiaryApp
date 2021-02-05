@@ -1,11 +1,11 @@
 package com.example.guru2_diaryapp.diaryView
 
 import android.Manifest
-import android.R.attr
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.io.ByteArrayOutputStream
 
 
 class DiaryViewEdit : AppCompatActivity() {
@@ -84,8 +85,19 @@ class DiaryViewEdit : AppCompatActivity() {
     // 뒤로가기 동작
     override fun onBackPressed() {
         svaeDiary(diary_et.text.toString())
+
+        val stream = ByteArrayOutputStream()
+        val bitmap = (image_preview.getDrawable() as BitmapDrawable).bitmap
+        val scale = (1024 / bitmap.width.toFloat())
+        val image_w = (bitmap.width * scale).toInt()
+        val image_h = (bitmap.height * scale).toInt()
+        val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
+        resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val byteArray: ByteArray = stream.toByteArray()
+
         var intent = Intent(this, DiaryView::class.java)
         intent.putExtra("diary_content", diary_et.text.toString())
+        intent.putExtra("diary_image", byteArray)
         startActivity(intent)
         Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         // 뒤로가는 동작이 되지 않으면 아래의 코드도 넣기

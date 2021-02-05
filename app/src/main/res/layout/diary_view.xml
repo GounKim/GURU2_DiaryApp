@@ -56,7 +56,7 @@
             android:layout_width="300dp"
             android:layout_height="400dp"
             android:layout_gravity="center"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:src="@drawable/ic_baseline_photo_24"/>
 
 
     </LinearLayout>

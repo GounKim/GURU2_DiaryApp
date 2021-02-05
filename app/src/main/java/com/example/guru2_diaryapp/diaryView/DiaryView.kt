@@ -1,14 +1,16 @@
 package com.example.guru2_diaryapp.diaryView
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
+
 
 class DiaryView : AppCompatActivity() {
     lateinit var diary_tv : TextView
@@ -29,6 +31,11 @@ class DiaryView : AppCompatActivity() {
         else {
             diary_tv.text = diary_text
         }
+
+        // 편집화면에서 등록한 이미지 가져오기
+        val byteArray = intent.getByteArrayExtra("image")
+        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
+        diary_image.setImageBitmap(bitmap);
 
         // 일기 편집 화면으로 이동
         // 잘 작동되는지 테스트 필요
