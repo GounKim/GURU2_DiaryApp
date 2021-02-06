@@ -1,86 +1,144 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp;
 
-import android.database.sqlite.SQLiteDatabase
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity.CENTER
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
-import android.widget.*
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
+import com.example.guru2_diaryapp.R
+import com.example.guru2_diaryapp.diaryView.DiaryView
+import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_NONE
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_SINGLE
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener {
 
+    // 화면
     lateinit var calendarView: MaterialCalendarView
     lateinit var tvShortDiary: TextView
     lateinit var bottomTextBox: LinearLayout
-    lateinit var blindLayout : LinearLayout
 
-    lateinit var sqlitedb: SQLiteDatabase
-    lateinit var dbManager: DBManager
+    // 메뉴
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        dbManager = DBManager(this,"cookieDiary",null,1)
-        sqlitedb = dbManager.writableDatabase
-        sqlitedb.close()
-        dbManager.close()
-
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
         bottomTextBox = findViewById(R.id.bottomTextLayout)
-        blindLayout = findViewById(R.id.blindLayout)
 
+
+        // actionbar의 왼쪽에 버튼 추가
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_book_24)
+
+        // 네비게이션 드로어 설정
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.naviView)
+
+        navigationView.setNavigationItemSelectedListener(this)
+
+        // 달력 생성
         calendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
-                .setMaximumDate(CalendarDay.from(2000,0,1))
-                .setMaximumDate(CalendarDay.from(2100,11,31))
+                .setMaximumDate(CalendarDay.from(2000, 0, 1))
+                .setMaximumDate(CalendarDay.from(2100, 11, 31))
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
 
-        if (bottomTextBox.isInvisible) {
-            calendarView.setOnDateChangedListener { widget, date, selected ->
-                val ani = TranslateAnimation(0f, 0f, bottomTextBox.height.toFloat(), 0f)
-                ani.duration = 400
-                ani.fillAfter = true
-                bottomTextBox.animation = ani
-                bottomTextBox.visibility = View.VISIBLE
-                tvShortDiary.setText(date.toString())
+        // 달력 Date 클릭시
+        calendarView.setOnDateChangedListener { widget, date, selected ->
+            val ani = TranslateAnimation(0f, 0f, bottomTextBox.height.toFloat(), 0f)
+            ani.duration = 400
+            ani.fillAfter = true
+            bottomTextBox.animation = ani
+            bottomTextBox.visibility = View.VISIBLE
+            tvShortDiary.setText(date.toString())
 
-                calendarView.selectionMode =  SELECTION_MODE_NONE
-
-            }
+            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
         }
-        else {
 
+        tvShortDiary.setOnClickListener {
+            val intent = Intent(this, SelectActivity::class.java)
+            startActivity(intent)
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.to_timeline_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item?.itemId) {
+            R.id.action_toTimeLine -> {
+                val intent = Intent(this, MainTimelineView::class.java)
+                startActivity(intent)
+                return true
+            }
+            else -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                return super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item?.itemId) {
+            R.id.nav_category -> {
+                val intent = Intent(this, com.example.guru2_diaryapp.category.Category::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_tracker -> {
+                val intent = Intent(this, Tracker::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_search -> {
+                val intent = Intent(this, SelectActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_settings -> {
+                val intent = Intent(this, DiaryView::class.java)
+                startActivity(intent)
+            }
+            else -> {
+                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
+            }
+        }
+        drawerLayout.closeDrawers()
+        return true
+    }
+
     override fun onBackPressed() {
-        if (bottomTextBox.visibility == android.view.View.VISIBLE) {
+        if (bottomTextBox.visibility == View.VISIBLE) {
             val ani = TranslateAnimation(0f, 0f, 0f, bottomTextBox.height.toFloat())
             ani.duration = 400
             ani.fillAfter = true
             bottomTextBox.animation = ani
-            bottomTextBox.visibility = android.view.View.INVISIBLE
-            calendarView.selectionMode =  SELECTION_MODE_SINGLE
+            bottomTextBox.visibility = View.INVISIBLE
+            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
+        }
+        else if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawers()
         }
         else {
             super.onBackPressed()
         }
     }
 }
-

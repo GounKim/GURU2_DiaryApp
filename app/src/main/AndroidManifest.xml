@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp">
-        <activity android:name=".SelectResultActivity"></activity>
+        <activity android:name=".Tracker"></activity>
+        <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
         <activity android:name=".MainTimelineView" />
         <activity android:name=".MainActivity">
@@ -31,7 +32,10 @@
         </activity>
         <!--뒤로가기-->
         <activity android:name=".diaryView.DiaryViewEdit"
-            android:parentActivityName=".diaryView.DiaryView"/>
+            android:parentActivityName=".diaryView.DiaryView">
+        </activity>
+        <activity android:name=".diaryView.DiaryView"></activity>
+        <activity android:name=".category.Category"></activity>
     </application>
 
 </manifest>
