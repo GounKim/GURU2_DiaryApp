@@ -117,6 +117,9 @@ class MainActivity : AppCompatActivity(),
                 val intent = Intent(this, DiaryView::class.java)
                 startActivity(intent)
             }
+            else -> {
+                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
+            }
         }
         drawerLayout.closeDrawers()
         return true
