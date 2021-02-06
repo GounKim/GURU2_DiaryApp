@@ -20,29 +20,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/googleLogin"
+    <!--Google Sign In 부분-->
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/btn_googleSignIn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="318dp"
-        android:backgroundTint="#D9D8D7"
-        android:text="Google 로그인"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="408dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cookieImage" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/naverLogin"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="#46D941"
-        android:text="Naver 로그인"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/googleLogin" />
+    </com.google.android.gms.common.SignInButton>
 
     <Button
         android:id="@+id/loginSkip"
@@ -53,7 +41,7 @@
         android:text="SKIP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/naverLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_googleSignIn" />
 
     <TextView
         android:id="@+id/diaryText"

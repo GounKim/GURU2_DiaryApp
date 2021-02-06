@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.guru2_diaryapp">
 
+    <!--인터넷 권한-->
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- 카메라 권한 설정 -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
