@@ -1,17 +1,23 @@
 package com.example.guru2_diaryapp;
 
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat
+import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.guru2_diaryapp.category.CategoryActivity
+import com.example.guru2_diaryapp.R
+import com.example.guru2_diaryapp.diaryView.DiaryView
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -30,9 +36,18 @@ class MainActivity : AppCompatActivity(),
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
 
+    // DB
+    lateinit var DBManager:DBManager
+    lateinit var sqlitedb:SQLiteDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        DBManager = DBManager(this,"cookieDB",null,1)
+        sqlitedb =  DBManager.writableDatabase
+        sqlitedb.close()
+        DBManager.close()
 
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
@@ -70,10 +85,11 @@ class MainActivity : AppCompatActivity(),
         }
 
         tvShortDiary.setOnClickListener {
-            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+            val intent = Intent(this, SelectActivity::class.java)
             startActivity(intent)
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.to_timeline_menu, menu)
@@ -109,8 +125,11 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                val intent = Intent(this, DiaryView::class.java)
                 startActivity(intent)
+            }
+            else -> {
+                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
             }
         }
         drawerLayout.closeDrawers()
@@ -123,7 +142,7 @@ class MainActivity : AppCompatActivity(),
             ani.duration = 400
             ani.fillAfter = true
             bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.INVISIBLE
+            bottomTextBox.visibility = View.GONE
             calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
         }
         else if (drawerLayout.isDrawerOpen(GravityCompat.START)){

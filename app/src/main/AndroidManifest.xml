@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.guru2_diaryapp">
 
+    <!-- 카메라 권한 설정 -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- 저장 권한 설정 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- 카메라 기능이 무조건 필요하지 않을 경우 -->
+    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,12 +19,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp">
-        <activity android:name=".category.CategoryActivity"></activity>
-        <activity android:name=".Category" />
+        <activity android:name=".LoginActivity"></activity>
+        <!-- Intro -->
+        <activity
+            android:name=".IntroActivity"
+            android:theme="@style/IntroTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".category.CategoryActivity" />
         <activity android:name=".Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
         <activity android:name=".MainTimelineView" />
+
+        <activity android:name=".diaryView.DiaryView"/>
+        <activity android:name=".diaryView.DiaryViewEdit"
+            android:parentActivityName=".diaryView.DiaryView"/>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,9 +47,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- 뒤로가기 -->
-        <activity
-            android:name=".diaryView.DiaryViewEdit"
-            android:parentActivityName=".diaryView.DiaryView" />
+
     </application>
 
 </manifest>
