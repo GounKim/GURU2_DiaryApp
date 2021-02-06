@@ -83,6 +83,7 @@ class LoginActivity : AppCompatActivity() {
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w("LoginActivity", "Google sign in failed", e)
+                Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
             }
         }
     } // onActivityResult End
@@ -110,6 +111,7 @@ class LoginActivity : AppCompatActivity() {
         if(user !=null) { // MainActivity 로 이동
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
     } // toMainActivity End
 
@@ -119,8 +121,6 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
     // signIn End
-
-
 
 
 }
