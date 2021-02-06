@@ -1,17 +1,13 @@
 package com.example.guru2_diaryapp;
 
-import android.database.sqlite.SQLiteDatabase
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,13 +18,10 @@ import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.R
 import com.example.guru2_diaryapp.diaryView.DiaryView
-import com.example.guru2_diaryapp.category.CategoryActivity
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_NONE
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView.SELECTION_MODE_SINGLE
 import java.util.*
 
 class MainActivity : AppCompatActivity(),

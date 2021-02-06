@@ -19,21 +19,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class CategoryFragment : Fragment() {
-    lateinit var category_tv : TextView
-    var name = ""
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        category_tv = getView()!!.findViewById(R.id.fragment_tv)
-        category_tv.text = name
-
-        return category_tv
-
-        // 익스텐션 지원 종료로 이 코드를 위의 코드로 변경함
-        //val view = inflater.inflate(R.layout.fragment_category, container, false)
-        // view.textView.text = name
-        // return view
-    }
+    ): View = inflater.inflate(R.layout.fragment_category, container, false)
 }
