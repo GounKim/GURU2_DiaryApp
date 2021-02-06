@@ -43,17 +43,18 @@ class MainActivity : AppCompatActivity(),
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
 
-    lateinit var sqlitedb: SQLiteDatabase
-    lateinit var dbManager: DBManager
+    // DB
+    lateinit var DBManager:DBManager
+    lateinit var sqlitedb:SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        dbManager = DBManager(this,"cookieDiary",null,1)
-        sqlitedb = dbManager.writableDatabase
+        DBManager = DBManager(this,"cookieDB",null,1)
+        sqlitedb =  DBManager.writableDatabase
         sqlitedb.close()
-        dbManager.close()
+        DBManager.close()
 
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity(),
             startActivity(intent)
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.to_timeline_menu, menu)
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity(),
             ani.duration = 400
             ani.fillAfter = true
             bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.INVISIBLE
+            bottomTextBox.visibility = View.GONE
             calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
         }
         else if (drawerLayout.isDrawerOpen(GravityCompat.START)){

@@ -14,7 +14,7 @@ class DBManager(
 
         //항목 리스트 테이블
         db?.execSQL("CREATE TABLE habit_lists ("+
-                "habit_id INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                "habit_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "habit TEXT NOT NULL UNIQUE," +
                 "sort_num INTEGER);")
 
@@ -35,12 +35,12 @@ class DBManager(
 
         //카테고리 리스트 테이블
         db?.execSQL("CREATE TABLE diary_categorys" +
-                "(category_id INTEGER PRIMARY AUTO_INCREMENT," +
+                "(category_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "category_name TEXT);")
 
         //다이어리 글 저장 테이블
         db?.execSQL("CREATE TABLE diary_posts" +
-                "(post_id INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                "(post_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "reporting_date INTEGER NOT NULL," +
                 "category_id TEXT," +
                 "content TEXT," +
