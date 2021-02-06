@@ -80,16 +80,15 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 
         </LinearLayout>
 
-        <!-- 네비게이션 드로어 -->
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/naviView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@color/white"
-            app:headerLayout="@layout/main_menu"
-            app:menu="@menu/navi_menu" />
-
     </FrameLayout>
+    <!-- 네비게이션 드로어 -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/naviView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/white"
+        app:headerLayout="@layout/main_menu"
+        app:menu="@menu/navi_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
