@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.to_timeline_menu, menu)
         return true
@@ -131,7 +132,7 @@ class MainActivity : AppCompatActivity(),
             ani.duration = 400
             ani.fillAfter = true
             bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.INVISIBLE
+            bottomTextBox.visibility = View.GONE
             calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
         }
         else if (drawerLayout.isDrawerOpen(GravityCompat.START)){
