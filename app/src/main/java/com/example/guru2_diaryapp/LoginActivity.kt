@@ -36,6 +36,15 @@ class LoginActivity : AppCompatActivity() {
             signIn()
         }
     }
+    // onStart. 유저가 앱에 이미 구글 로그인을 했는지 확인
+    public override fun onStart() {
+        super.onStart()
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if(account!==null){ // 이미 로그인 되어있을시 바로 메인 액티비티로 이동
+            //val user = auth!!.currentUser
+            toMainActivity(auth?.currentUser)
+        }
+    } //onStart End
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, GOOGLE_REQUEST_CODE)
@@ -59,6 +68,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth?.signInWithCredential(credential)
@@ -68,15 +78,24 @@ class LoginActivity : AppCompatActivity() {
                         Log.d(TAG, "로그인 성공")
                         val user = auth!!.currentUser
                         loginSuccess()
+
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception)
                     }
                 }
     }
+
     private fun loginSuccess(){
         val intent = Intent(this,MainActivity::class.java)
         startActivity(intent)
         finish()
     }
+
+    fun toMainActivity(user: FirebaseUser?) {
+        if(user !=null) { // MainActivity 로 이동
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+    } // toMainActivity End
 }
