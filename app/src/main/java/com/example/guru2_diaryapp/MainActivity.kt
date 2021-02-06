@@ -1,6 +1,7 @@
 package com.example.guru2_diaryapp;
 
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -30,9 +31,18 @@ class MainActivity : AppCompatActivity(),
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
 
+    // DB
+    lateinit var DBManager:DBManager
+    lateinit var sqlitedb:SQLiteDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        DBManager = DBManager(this,"cookieDB",null,1)
+        sqlitedb =  DBManager.writableDatabase
+        sqlitedb.close()
+        DBManager.close()
 
         calendarView = findViewById(R.id.calendarView)
         tvShortDiary = findViewById(R.id.shortDiary)
