@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/brown_2"
+        android:width="?attr/maxWidth"
+        android:height="?attr/maxHeight"/>
+
+    <item android:width="300dp"
+        android:height="300dp"
+        android:gravity="center">
+        <shape android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:shape="oval"
+            android:tint="#E3CBB1">
+
+            <padding
+                android:bottom="9dp"
+                android:left="9dp"
+                android:right="9dp"
+                android:top="9dp" />
+
+        </shape>
+    </item>
+
+</layer-list>
