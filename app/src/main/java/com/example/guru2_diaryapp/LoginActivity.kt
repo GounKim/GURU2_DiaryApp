@@ -106,10 +106,10 @@ class LoginActivity : AppCompatActivity() {
     }// firebaseAuthWithGoogle END
 
     // toMainActivity
-    fun toMainActivity(user: FirebaseUser?) {
+    private fun toMainActivity(user: FirebaseUser?) {
         if(user !=null) { // MainActivity 로 이동
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     } // toMainActivity End
 
