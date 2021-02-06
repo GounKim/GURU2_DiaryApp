@@ -5,10 +5,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class DBManager(
-        context: Context?,
-        name: String?,
-        factory: SQLiteDatabase.CursorFactory?,
-        version: Int) : SQLiteOpenHelper(context, name, factory, version) {
+    context: Context?,
+    name: String?,
+    factory: SQLiteDatabase.CursorFactory?,
+    version: Int) : SQLiteOpenHelper(context, name, factory, version) {
 
     override fun onCreate(db: SQLiteDatabase?) {
 
