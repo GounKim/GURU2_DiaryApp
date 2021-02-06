@@ -1,22 +1,23 @@
 package com.example.guru2_diaryapp;
 
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.animation.TranslateAnimation
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.guru2_diaryapp.category.CategoryActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -24,12 +25,15 @@ class MainActivity : AppCompatActivity(),
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
-    lateinit var tvShortDiary: TextView
-    lateinit var bottomTextBox: LinearLayout
 
     // 메뉴
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
+
+    // BottomSheetDialog (하단 슬라이드)
+    lateinit var bottomSheetDialog: BottomSheetDialog
+    lateinit var tvshortDiary: TextView
+    lateinit var moodImage: ImageView
 
     // DB
     lateinit var DBManager:DBManager
@@ -41,12 +45,17 @@ class MainActivity : AppCompatActivity(),
 
         DBManager = DBManager(this,"cookieDB",null,1)
         sqlitedb =  DBManager.writableDatabase
+
+        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210214, 'sunny', 0);")
+        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210204, 'rain', 1);")
+
+        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (1, 20210214, '떡볶이' ,'떡볶이를 먹었다. 기분이 좋았다.', NULL);")
+        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (2, 20210204, '카테고리?' ,'날씨가 흐려서 기분이 별로다. 배고프다.', NULL);")
+
         sqlitedb.close()
         DBManager.close()
 
         calendarView = findViewById(R.id.calendarView)
-        tvShortDiary = findViewById(R.id.shortDiary)
-        bottomTextBox = findViewById(R.id.bottomTextLayout)
 
 
         // actionbar의 왼쪽에 버튼 추가
@@ -59,6 +68,15 @@ class MainActivity : AppCompatActivity(),
 
         navigationView.setNavigationItemSelectedListener(this)
 
+        // BottomSheetDialog 연결
+        bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
+
+        tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
+        moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
+
+
+
         // 달력 생성
         calendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -69,20 +87,58 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
-            val ani = TranslateAnimation(0f, 0f, bottomTextBox.height.toFloat(), 0f)
-            ani.duration = 400
-            ani.fillAfter = true
-            bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.VISIBLE
-            tvShortDiary.setText(date.toString())
 
-            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
+            var year = date.year
+            var month = date.month + 1
+            var day = date.day
+            var newDate = year * 10000 + month * 100 + day
+
+            Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
+
+            sqlitedb = DBManager.readableDatabase
+
+            var cursor: Cursor
+            cursor = sqlitedb.rawQuery("SELECT content "
+                                            + "FROM diary_posts "
+                                            + "WHERE reporting_date = '"+ newDate + "';", null)
+
+            if (cursor.moveToFirst()) {
+                var diaryText = cursor.getString(0).toString()
+                var shortDiary = diaryText.substring(0, diaryText.indexOf("."))
+                tvshortDiary.text = shortDiary
+            } else {
+                tvshortDiary.text = "작성된 일기가 없습니다."
+            }
+
+            cursor = sqlitedb.rawQuery("SELECT mood "
+                                            + "FROM mood_weather_lists "
+                                            + "WHERE reporting_date = '"+ newDate + "';", null)
+
+            if (cursor.moveToFirst()) {
+                var mood = cursor.getInt(0)
+                if (mood == 0) {
+                    moodImage.setImageResource(R.drawable.ic_mood_good)
+                }
+                else if (mood == 1) {
+                    moodImage.setImageResource(R.drawable.ic_mood_bad)
+                }
+                else {
+                    moodImage.setImageResource(R.drawable.ic_baseline_add_reaction_24)
+                }
+            }
+
+            cursor.close()
+            sqlitedb.close()
+
+            bottomSheetDialog.show()
         }
 
-        tvShortDiary.setOnClickListener {
+        tvshortDiary.setOnClickListener() {
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             startActivity(intent)
         }
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -128,15 +184,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        if (bottomTextBox.visibility == View.VISIBLE) {
-            val ani = TranslateAnimation(0f, 0f, 0f, bottomTextBox.height.toFloat())
-            ani.duration = 400
-            ani.fillAfter = true
-            bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.INVISIBLE
-            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
-        }
-        else if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawers()
         }
         else {
