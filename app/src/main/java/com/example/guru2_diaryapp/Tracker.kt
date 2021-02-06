@@ -25,7 +25,7 @@ class Tracker : AppCompatActivity() {
         sqlitedb = dbManager.readableDatabase
 
         var cursor : Cursor
-
+        cursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists",null)
     }
 
 
