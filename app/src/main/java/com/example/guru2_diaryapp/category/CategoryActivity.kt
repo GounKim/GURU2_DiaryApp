@@ -1,49 +1,43 @@
 package com.example.guru2_diaryapp.category
 
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager.widget.ViewPager
 import com.example.guru2_diaryapp.R
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy
-
 
 class CategoryActivity : AppCompatActivity() {
 
-    /*private lateinit var mContext : Context
+    private lateinit var mContext : Context
     lateinit var category_text : TextView
     lateinit var category_logo : ImageView
-    lateinit var  : ViewPager*/
+    lateinit var category_vp : ViewPager
     lateinit var category_tab : TabLayout
-    lateinit var category_vp : ViewPager2
-    lateinit var pgAdapter: PageAdapter
-
-    val CategoryTextArray = arrayOf("일상", "여행")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category)
 
-        /*mContext = applicationContext
+        mContext = applicationContext
+        val view = LayoutInflater.from(mContext).inflate(R.layout.category_button, null)
 
-        category_text = findViewById(R.id.category_text)
-        category_logo = findViewById(R.id.category_logo)*/
+        category_text = view.findViewById(R.id.category_text)
+        category_logo = view.findViewById(R.id.category_logo)
 
-        category_tab = findViewById(R.id.category_tab)
         category_vp = findViewById(R.id.category_vp)
+        category_tab = findViewById(R.id.category_tab)
 
-        pgAdapter = PageAdapter(this)
-        category_vp.adapter = pgAdapter
-
-        TabLayoutMediator(category_tab, category_vp,
-            TabConfigurationStrategy { tab, position ->
-                tab.text = "Tab " + (position + 1)
-            }).attach()
+        initViewPager()
     }
 
     // 함수의 파라미터로 각 카테고리의 이름을 받고 그에 맞는 아이콘을 세팅
-    /*private fun createView(categoryName : String) : View {
+    private fun createView(categoryName : String) : View {
         category_text.text = categoryName
         when (categoryName) {
             "일상" -> {
@@ -85,5 +79,5 @@ class CategoryActivity : AppCompatActivity() {
         category_tab.getTabAt(0)?.setCustomView(createView("일상"))
         category_tab.getTabAt(1)?.setCustomView(createView("여행"))
         category_tab.getTabAt(2)?.setCustomView(createView("교환일기"))
-    }*/
+    }
 }

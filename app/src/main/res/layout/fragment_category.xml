@@ -8,9 +8,8 @@
     android:orientation="vertical"
     tools:viewBindingIgnore="true">
 
-
     <!-- 일기 추가로 테스트하고 이후에 더 고쳐야할 것 같아요 -->
-    <!--<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         <ImageView
@@ -33,14 +32,10 @@
             android:gravity="left"
             android:text="제목"
             android:textSize="15sp" />
-    </LinearLayout>-->
+    </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:gravity="center"
-        android:textSize="50sp"/>
+
+
+
 </LinearLayout>
