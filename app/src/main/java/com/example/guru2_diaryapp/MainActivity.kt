@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.action_toTimeLine -> {
-                val intent = Intent(this, MainTimelineView::class.java)
+                val intent = Intent(this, TimeLineView::class.java)
                 startActivity(intent)
                 return true
             }
