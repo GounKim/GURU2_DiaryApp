@@ -57,8 +57,13 @@ class DBManager(
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
     }
 
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onConfigure(db)
+        super.onOpen(db)
+    }
+
     fun onCategoryDeleteMode(db: SQLiteDatabase?){
-        //카테고리가 삭제되면 모든 하위 항목들이 삭제 설정을 변경
+        //카테고리가 삭제되면 모든 하위 항목들이 삭제 되도록 설정을 변경
 
     }
 }
