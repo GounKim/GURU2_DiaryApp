@@ -30,7 +30,7 @@ class DBManager(
         //기분 날씨 테이블
         db?.execSQL("CREATE TABLE mood_weather_lists " +
                 "(reporting_date INTEGER PRIMARY KEY, " +
-                "weather TEXT, " +
+                "weather INTEGER, " +
                 "mood INTEGER);")
 
         //카테고리 리스트 테이블
@@ -42,10 +42,10 @@ class DBManager(
         db?.execSQL("CREATE TABLE diary_posts" +
                 "(post_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "reporting_date INTEGER NOT NULL," +
-                "category_id TEXT," +
+                "category_id INTEGER DEFAULT 0 NOT NULL," +
                 "content TEXT," +
                 "CONSTRAINT category_fk FOREIGN KEY (category_id) REFERENCES diary_categorys (category_id) " +
-                "ON DELETE SET NULL);")
+                "ON DELETE SET DEFAULT);")
 
         //이미지 경로 저장 테이블
         db?.execSQL("CREATE TABLE diary_imgs(img_id INTEGER PRIMARY KEY AUTOINCREMENT," +
