@@ -219,7 +219,7 @@ class MainActivity : AppCompatActivity(),
         month_day[10] = 30
 
         // 월
-        for(i in 1..month step 1) {
+        for(i in 1..month-1 step 1) {
             total_day += month_day[i-1]
         }
 

@@ -221,7 +221,7 @@ class DiaryViewEdit : AppCompatActivity() {
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(intent, REQUEST_CODE)
-
+            image_preview.visibility = View.VISIBLE
         }
     }
 
