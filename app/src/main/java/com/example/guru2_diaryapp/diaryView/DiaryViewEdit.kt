@@ -36,6 +36,8 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var image_preview : ImageView
     lateinit var date_tv : TextView
 
+    var newDate : Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.diary_view_edit)
@@ -45,7 +47,9 @@ class DiaryViewEdit : AppCompatActivity() {
         image_preview = findViewById(R.id.image_preview)
         date_tv = findViewById(R.id.date_tv)
 
+        // 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
+        newDate = intent.getIntExtra("newDate", 0)
 
         dbManager = DBManager(this, "diary_posts", null, 1)
 

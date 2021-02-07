@@ -19,6 +19,7 @@ class DiaryView : AppCompatActivity() {
     lateinit var diary_tv : TextView
     lateinit var diary_image : ImageView
     lateinit var date_tv : TextView
+    var newDate : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class DiaryView : AppCompatActivity() {
 
         // 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
+        newDate = intent.getIntExtra("newDate", 0)
 
         // 편집화면에서 작성한 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -58,6 +60,7 @@ class DiaryView : AppCompatActivity() {
         diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("select_date", date_tv.text.toString())
+            intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
 
@@ -83,3 +86,4 @@ class DiaryView : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 }
+

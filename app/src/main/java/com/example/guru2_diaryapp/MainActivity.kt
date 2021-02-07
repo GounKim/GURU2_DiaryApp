@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity(),
 
     // 일기로 전달될 날짜
     lateinit var selectDate : String
+    var newDate : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,15 +91,15 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
-            
+
             var year = date.year
             var month = date.month + 1
             var day = date.day
-            var newDate = year * 10000 + month * 100 + day
+            newDate = year * 10000 + month * 100 + day
 
             Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
-            selectDate = "${year}.${month}.${day}"
+            selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqlitedb = DBManager.readableDatabase
 
@@ -142,6 +143,7 @@ class MainActivity : AppCompatActivity(),
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             intent.putExtra("select_date", selectDate)
+            intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
 
@@ -197,5 +199,35 @@ class MainActivity : AppCompatActivity(),
         else {
             super.onBackPressed()
         }
+    }
+
+    // 요일 구하기
+    fun getDayName(year : Int, month : Int, day : Int): String {
+        val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
+        var month_day = Array<Int>(12) {31}
+        var total_day = 0
+
+        // 년
+        if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+            month_day[1] = 29
+        } else {
+            month_day[1] = 28
+        }
+        month_day[3] = 30
+        month_day[5] = 30
+        month_day[8] = 30
+        month_day[10] = 30
+
+        // 월
+        for(i in 1..month step 1) {
+            total_day += month_day[i-1]
+        }
+
+        // 일
+        total_day += day - 1;
+
+        var answer_day = (5 + total_day) % 7
+
+        return str_day[answer_day]
     }
 }
