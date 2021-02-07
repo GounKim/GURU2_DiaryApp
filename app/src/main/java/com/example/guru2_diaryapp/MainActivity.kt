@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity(),
     lateinit var DBManager:DBManager
     lateinit var sqlitedb:SQLiteDatabase
 
+    // 일기로 전달될 날짜
+    lateinit var selectDate : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -87,13 +90,15 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
-
+            
             var year = date.year
             var month = date.month + 1
             var day = date.day
             var newDate = year * 10000 + month * 100 + day
 
             Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
+
+            selectDate = "${year}.${month}.${day}"
 
             sqlitedb = DBManager.readableDatabase
 
@@ -134,7 +139,9 @@ class MainActivity : AppCompatActivity(),
         }
 
         tvshortDiary.setOnClickListener() {
+
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+            intent.putExtra("select_date", selectDate)
             startActivity(intent)
         }
 

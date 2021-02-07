@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -11,11 +12,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.guru2_diaryapp.DBManager
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,9 +28,13 @@ import java.io.ByteArrayOutputStream
 class DiaryViewEdit : AppCompatActivity() {
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
+
+    lateinit var dbManager: DBManager
+    lateinit var sqllitedb : SQLiteDatabase
     lateinit var diary_et : EditText
     lateinit var diary_bnv : BottomNavigationView
     lateinit var image_preview : ImageView
+    lateinit var date_tv : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +43,13 @@ class DiaryViewEdit : AppCompatActivity() {
         diary_et = findViewById(R.id.diary_et)
         diary_bnv = findViewById(R.id.diary_bnv);
         image_preview = findViewById(R.id.image_preview)
+        date_tv = findViewById(R.id.date_tv)
 
-        loadDiary()
+        date_tv.text = intent.getStringExtra("select_date")
+
+        dbManager = DBManager(this, "diary_posts", null, 1)
+
+        //loadDiary()
 
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -84,15 +96,18 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
-        svaeDiary(diary_et.text.toString())
+        //svaeDiary(diary_et.text.toString())
 
+        // intent를 이용해서 Diary View에 내용 전달
         var intent = Intent(this, DiaryView::class.java)
         intent.putExtra("diary_content", diary_et.text.toString())
 
+        // 선택한 이미지가 없다면
         if(image_preview.getDrawable() == null)
         {
 
         }
+        // 선택한 이미지가 있다면
         else
         {
             val stream = ByteArrayOutputStream()
@@ -113,12 +128,16 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     // 일기 내용 저장
-    // 공유환경변수 사용
+    // 공유환경변수 사용 -> DB로 변경
     private fun svaeDiary(content : String) {
-        var pref = this.getPreferences(0)
+        /*var pref = this.getPreferences(0)
         var editor = pref.edit()
 
-        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()
+        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
+
+        sqllitedb = dbManager.writableDatabase
+        /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
+                + diary_et')")*/
     }
 
     // 일기 내용 불러오기
