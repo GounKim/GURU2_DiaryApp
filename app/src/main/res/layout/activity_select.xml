@@ -12,9 +12,12 @@
         android:id="@+id/edtSearch"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:drawableRight="@drawable/ic_baseline_search_24"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"
         android:background="@drawable/search_border"
-        android:text="검색" />
+        android:drawableRight="@drawable/ic_baseline_search_24"
+        android:hint="검색 단어" />
 
     <ScrollView
         android:layout_width="match_parent"

@@ -34,7 +34,7 @@
         <activity android:name=".Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
-        <activity android:name=".MainTimelineView" />
+        <activity android:name=".TimeLineView" />
 
         <activity android:name=".diaryView.DiaryView"/>
         <activity android:name=".diaryView.DiaryViewEdit"
