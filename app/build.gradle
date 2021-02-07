@@ -59,7 +59,7 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
 
     //리사이클러뷰 사용을 위해 추가
-    implementation "androidx.recyclerview:recyclerview:1.2.0-alpha06"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
     // For control over item selection of both touch and mouse driven selection
-    implementation "androidx.recyclerview:recyclerview-selection:1.2.0-alpha06"
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc03"
 }
