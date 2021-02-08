@@ -17,8 +17,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
+import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.ByteArrayOutputStream
@@ -28,7 +28,7 @@ class DiaryViewEdit : AppCompatActivity() {
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
 
-    lateinit var dbManager: MyDBHelper
+    lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
     lateinit var diary_et : EditText
     lateinit var diary_bnv : BottomNavigationView
@@ -61,7 +61,7 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
 
-        dbManager = MyDBHelper(this)
+        myDBHelper = MyDBHelper(this)
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -176,7 +176,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
         editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
 
-        sqllitedb = dbManager.writableDatabase
+        sqllitedb = myDBHelper.writableDatabase
         /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
                 + diary_et')")*/
     }
