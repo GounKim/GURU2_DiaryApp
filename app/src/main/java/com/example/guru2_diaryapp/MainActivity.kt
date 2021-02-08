@@ -17,7 +17,6 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -36,8 +35,8 @@ class MainActivity : AppCompatActivity(),
     lateinit var moodImage: ImageView
 
     // DB
-    lateinit var DBManager:DBManager
-    lateinit var sqlitedb:SQLiteDatabase
+    lateinit var myDBHelper:MyDBHelper
+    lateinit var sqldb:SQLiteDatabase
 
     // 일기로 전달될 날짜
     lateinit var selectDate : String
@@ -47,20 +46,12 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        DBManager = DBManager(this,"cookieDB",null,1)
-        sqlitedb =  DBManager.writableDatabase
+        myDBHelper = MyDBHelper(this)
+        sqldb = myDBHelper.writableDatabase
 
-        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210214, 'sunny', 0);")
-        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210204, 'rain', 1);")
-
-        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (1, 20210214, '떡볶이' ,'떡볶이를 먹었다. 기분이 좋았다.', NULL);")
-        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (2, 20210204, '카테고리?' ,'날씨가 흐려서 기분이 별로다. 배고프다.', NULL);")
-
-        sqlitedb.close()
-        DBManager.close()
+        sqldb.execSQL("INSERT INTO diary_posts VALUES (null,20200202, 1 , 0 ,'일기 본문');")
 
         calendarView = findViewById(R.id.calendarView)
-
 
         // actionbar의 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -101,10 +92,10 @@ class MainActivity : AppCompatActivity(),
 
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
-            sqlitedb = DBManager.readableDatabase
+            sqldb = myDBHelper.readableDatabase
 
             var cursor: Cursor
-            cursor = sqlitedb.rawQuery("SELECT content "
+            cursor = sqldb.rawQuery("SELECT content "
                                             + "FROM diary_posts "
                                             + "WHERE reporting_date = '"+ newDate + "';", null)
 
@@ -116,9 +107,13 @@ class MainActivity : AppCompatActivity(),
                 tvshortDiary.text = "작성된 일기가 없습니다."
             }
 
-            cursor = sqlitedb.rawQuery("SELECT mood "
+            /*
+            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요!
+            cursor = sqldb.rawQuery("SELECT mood "
                                             + "FROM mood_weather_lists "
                                             + "WHERE reporting_date = '"+ newDate + "';", null)
+
+             */
 
             if (cursor.moveToFirst()) {
                 var mood = cursor.getInt(0)
@@ -134,7 +129,7 @@ class MainActivity : AppCompatActivity(),
             }
 
             cursor.close()
-            sqlitedb.close()
+            sqldb.close()
 
             bottomSheetDialog.show()
         }

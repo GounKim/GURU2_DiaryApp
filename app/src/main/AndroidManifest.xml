@@ -21,11 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp">
-        <activity
-            android:name=".category.CategoryActivity">
-        </activity>
-
-        <activity android:name=".LoginActivity" /> <!-- Intro -->
+        <activity android:name=".LoginActivity"/>
+        <!-- Intro -->
         <activity
             android:name=".IntroActivity"
             android:theme="@style/IntroTheme">
@@ -35,6 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".category.CategoryActivity" />
         <activity android:name=".Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
