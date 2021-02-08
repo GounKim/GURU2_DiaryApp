@@ -13,6 +13,9 @@
     <uses-feature
         android:name="android.hardware.camera2"
         android:required="false" />
+    <!-- GPS 위치 획득 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -41,7 +44,6 @@
         <activity
             android:name=".diaryView.DiaryViewEdit"
             android:parentActivityName=".diaryView.DiaryView" />
-        <activity android:name=".MainTimelineView" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

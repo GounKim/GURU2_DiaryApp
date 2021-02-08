@@ -2,13 +2,18 @@ package com.example.guru2_diaryapp.diaryView
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -17,18 +22,34 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.guru2_diaryapp.DBManager
+import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.JsonObject
+import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
-
 
 class DiaryViewEdit : AppCompatActivity() {
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
+    private val REQUEST_WEATHER_CODE = 1001
+    private val REQUEST_GPS_CODE = 1002
+    private var lat : String = ""
+    private var lon : String = ""
+    private var apiID : String = "4dd8b7eb922a5d7e8da094cb922921f2"
 
-    lateinit var dbManager: DBManager
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    lateinit var dbManager: MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
     lateinit var diary_et : EditText
     lateinit var diary_bnv : BottomNavigationView
@@ -36,6 +57,8 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
     lateinit var selected_category : String
+    lateinit var current_weather : ImageView
+    lateinit var position : LatLng
 
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
@@ -50,6 +73,7 @@ class DiaryViewEdit : AppCompatActivity() {
         image_preview = findViewById(R.id.image_preview)
         date_tv = findViewById(R.id.date_tv)
         category_spinner = findViewById(R.id.category_spinner)
+        current_weather = findViewById(R.id.current_weather)
 
         // 카테고리 선택 관련
         var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
@@ -61,7 +85,7 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
 
-        dbManager = DBManager(this, "diary_posts", null, 1)
+        //dbManager = MyDBHelper(this, "diary_posts", null, 1)
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -94,7 +118,8 @@ class DiaryViewEdit : AppCompatActivity() {
 
                 }
                 R.id.weather -> {
-
+                    locationPermission()
+                    weatherPermission()
                 }
                 R.id.current_time -> {
 
@@ -191,6 +216,7 @@ class DiaryViewEdit : AppCompatActivity() {
         }
     }
 
+    // 갤러리
     private fun selectGallery() {
         // 앨범 접근 권한
         //var writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -239,4 +265,182 @@ class DiaryViewEdit : AppCompatActivity() {
             }
         }
     }
+
+    // 날씨 관련 접근 권한
+    private fun weatherPermission() {
+        // 인터넷 권한
+        var internetPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+
+        if(internetPermission != PackageManager.PERMISSION_GRANTED) { // 권한이 허용되지 않은 경우
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) { // 이전에 이미 권한이 거부되었을 때 설명
+                var dig = AlertDialog.Builder(this)
+                dig.setTitle("권한이 필요한 이유")
+                dig.setMessage("현재 날씨 정보를 얻기 위해서는 인터넷 권한을 필요로 합니다.")
+                dig.setPositiveButton("확인") { dialog, which ->
+                    ActivityCompat.requestPermissions(this@DiaryViewEdit,
+                        arrayOf(Manifest.permission.INTERNET),
+                        REQUEST_WEATHER_CODE)
+                }
+                dig.setNegativeButton("취소", null)
+                dig.show()
+            } else {
+                // 처음 권한 요청
+                ActivityCompat.requestPermissions(this@DiaryViewEdit,
+                    arrayOf(Manifest.permission.INTERNET),
+                    REQUEST_WEATHER_CODE)
+            }
+        } else {
+            // 권한이 이미 허용됨
+            // 테스트용 토스트 메시지
+            Toast.makeText(this, "인터넷 관련 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+
+            // 날씨 가져오기
+            getCurrentWeather()
+        }
+    }
+
+    // 위치 관련 접근 권한
+    private fun locationPermission(){
+        // 위치 권한
+        var finePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        var coarsePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+
+        if(finePermission != PackageManager.PERMISSION_GRANTED || coarsePermission != PackageManager.PERMISSION_GRANTED) { // 권한이 허용되지 않은 경우
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) { // 이전에 이미 권한이 거부되었을 때 설명
+
+                var dig = AlertDialog.Builder(this)
+                dig.setTitle("권한이 필요한 이유")
+                dig.setMessage("현재 날씨 정보를 얻기 위해서는 위치 권한을 필요로 합니다.")
+                dig.setPositiveButton("확인") { dialog, which ->
+                    ActivityCompat.requestPermissions(this@DiaryViewEdit,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                        REQUEST_GPS_CODE)
+                }
+                dig.setNegativeButton("취소", null)
+                dig.show()
+            } else {
+                // 처음 권한 요청
+                ActivityCompat.requestPermissions(this@DiaryViewEdit,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                    REQUEST_GPS_CODE)
+            }
+        } else {
+            // 권한이 이미 허용됨
+            // 테스트용 토스트 메시지
+            Toast.makeText(this, "위치 관련 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+
+            // 최근 위치 정보 가져오기
+            /*fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    lat = location.latitude.toString()
+                    lon = location.longitude.toString()
+                    Log.d("lat and long", "last position : ${lat} and ${lon}" )
+                }
+            }
+
+            // 위치 정보 업데이트 - 필요시 호출됨
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    location?.let {
+                        //position = LatLng(it.latitude, it.longitude)
+                        lat = it.latitude.toString()
+                        lon = it.longitude.toString()
+                        Log.d("lat and long", "update position : ${lat} and ${lon}")
+                    }
+                }
+
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+                override fun onProviderEnabled(provider: String) {}
+                override fun onProviderDisabled(provider: String) {}
+            }
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                10000,
+                1f,
+                locationListener
+            )*/
+        }
+    }
+
+    // 위치 관련
+    private val locationManager by lazy {
+        getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    }
+
+    /*private fun createLocationRequest() {
+        val locationRequest = LocationRequest()
+        locationRequest.setInterval(10000)
+        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER)
+    }
+
+    override fun onLocationChanged(location : Location) {
+        lat = location.longitude.toString()
+        lon = location.longitude.toString()
+    }*/
+
+
+    private fun getCurrentWeather() {
+        var res: Call<JsonObject> = RetrofitClient
+            .getInstance()
+            .buildRetrofit()
+            .getCurrentWeather("7.421998333333335","-122.08400000000002","4dd8b7eb922a5d7e8da094cb922921f2")
+
+        res.enqueue(object: Callback<JsonObject> {
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.d("weather", "Failure : ${t.message.toString()}")
+            }
+
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                var jsonObj = JSONObject(response.body().toString())
+                Log.d("weather", "Success :: $jsonObj")
+
+                val jsonArray = jsonObj.getJSONArray("weather")
+                val jsonObject = jsonArray.getJSONObject(0)
+                //val descWeather = jsonObject.getString("description")
+
+                val descWeather = "moderate rain"
+                if (descWeather == "broken clouds") { // 흩어진 구름
+                    Log.d("weather", "broken clouds")
+                    current_weather.setImageResource(R.drawable.few_cloud)
+                } else if (descWeather == "light rain") { // 약한 비
+                    Log.d("weather", "light rain")
+                    current_weather.setImageResource(R.drawable.light_rain)
+                } else if (descWeather == "haze") { // 안개
+                    Log.d("weather", "haze")
+                    current_weather.setImageResource(R.drawable.mist)
+                } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
+                    Log.d("weather", "overcast clouds")
+                    current_weather.setImageResource(R.drawable.cloud)
+                } else if (descWeather == "moderate rain") { // 비 - 보통
+                    Log.d("weather", "moderate rain")
+                    current_weather.setImageResource(R.drawable.moderate_rain)
+                } else if (descWeather == "few clouds") { // 조금 흐림
+                    Log.d("weather", "few clouds")
+                    current_weather.setImageResource(R.drawable.few_cloud)
+                } else if (descWeather == "heavy intensity rain") { // 강한 비
+                    Log.d("weather", "heavy intensity rain")
+                    current_weather.setImageResource(R.drawable.heavy_rain)
+                } else if (descWeather == "clear sky") { // 맑은 하늘
+                    Log.d("weather", "clear sky")
+                    current_weather.setImageResource(R.drawable.sunny)
+                } else if (descWeather == "scattered clouds") { // 흩어진 구름
+                    Log.d("weather", "scattered clouds")
+                    current_weather.setImageResource(R.drawable.few_cloud)
+                } else if (descWeather == "snow"){
+                    Log.d("weather", "snow")
+                    current_weather.setImageResource(R.drawable.snow)
+                } else {
+                    Log.d("weather", "알 수 없음")
+                    current_weather.setImageResource(R.drawable.ic_baseline_refresh_24)
+                }
+            }
+        })
+    }
+
+
+
 }
