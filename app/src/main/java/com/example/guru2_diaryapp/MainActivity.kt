@@ -1,27 +1,23 @@
 package com.example.guru2_diaryapp;
 
 import android.content.Intent
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
-import android.view.animation.TranslateAnimation
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat
-import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.guru2_diaryapp.R
-import com.example.guru2_diaryapp.diaryView.DiaryView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -29,16 +25,23 @@ class MainActivity : AppCompatActivity(),
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
-    lateinit var tvShortDiary: TextView
-    lateinit var bottomTextBox: LinearLayout
 
     // 메뉴
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
 
+    // BottomSheetDialog (하단 슬라이드)
+    lateinit var bottomSheetDialog: BottomSheetDialog
+    lateinit var tvshortDiary: TextView
+    lateinit var moodImage: ImageView
+
     // DB
     lateinit var DBManager:DBManager
     lateinit var sqlitedb:SQLiteDatabase
+
+    // 일기로 전달될 날짜
+    lateinit var selectDate : String
+    var newDate : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,12 +49,17 @@ class MainActivity : AppCompatActivity(),
 
         DBManager = DBManager(this,"cookieDB",null,1)
         sqlitedb =  DBManager.writableDatabase
+
+        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210214, 'sunny', 0);")
+        //sqlitedb.execSQL("INSERT INTO mood_weather_lists VALUES (20210204, 'rain', 1);")
+
+        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (1, 20210214, '떡볶이' ,'떡볶이를 먹었다. 기분이 좋았다.', NULL);")
+        //sqlitedb.execSQL("INSERT INTO diary_posts VALUES (2, 20210204, '카테고리?' ,'날씨가 흐려서 기분이 별로다. 배고프다.', NULL);")
+
         sqlitedb.close()
         DBManager.close()
 
         calendarView = findViewById(R.id.calendarView)
-        tvShortDiary = findViewById(R.id.shortDiary)
-        bottomTextBox = findViewById(R.id.bottomTextLayout)
 
 
         // actionbar의 왼쪽에 버튼 추가
@@ -64,6 +72,15 @@ class MainActivity : AppCompatActivity(),
 
         navigationView.setNavigationItemSelectedListener(this)
 
+        // BottomSheetDialog 연결
+        bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
+
+        tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
+        moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
+
+
+
         // 달력 생성
         calendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -74,22 +91,64 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
-            val ani = TranslateAnimation(0f, 0f, bottomTextBox.height.toFloat(), 0f)
-            ani.duration = 400
-            ani.fillAfter = true
-            bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.VISIBLE
-            tvShortDiary.setText(date.toString())
 
-            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
+            var year = date.year
+            var month = date.month + 1
+            var day = date.day
+            newDate = year * 10000 + month * 100 + day
+
+            Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
+
+            selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
+
+            sqlitedb = DBManager.readableDatabase
+
+            var cursor: Cursor
+            cursor = sqlitedb.rawQuery("SELECT content "
+                                            + "FROM diary_posts "
+                                            + "WHERE reporting_date = '"+ newDate + "';", null)
+
+            if (cursor.moveToFirst()) {
+                var diaryText = cursor.getString(0).toString()
+                var shortDiary = diaryText.substring(0, diaryText.indexOf("."))
+                tvshortDiary.text = shortDiary
+            } else {
+                tvshortDiary.text = "작성된 일기가 없습니다."
+            }
+
+            cursor = sqlitedb.rawQuery("SELECT mood "
+                                            + "FROM mood_weather_lists "
+                                            + "WHERE reporting_date = '"+ newDate + "';", null)
+
+            if (cursor.moveToFirst()) {
+                var mood = cursor.getInt(0)
+                if (mood == 0) {
+                    moodImage.setImageResource(R.drawable.ic_mood_good)
+                }
+                else if (mood == 1) {
+                    moodImage.setImageResource(R.drawable.ic_mood_bad)
+                }
+                else {
+                    moodImage.setImageResource(R.drawable.ic_baseline_add_reaction_24)
+                }
+            }
+
+            cursor.close()
+            sqlitedb.close()
+
+            bottomSheetDialog.show()
         }
 
-        tvShortDiary.setOnClickListener {
-            val intent = Intent(this, SelectActivity::class.java)
+        tvshortDiary.setOnClickListener() {
+
+            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+            intent.putExtra("select_date", selectDate)
+            intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
-    }
 
+
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.to_timeline_menu, menu)
@@ -99,7 +158,7 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.action_toTimeLine -> {
-                val intent = Intent(this, MainTimelineView::class.java)
+                val intent = Intent(this, TimeLineView::class.java)
                 startActivity(intent)
                 return true
             }
@@ -125,11 +184,8 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, DiaryView::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 startActivity(intent)
-            }
-            else -> {
-                Toast.makeText(applicationContext, "눌림", Toast.LENGTH_SHORT).show()
             }
         }
         drawerLayout.closeDrawers()
@@ -137,19 +193,41 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        if (bottomTextBox.visibility == View.VISIBLE) {
-            val ani = TranslateAnimation(0f, 0f, 0f, bottomTextBox.height.toFloat())
-            ani.duration = 400
-            ani.fillAfter = true
-            bottomTextBox.animation = ani
-            bottomTextBox.visibility = View.GONE
-            calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
-        }
-        else if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawers()
         }
         else {
             super.onBackPressed()
         }
+    }
+
+    // 요일 구하기
+    fun getDayName(year : Int, month : Int, day : Int): String {
+        val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
+        var month_day = Array<Int>(12) {31}
+        var total_day = 0
+
+        // 년
+        if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+            month_day[1] = 29
+        } else {
+            month_day[1] = 28
+        }
+        month_day[3] = 30
+        month_day[5] = 30
+        month_day[8] = 30
+        month_day[10] = 30
+
+        // 월
+        for(i in 1..month-1 step 1) {
+            total_day += month_day[i-1]
+        }
+
+        // 일
+        total_day += day - 1;
+
+        var answer_day = (5 + total_day) % 7
+
+        return str_day[answer_day]
     }
 }

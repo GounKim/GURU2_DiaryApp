@@ -52,7 +52,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.2'
     implementation 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
-    implementation 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
     implementation 'androidx.recyclerview:recyclerview:1.2.0-beta01'
     implementation 'androidx.wear:wear:1.1.0'
     testImplementation 'junit:junit:4.+'
@@ -69,4 +68,12 @@ dependencies {
    // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:26.3.0')
     compileOnly 'com.google.android.wearable:wearable:2.8.1'
+
+    //카드뷰 사용 추가
+    implementation "androidx.cardview:cardview:1.0.0"
+
+    //리사이클러뷰 사용을 위해 추가
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    // For control over item selection of both touch and mouse driven selection
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc03"
 }
