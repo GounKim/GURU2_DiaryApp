@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
 
         //Google 로그인 옵션 구성. requestIdToken 및 Email 요청
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("472048867852-f0if4is70tou46km6eacbpei9t4auc2r.apps.googleusercontent.com")
+                .requestIdToken("472048867852-qqr70a2ldkfvt152djv9t6ocptnfuqdm.apps.googleusercontent.com")
                 .requestEmail()
                 .build()
 
