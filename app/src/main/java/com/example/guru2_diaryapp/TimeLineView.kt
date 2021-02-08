@@ -7,8 +7,8 @@ import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 
 class TimeLineView : AppCompatActivity() {
-    lateinit var dbManager: DBManager
-    lateinit var sqlite:SQLiteDatabase
+    lateinit var myDBHelper: MyDBHelper
+    lateinit var sqldb:SQLiteDatabase
 
     lateinit var rvAdapter: RecyclerViewAdapter
 
@@ -21,9 +21,6 @@ class TimeLineView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timeline_view)
 
-        dbManager = DBManager(this,"cookieDB",null,1)
-        sqlite = dbManager.readableDatabase
-
         timeline_rv = findViewById(R.id.timeLineRv)
 
         var cursor:Cursor
@@ -32,8 +29,12 @@ class TimeLineView : AppCompatActivity() {
         //게시글 테이블과 카테고리 테이블을 왼쪽 외부 조인해 조회한다.
         sql = "SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys"
         sql += " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;"
-        cursor = sqlite.rawQuery(sql,null)
 
+        myDBHelper = MyDBHelper(this)
+        sqldb = myDBHelper.readableDatabase
+        cursor = sqldb.rawQuery(sql,null)
+
+        
         //순서대로 커서를 가리키며 출력
         var num = 0
         while(cursor.moveToNext()){
@@ -46,6 +47,6 @@ class TimeLineView : AppCompatActivity() {
             num++
         }
 
-        rvAdapter = RecyclerViewAdapter(diaryData,this,timeline_rv)
+       //rvAdapter = RecyclerViewAdapter(diaryData,this,timeline_rv)
     }
 }

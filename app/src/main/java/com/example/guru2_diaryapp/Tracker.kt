@@ -5,11 +5,10 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
 
 class Tracker : AppCompatActivity() {
 
-    lateinit var dbManager: DBManager
+    lateinit var dbManager: MyDBHelper
     lateinit var sqlitedb: SQLiteDatabase
 
 
@@ -19,8 +18,8 @@ class Tracker : AppCompatActivity() {
 
 
 
-        dbManager = DBManager(this,"habit_lists",null,1)
-        dbManager = DBManager(this,"habit_check_lists",null,1)
+        //dbManager = MyDBHelper(this,"habit_lists",null,1)
+       //dbManager = MyDBHelper(this,"habit_check_lists",null,1)
 
         sqlitedb = dbManager.readableDatabase
 
