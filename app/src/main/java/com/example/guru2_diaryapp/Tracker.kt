@@ -8,7 +8,7 @@ import android.os.Bundle
 
 class Tracker : AppCompatActivity() {
 
-    lateinit var dbManager: MyDBHelper
+    lateinit var myDBHelper: MyDBHelper
     lateinit var sqlitedb: SQLiteDatabase
 
 
@@ -20,8 +20,8 @@ class Tracker : AppCompatActivity() {
 
         //dbManager = MyDBHelper(this,"habit_lists",null,1)
        //dbManager = MyDBHelper(this,"habit_check_lists",null,1)
-
-        sqlitedb = dbManager.readableDatabase
+        myDBHelper = MyDBHelper(this)
+        sqlitedb = myDBHelper.readableDatabase
 
         var cursor : Cursor
         cursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists",null)
