@@ -170,15 +170,8 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 일기 내용 저장
     // 공유환경변수 사용 -> DB로 변경
-    private fun svaeDiary(content : String) {
-        /*var pref = this.getPreferences(0)
-        var editor = pref.edit()
+    private fun saveDiary(content : String) {
 
-        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
-
-        sqllitedb = myDBHelper.writableDatabase
-        /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
-                + diary_et')")*/
     }
 
     // 일기 내용 불러오기

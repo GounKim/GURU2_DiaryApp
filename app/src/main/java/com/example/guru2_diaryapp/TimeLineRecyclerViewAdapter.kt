@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 
 //타임라인뷰, 검색, 카테고리 내 일기 목록 출력에 사용할 recyclerView 의 어뎁터
-class RecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Context, var item: RecyclerView):
-        Adapter<RecyclerViewAdapter.ItemViewHolder>() {
+class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Context, var item: RecyclerView):
+        Adapter<TimeLineRecyclerViewAdapter.ItemViewHolder>() {
 
     inner class ItemViewHolder(view:View): RecyclerView.ViewHolder(view) {
 
@@ -21,7 +21,7 @@ class RecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Context, v
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewAdapter.ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineRecyclerViewAdapter.ItemViewHolder {
         return ItemViewHolder(LayoutInflater.from(context).inflate(R.layout.item_timeline_view, parent,false))
     }
 
