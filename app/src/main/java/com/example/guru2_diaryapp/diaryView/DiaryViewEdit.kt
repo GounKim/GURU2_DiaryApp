@@ -16,6 +16,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.telecom.Call
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -203,9 +204,11 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = 0
         var content = diary_et.text.toString()
 
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+
         val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
-        // ,'$changeProfilePath'
+        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+
     }
 
     // 일기 내용 불러오기
