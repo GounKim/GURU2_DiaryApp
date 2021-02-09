@@ -16,7 +16,6 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.telecom.Call
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -377,18 +376,18 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     private fun getCurrentWeather() {
-        var res: Call<JsonObject> = RetrofitClient
+        var res: retrofit2.Call<JsonObject> = RetrofitClient
             .getInstance()
             .buildRetrofit()
             .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
 
         res.enqueue(object: Callback<JsonObject> {
 
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
             }
 
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+            override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
                 var jsonObj = JSONObject(response.body().toString())
                 Log.d("weather", "Success :: $jsonObj")
 
