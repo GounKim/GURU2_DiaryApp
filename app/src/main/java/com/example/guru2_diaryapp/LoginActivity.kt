@@ -47,7 +47,6 @@ class LoginActivity : AppCompatActivity() {
 
         //Google 로그인 옵션 구성. requestIdToken 및 Email 요청
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                //.requestIdToken("472048867852-qqr70a2ldkfvt152djv9t6ocptnfuqdm.apps.googleusercontent.com")
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build()
@@ -67,7 +66,7 @@ class LoginActivity : AppCompatActivity() {
         if (account !== null) { // 이미 로그인 되어있을시 바로 메인 액티비티로 이동
             toMainActivity(firebaseAuth.currentUser)
         }
-    } //onStart End
+    }
 
     // onActivityResult
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +86,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
             }
         }
-    } // onActivityResult End
+    }
 
     // firebaseAuthWithGoogle
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
@@ -106,7 +105,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
                     }
                 }
-    }// firebaseAuthWithGoogle END
+    }
 
     // toMainActivity
     private fun toMainActivity(user: FirebaseUser?) {
@@ -115,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-    } // toMainActivity End
+    }
 
     // signIn
     private fun signIn() {
