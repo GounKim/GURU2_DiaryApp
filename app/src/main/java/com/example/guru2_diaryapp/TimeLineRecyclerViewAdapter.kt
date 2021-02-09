@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.viewpager2.widget.ViewPager2
@@ -13,18 +15,24 @@ import androidx.viewpager2.widget.ViewPager2
 class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Context, var item: RecyclerView):
         Adapter<TimeLineRecyclerViewAdapter.ItemViewHolder>() {
 
-    inner class ItemViewHolder(view:View): RecyclerView.ViewHolder(view) , View.OnClickListener {
+
+    inner class ItemViewHolder(view:View): RecyclerView.ViewHolder(view) {
 
         var dateTv = view.findViewById<TextView>(R.id.tlitem_date_tv)
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
         var contentTv = view.findViewById<TextView>(R.id.tlitem_content_tv)
         var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
+    }
 
-        override fun onClick(v: View?) {
-            //인텐트로 가진 정보들 넘겨주기. 해당하는 글 보기로 이동
-            TODO("Not yet implemented")
+    interface itemClickListener {
+        fun onClick(v: View, d: DiaryData) {
         }
+    }
 
+    lateinit var rvClickListener:AdapterView.OnItemClickListener
+
+    fun setclickListener(r:AdapterView.OnItemClickListener){
+        this.rvClickListener = r
     }
 
 
@@ -37,6 +45,10 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             holder.categoryTv.text = data[position].category_name
             holder.contentTv.text = data[position].content
 
+            holder.itemView.setOnClickListener{
+                itemClickListener.onClick(it,data[position])
+                Toast.makeText(context,"${position} 번째: ${data[position].id}",Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun getItemCount(): Int {
