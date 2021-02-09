@@ -17,7 +17,6 @@ class TimeLineView : AppCompatActivity() {
     lateinit var button: Button
     //View
     lateinit var timeline_rv: RecyclerView
-    lateinit var linearLayoutManager:LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +26,15 @@ class TimeLineView : AppCompatActivity() {
         timeline_rv = findViewById(R.id.timeLineRv)
 
         var DiaryTimeLine = ArrayList<DiaryData>()
-        DiaryTimeLine.add(DiaryData(20200202,"기본","이곳에 내용을 적습니다.",
-                null))
 
+        for (i in 1..5) {
+            DiaryTimeLine.add(DiaryData(i,20200200+i, "test data",
+                    "$i 번 일기 이곳에 내용을 적습니다.",null))
+        }
 
         button = findViewById(R.id.button)
         button.setOnClickListener {
+
             DiaryTimeLine.addAll(PageDown(0))
             timeline_rv.adapter = TimeLineRecyclerViewAdapter(DiaryTimeLine,this,timeline_rv)
             timeline_rv.layoutManager = LinearLayoutManager(this)
@@ -47,10 +49,10 @@ class TimeLineView : AppCompatActivity() {
 
     }
 
-    //이미지 저장
+    /*이미지 저장
     private fun ImgLoadFromDB(cursor:Cursor){
 
-    }
+    }*/
 
     /* 계획:
     가장 아래에 로드된 데이터가 무엇인지 확인 후 그 이후로 50개를 arraylist로 불러온다.
@@ -67,13 +69,14 @@ class TimeLineView : AppCompatActivity() {
         cursor.moveToPosition(BottomPost)
         var num = 0
         while (cursor.moveToNext() && num < 20) {
-            var date =
+            val id = cursor.getInt(cursor.getColumnIndex("post_id"))
+            val date =
                 cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            var category =
+            val category =
                 cursor.getString(cursor.getColumnIndex("category_name"))
-            var content =
+            val content =
                 cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add(DiaryData(date,category,content,null))
+            mydiaryData.add(DiaryData(id,date,category,content,null))
             num++
         }
         sqldb.close()
@@ -90,13 +93,14 @@ class TimeLineView : AppCompatActivity() {
         cursor.moveToPosition(topPostId)
         var num = 0
         while (cursor.moveToPrevious() && num < 20) {
-            var date =
+            val id = cursor.getInt(cursor.getColumnIndex("post_id"))
+            val date =
                     cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            var category =
+            val category =
                     cursor.getString(cursor.getColumnIndex("category_name"))
-            var content =
+            val content =
                     cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add(DiaryData(date,category,content,null))
+            mydiaryData.add(DiaryData(id,date,category,content,null))
             num++
         }
         sqldb.close()
@@ -105,7 +109,7 @@ class TimeLineView : AppCompatActivity() {
 }
 
 //날짜, 카테고리명, 본문, 사진 정보 리스트
-data class DiaryData(var reporting_date:Int,var category_name:String,var content:String,
+data class DiaryData(var id:Int, var reporting_date:Int,var category_name:String,var content:String,
                      var imgs:ArrayList<String>?)
 
 
