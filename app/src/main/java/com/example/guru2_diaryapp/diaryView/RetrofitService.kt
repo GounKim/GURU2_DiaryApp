@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp.diaryView
 
+import android.telecom.Call
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.GET
