@@ -32,7 +32,7 @@ class DiaryView : AppCompatActivity() {
 
     lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
-    var postId : Int = 0
+    var postID : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +87,7 @@ class DiaryView : AppCompatActivity() {
         // 일기 편집 화면으로 이동
         diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
-            intent.putExtra("postId", postId)
+            intent.putExtra("postID", postID)
             startActivity(intent)
 
             /*val intent = Intent(this, DiaryViewEdit::class.java)
@@ -144,7 +144,7 @@ class DiaryView : AppCompatActivity() {
 
         cursor.moveToFirst()
 
-        postId = cursor.getInt(cursor.getColumnIndex("post_id"))
+        postID = cursor.getInt(cursor.getColumnIndex("post_id"))
 
         val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
         val year = date / 10000
