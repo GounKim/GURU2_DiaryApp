@@ -21,6 +21,7 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -54,7 +55,6 @@ class MainActivity : AppCompatActivity(),
         myDBHelper = MyDBHelper(this)
         calendarView = findViewById(R.id.calendarView)
 
-
         // actionbar의 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_book_24)
@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity(),
         tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
+
 
 
         // 달력 생성
