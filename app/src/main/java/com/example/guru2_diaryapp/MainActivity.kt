@@ -48,10 +48,6 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         myDBHelper = MyDBHelper(this)
-        sqldb = myDBHelper.writableDatabase
-
-        sqldb.execSQL("INSERT INTO diary_posts VALUES (null,20200202, 1 , 0 ,'일기 본문');")
-
         calendarView = findViewById(R.id.calendarView)
 
 
@@ -72,8 +68,6 @@ class MainActivity : AppCompatActivity(),
         tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
 
-
-
         // 달력 생성
         calendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -92,11 +86,9 @@ class MainActivity : AppCompatActivity(),
 
             Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
-            sqldb = myDBHelper.readableDatabase
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
-
             var cursor: Cursor
             cursor = sqldb.rawQuery("SELECT content "
                                             + "FROM diary_posts "
@@ -110,13 +102,14 @@ class MainActivity : AppCompatActivity(),
                 tvshortDiary.text = "작성된 일기가 없습니다."
             }
 
+
             /*
-            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요!
+            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요! 무드 부분도 주석처리 했습니다.
             cursor = sqldb.rawQuery("SELECT mood "
                                             + "FROM mood_weather_lists "
                                             + "WHERE reporting_date = '"+ newDate + "';", null)
 
-             */
+
 
             if (cursor.moveToFirst()) {
                 var mood = cursor.getInt(0)
@@ -130,6 +123,9 @@ class MainActivity : AppCompatActivity(),
                     moodImage.setImageResource(R.drawable.ic_baseline_add_reaction_24)
                 }
             }
+
+
+             */
 
             cursor.close()
             sqldb.close()
