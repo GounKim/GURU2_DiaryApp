@@ -81,7 +81,7 @@ class DiaryViewEdit : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         category_spinner.adapter = adapter
 
-        // 달력에서 선택한 날짜 받아오기
+        /*// 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
 
@@ -107,7 +107,7 @@ class DiaryViewEdit : AppCompatActivity() {
             image_preview.visibility = View.VISIBLE
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
             image_preview.setImageBitmap(bitmap);
-        }
+        }*/
 
         //loadDiary()
 
@@ -160,6 +160,8 @@ class DiaryViewEdit : AppCompatActivity() {
         // 세이브 테스트용
         saveDiary()
         Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+
+        /*
         selected_category = categories[category_spinner.selectedItemPosition]
 
         // intent를 이용해서 Diary View에 내용 전달
@@ -186,7 +188,7 @@ class DiaryViewEdit : AppCompatActivity() {
             resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             val byteArray: ByteArray = stream.toByteArray()
             intent.putExtra("diary_image", byteArray)
-        }
+        }*/
 
         startActivity(intent)
         Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
