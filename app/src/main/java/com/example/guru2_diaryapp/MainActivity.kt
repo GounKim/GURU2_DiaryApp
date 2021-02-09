@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var sqldb:SQLiteDatabase
 
     // 일기로 전달될 날짜
-    lateinit var selectDate : String
+    //lateinit var selectDate : String
     var newDate : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(),
             //Toast.makeText(this, "$thisWeek", Toast.LENGTH_SHORT).show()
             //Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
-            selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
+            //selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
             var cursor: Cursor
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(),
         tvshortDiary.setOnClickListener() {
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-            intent.putExtra("select_date", selectDate)
+            //intent.putExtra("select_date", selectDate)
             intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
