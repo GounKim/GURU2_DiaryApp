@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
-import org.w3c.dom.Text
 import java.io.ByteArrayOutputStream
 
 

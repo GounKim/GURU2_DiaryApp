@@ -2,7 +2,6 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,12 +12,14 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
+import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
     // DB
-    lateinit var myDBHelper:MyDBHelper
+    lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb:SQLiteDatabase
 
     // 일기로 전달될 날짜
@@ -79,6 +80,9 @@ class MainActivity : AppCompatActivity(),
                 .setMaximumDate(CalendarDay.from(2100, 11, 31))
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
+
+        calendarView.addDecorator(SundDayDeco())
+        calendarView.addDecorator(SaturdayDeco())
 
         // 트래커에 날짜 정보 보내기
         Toast.makeText(this, "${Calendar.DAY_OF_WEEK}", Toast.LENGTH_SHORT).show()
