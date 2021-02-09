@@ -3,8 +3,6 @@ package com.example.guru2_diaryapp
 //테스트용 더미 데이터를 생성하는 클래스입니다. 개발이 끝나면 삭제할게요.
 class MakeDummyData{
 
-
-
     var categorys = ArrayList<String>()
 
     //name카테고리를 생성한다. 같은 이름의 카테고리가 있을 경우 생성하지 않고 false 를 반환한다.
