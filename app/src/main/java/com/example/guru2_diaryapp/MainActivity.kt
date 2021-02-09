@@ -2,14 +2,15 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.*
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var bottomSheetDialog: BottomSheetDialog
     lateinit var tvshortDiary: TextView
     lateinit var moodImage: ImageView
+    lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
     // DB
     lateinit var myDBHelper:MyDBHelper
@@ -48,10 +50,6 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         myDBHelper = MyDBHelper(this)
-        sqldb = myDBHelper.writableDatabase
-
-        sqldb.execSQL("INSERT INTO diary_posts VALUES (null,20200202, 1 , 0 ,'일기 본문');")
-
         calendarView = findViewById(R.id.calendarView)
 
 
@@ -71,7 +69,7 @@ class MainActivity : AppCompatActivity(),
 
         tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
-
+        mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
 
         // 달력 생성
@@ -81,6 +79,9 @@ class MainActivity : AppCompatActivity(),
                 .setMaximumDate(CalendarDay.from(2100, 11, 31))
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
+
+        // 트래커에 날짜 정보 보내기
+        Toast.makeText(this, "${Calendar.DAY_OF_WEEK}", Toast.LENGTH_SHORT).show()
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -92,15 +93,13 @@ class MainActivity : AppCompatActivity(),
 
             Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
-            sqldb = myDBHelper.readableDatabase
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
-
             var cursor: Cursor
             cursor = sqldb.rawQuery("SELECT content "
-                                            + "FROM diary_posts "
-                                            + "WHERE reporting_date = '"+ newDate + "';", null)
+                    + "FROM diary_posts "
+                    + "WHERE reporting_date = '"+ newDate + "';", null)
 
             if (cursor.moveToFirst()) {
                 var diaryText = cursor.getString(0).toString()
@@ -110,13 +109,43 @@ class MainActivity : AppCompatActivity(),
                 tvshortDiary.text = "작성된 일기가 없습니다."
             }
 
+            // 트래커 생성 test
+//            try {
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '물 2L 마시기', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '1시간 운동', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '12시 이전 취침', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '1시간 운동', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '12시 이전 취침', 0)")
+//            } catch (e: SQLiteConstraintException) {
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '물 2L 마시기', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210210")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210210")
+//            }
+
+
+            // 트래커 출력(?)
+            cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
+
+            var count = 0
+            while (cursor.moveToNext()) {
+                var btnHabbit: Button = Button(this)
+                btnHabbit.id = count
+                btnHabbit.text = cursor.getString(0)
+                btnHabbit.width = MATCH_PARENT
+                btnHabbit.height = WRAP_CONTENT
+                mainTrackerLayout.addView(btnHabbit)
+            }
+
+
             /*
-            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요!
+            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요! 무드 부분도 주석처리 했습니다.
             cursor = sqldb.rawQuery("SELECT mood "
                                             + "FROM mood_weather_lists "
                                             + "WHERE reporting_date = '"+ newDate + "';", null)
 
-             */
+
 
             if (cursor.moveToFirst()) {
                 var mood = cursor.getInt(0)
@@ -131,6 +160,9 @@ class MainActivity : AppCompatActivity(),
                 }
             }
 
+
+             */
+
             cursor.close()
             sqldb.close()
 
@@ -144,7 +176,6 @@ class MainActivity : AppCompatActivity(),
             intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
-
 
     }
 
