@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp
 
+import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
@@ -7,17 +8,21 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class TimeLineView : AppCompatActivity() {
     //DB
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor:Cursor
+    var TimeLineData = ArrayList<DiaryData>()
 
     //View
     lateinit var timeline_rv: RecyclerView
+    private var recyclerViewAdapter: TimeLineRecyclerViewAdapter?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,35 +31,22 @@ class TimeLineView : AppCompatActivity() {
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.timeLineRv)
 
-        var TimeLineData = ArrayList<DiaryData>()
-
-        for (i in 1..10) {
-            TimeLineData.add(DiaryData(i,20200200+i, "test data",
-                    "$i 번 일기 이곳에 내용을 적습니다.",null))
-        }
-
             TimeLineData.addAll(PageDown(0))
-            timeline_rv.adapter = TimeLineRecyclerViewAdapter(TimeLineData,this,timeline_rv)
+            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this,timeline_rv){
+                data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
+                var intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                intent.putExtra("post_id",data.reporting_date)
+                startActivity(intent)
+            }
+            timeline_rv.adapter = recyclerViewAdapter
             timeline_rv.layoutManager = LinearLayoutManager(this)
 
 
         //최하단에 도달했을 때 (과거 글 추가 로드)
         if(!timeline_rv.canScrollVertically(1)){
 
-            for (i in 11..20) {
-                TimeLineData.add(DiaryData(i,20200200+i, "test data",
-                        "$i 번 일기 이곳에 내용을 적습니다.",null))
-
-                timeline_rv.adapter = TimeLineRecyclerViewAdapter(TimeLineData,this,timeline_rv)
-                timeline_rv.layoutManager = LinearLayoutManager(this)
-                Log.d("timeline","load")
-
-            }
         }
 
-        timeline_rv.setOnClickListener{
-
-        }
     }
 
 
@@ -87,6 +79,3 @@ class TimeLineView : AppCompatActivity() {
 //날짜, 카테고리명, 본문, 사진 정보 리스트
 data class DiaryData(var id:Int, var reporting_date:Int,var category_name:String,var content:String,
                      var imgs:ArrayList<String>?)
-
-
-
