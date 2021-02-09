@@ -47,6 +47,5 @@ class TimeLineView : AppCompatActivity() {
             num++
         }
 
-       //rvAdapter = RecyclerViewAdapter(diaryData,this,timeline_rv)
     }
 }

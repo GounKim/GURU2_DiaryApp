@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -12,7 +13,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -35,6 +38,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
+
 class DiaryViewEdit : AppCompatActivity() {
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
@@ -44,7 +48,7 @@ class DiaryViewEdit : AppCompatActivity() {
     private var lon : String = ""
     private var apiID : String = "4dd8b7eb922a5d7e8da094cb922921f2"
 
-    lateinit var dbManager: MyDBHelper
+    lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
     lateinit var diary_et : EditText
     lateinit var diary_bnv : BottomNavigationView
@@ -53,6 +57,7 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var category_spinner : Spinner
     lateinit var selected_category : String
     lateinit var current_weather : ImageView
+    lateinit var currenturi:Uri
 
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
@@ -79,7 +84,7 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
 
-        //dbManager = MyDBHelper(this, "diary_posts", null, 1)
+        myDBHelper = MyDBHelper(this)
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -188,15 +193,36 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 일기 내용 저장
     // 공유환경변수 사용 -> DB로 변경
-    private fun svaeDiary(content : String) {
+    /*private fun svaeDiary(content : String) {
         /*var pref = this.getPreferences(0)
         var editor = pref.edit()
 
         editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
 
-        sqllitedb = dbManager.writableDatabase
+        sqllitedb = myDBHelper.writableDatabase
         /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
                 + diary_et')")*/
+
+    }*/
+
+
+    // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
+    private fun saveDiary(content: String){
+
+        myDBHelper = MyDBHelper(this)
+        sqllitedb = myDBHelper.writableDatabase
+        var reporting_date : String = date_tv.text.toString()
+        var weather : Int = 0
+
+        var category_id : Int = 0
+        var content = diary_et.text.toString()
+
+        var changeProfilePath = absolutelyPath(currenturi)
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content',''$changeProfilePath')")
+
+
+        var intent = Intent(this, DiaryView::class.java)
+        startActivity(intent)
     }
 
     // 일기 내용 불러오기
@@ -248,13 +274,30 @@ class DiaryViewEdit : AppCompatActivity() {
 
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+
                 data?.data?.let { uri ->
                     image_preview.setImageURI(uri)
+                    currenturi=uri
                 }!!
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    // 절대경로 변환
+    private fun absolutelyPath(path: Uri): String? {
+
+        var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+        var c: Cursor? = contentResolver.query(path, proj, null, null, null)
+        var index = c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        if (c != null) {
+            c.moveToFirst()
+        }
+
+        var result = index?.let { c?.getString(it) }
+
+        return result
     }
 
     // 날씨 관련 접근 권한
@@ -407,7 +450,4 @@ class DiaryViewEdit : AppCompatActivity() {
             }
         })
     }
-
-
-
 }

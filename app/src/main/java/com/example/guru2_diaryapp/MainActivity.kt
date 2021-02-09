@@ -17,6 +17,7 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity(),
 
             Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
+            sqldb = myDBHelper.readableDatabase
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
