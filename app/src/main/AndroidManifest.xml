@@ -13,6 +13,9 @@
     <uses-feature
         android:name="android.hardware.camera2"
         android:required="false" />
+    <!-- GPS 위치 획득 권한 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -20,12 +23,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GURU2_DiaryApp">
-        <activity
-            android:name=".category.CategoryActivity">
-        </activity>
-
-        <activity android:name=".LoginActivity" /> <!-- Intro -->
+        android:theme="@style/Theme.GURU2_DiaryApp"
+        android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
+        <activity android:name=".LoginActivity"/>
+        <!-- Intro -->
         <activity
             android:name=".IntroActivity"
             android:theme="@style/IntroTheme">
@@ -35,7 +36,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Tracker" />
+        <activity android:name=".category.CategoryActivity" />
+        <activity android:name=".Tracker.Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
         <activity android:name=".TimeLineView" />
