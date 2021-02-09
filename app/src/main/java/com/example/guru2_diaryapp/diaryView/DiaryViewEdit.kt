@@ -39,7 +39,7 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
     lateinit var selected_category : String
-    lateinit var currenturi:Uri
+    var currenturi:Uri?=null
 
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
@@ -50,7 +50,7 @@ class DiaryViewEdit : AppCompatActivity() {
         setContentView(R.layout.diary_view_edit)
 
         diary_et = findViewById(R.id.diary_et)
-        diary_bnv = findViewById(R.id.diary_bnv);
+        diary_bnv = findViewById(R.id.diary_bnv)
         image_preview = findViewById(R.id.image_preview)
         date_tv = findViewById(R.id.date_tv)
         category_spinner = findViewById(R.id.category_spinner)
@@ -88,9 +88,6 @@ class DiaryViewEdit : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
             image_preview.setImageBitmap(bitmap);
         }
-
-
-
 
         //loadDiary()
 
@@ -201,12 +198,9 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = 0
         var content = diary_et.text.toString()
 
-        var changeProfilePath = absolutelyPath(currenturi)
+        val changeProfilePath = currenturi?.let { absolutelyPath(it) }
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content',''$changeProfilePath')")
 
-
-        var intent = Intent(this, DiaryView::class.java)
-        startActivity(intent)
     }
 
     // 일기 내용 불러오기
@@ -254,7 +248,7 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     // 갤러리에서 사진 가져오기
-    override protected fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_CODE) {
@@ -262,7 +256,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
                 data?.data?.let { uri ->
                     image_preview.setImageURI(uri)
-                    currenturi=uri
+                    currenturi = uri
                 }!!
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
