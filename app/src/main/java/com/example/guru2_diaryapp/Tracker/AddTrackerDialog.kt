@@ -1,13 +1,13 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.Tracker
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.fragment.app.DialogFragment
+import com.example.guru2_diaryapp.R
 
 class AddTrackerDialog: DialogFragment() {
 

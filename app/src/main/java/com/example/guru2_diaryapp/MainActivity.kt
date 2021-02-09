@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.Tracker.Tracker
@@ -80,12 +81,16 @@ class MainActivity : AppCompatActivity(),
                 .setMaximumDate(CalendarDay.from(2100, 11, 31))
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
-
+        calendarView.setCurrentDate(Date(System.currentTimeMillis()))
+        calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
+        calendarView.addDecorator(OnDayDeco())
 
         // 트래커에 날짜 정보 보내기
-        Toast.makeText(this, "${Calendar.DAY_OF_WEEK}", Toast.LENGTH_SHORT).show()
+        var thisWeek = thisWeek(CalendarDay.today().year, CalendarDay.today().month + 1, CalendarDay.today().day)
+        var intent = Intent(this, Tracker::class.java)
+        intent.putExtra("thisWeek", thisWeek)
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -95,7 +100,10 @@ class MainActivity : AppCompatActivity(),
             var day = date.day
             newDate = year * 10000 + month * 100 + day
 
-            Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
+            // 테스트용
+            //thisWeek = thisWeek(year,month,day)
+            //Toast.makeText(this, "$thisWeek", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
@@ -263,4 +271,19 @@ class MainActivity : AppCompatActivity(),
 
         return str_day[answer_day]
     }
+
+    // 현재 주 시작일(월요일) 계산
+    fun thisWeek(year : Int, month : Int, day : Int): Int {
+        val strToday = getDayName(year, month, day)
+        when (strToday) {
+            "월" -> return (year * 10000 + month * 100 + day)
+            "화" -> return (year * 10000 + month * 100 + day - 1)
+            "수" -> return (year * 10000 + month * 100 + day - 2)
+            "목" -> return (year * 10000 + month * 100 + day - 3)
+            "금" -> return (year * 10000 + month * 100 + day - 4)
+            "토" -> return (year * 10000 + month * 100 + day - 5)
+            else -> return (year * 10000 + month * 100 + day - 6)
+        }
+    }
+
 }

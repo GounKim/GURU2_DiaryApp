@@ -18,7 +18,7 @@ class SaturdayDeco : DayViewDecorator {
     }
 
     override fun decorate(view: DayViewFacade?) {
-        view?.addSpan(ForegroundColorSpan(Color.RED))
+        view?.addSpan(ForegroundColorSpan(Color.BLUE))
     }
 
 }
