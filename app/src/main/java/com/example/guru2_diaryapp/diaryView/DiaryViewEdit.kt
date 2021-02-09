@@ -157,7 +157,8 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
-        //svaeDiary(diary_et.text.toString())
+        saveDiary()
+        Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
         selected_category = categories[category_spinner.selectedItemPosition]
 
         // intent를 이용해서 Diary View에 내용 전달
@@ -192,24 +193,8 @@ class DiaryViewEdit : AppCompatActivity() {
         //super.onBackPressed()
     }
 
-    // 일기 내용 저장
-    // 공유환경변수 사용 -> DB로 변경
-    /*private fun svaeDiary(content : String) {
-        /*var pref = this.getPreferences(0)
-        var editor = pref.edit()
-
-        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
-
-        sqllitedb = myDBHelper.writableDatabase
-        /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
-                + diary_et')")*/
-
-    }*/
-
-
     // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
-    private fun saveDiary(content: String){
-
+    private fun saveDiary(){
         myDBHelper = MyDBHelper(this)
         sqllitedb = myDBHelper.writableDatabase
         var reporting_date : String = date_tv.text.toString()
@@ -219,8 +204,8 @@ class DiaryViewEdit : AppCompatActivity() {
         var content = diary_et.text.toString()
 
         val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content',''$changeProfilePath')")
-
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
+        // ,'$changeProfilePath'
     }
 
     // 일기 내용 불러오기
