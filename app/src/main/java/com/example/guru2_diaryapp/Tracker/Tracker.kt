@@ -37,12 +37,14 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists",null)
         //nCursor = sqlitedb.rawQuery("SELECT habit_id FROM habit_listes", null)
 
-        var thisWeek = intent.getStringExtra("thisWeek")?.toInt()
+
+        var intent = intent
+        var thisWeek = intent.getStringExtra("thisWeek")
         Toast.makeText(this, "$thisWeek", Toast.LENGTH_SHORT).show()
 
 
         if (cCursor.moveToFirst()) {
-
+            /*
             while (cCursor.moveToNext()) {
                 var date = cCursor.getString(cCursor.getColumnIndex("reporting_date")).toString()
                 var habit = cCursor.getString(cCursor.getColumnIndex("habit")).toString()
@@ -74,6 +76,7 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
                 var str = cCursor.getString(cCursor.getColumnIndex("habit")).toString()
                 //Toast.makeText(this, "$str", Toast.LENGTH_SHORT).show()
             }
+            */
         }
         else { show() }
 

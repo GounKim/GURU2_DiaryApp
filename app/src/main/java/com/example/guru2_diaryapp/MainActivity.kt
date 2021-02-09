@@ -88,11 +88,6 @@ class MainActivity : AppCompatActivity(),
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco())
 
-        // 트래커에 날짜 정보 보내기
-        var thisWeek = thisWeek(CalendarDay.today().year, CalendarDay.today().month + 1, CalendarDay.today().day)
-        var intent = Intent(this, Tracker::class.java)
-        intent.putExtra("thisWeek", thisWeek)
-
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
 
@@ -219,6 +214,8 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.nav_tracker -> {
                 val intent = Intent(this, Tracker::class.java)
+                var thisWeek = thisWeek(CalendarDay.today().year, CalendarDay.today().month + 1, CalendarDay.today().day)
+                intent.putExtra("thisWeek", thisWeek.toString())
                 startActivity(intent)
             }
             R.id.nav_search -> {
