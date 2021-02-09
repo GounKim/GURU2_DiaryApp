@@ -23,6 +23,7 @@ import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import org.w3c.dom.Text
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener {
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var tvshortDiary: TextView
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
+    var arr_btn = ArrayList<Int>()  // 트래커 버튼 리스트
 
     // DB
     lateinit var myDBHelper: MyDBHelper
@@ -133,8 +135,12 @@ class MainActivity : AppCompatActivity(),
 //            }
 
 
-            // 트래커 출력(?)
+            // 트래커 영역
             cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
+
+            if (!cursor.moveToFirst()) {
+                mainTrackerLayout.removeAllViews()
+            }
 
             var count = 0
             while (cursor.moveToNext()) {
