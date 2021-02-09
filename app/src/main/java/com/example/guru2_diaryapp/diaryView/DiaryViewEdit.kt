@@ -198,8 +198,10 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = 0
         var content = diary_et.text.toString()
 
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+
         val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content',''$changeProfilePath')")
+        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
 
     }
 
