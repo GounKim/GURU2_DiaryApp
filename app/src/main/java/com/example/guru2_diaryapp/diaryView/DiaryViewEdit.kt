@@ -118,7 +118,6 @@ class DiaryViewEdit : AppCompatActivity() {
 
                 }
                 R.id.weather -> {
-                    locationPermission()
                     weatherPermission()
                 }
                 R.id.current_time -> {
@@ -290,12 +289,9 @@ class DiaryViewEdit : AppCompatActivity() {
                     REQUEST_WEATHER_CODE)
             }
         } else {
-            // 권한이 이미 허용됨
-            // 테스트용 토스트 메시지
-            Toast.makeText(this, "인터넷 관련 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
-
-            // 날씨 가져오기
-            getCurrentWeather()
+            // 인터넷 권한이 이미 허용됨
+            // 위치 권한 + 현 위치 불러오기
+            locationPermission()
         }
     }
 
@@ -328,20 +324,7 @@ class DiaryViewEdit : AppCompatActivity() {
             }
         } else {
             // 권한이 이미 허용됨
-            // 테스트용 토스트 메시지
-            Toast.makeText(this, "위치 관련 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
-
-            // 최근 위치 정보 가져오기
-            /*fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    lat = location.latitude.toString()
-                    lon = location.longitude.toString()
-                    Log.d("lat and long", "last position : ${lat} and ${lon}" )
-                }
-            }
-
-            // 위치 정보 업데이트 - 필요시 호출됨
+            // 위치 정보 업데이트
             val locationListener = object : LocationListener {
                 override fun onLocationChanged(location: Location) {
                     location?.let {
@@ -350,6 +333,8 @@ class DiaryViewEdit : AppCompatActivity() {
                         lon = it.longitude.toString()
                         Log.d("lat and long", "update position : ${lat} and ${lon}")
                     }
+                    // 현 위치의 현재 날씨
+                    getCurrentWeather()
                 }
 
                 override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -361,7 +346,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 10000,
                 1f,
                 locationListener
-            )*/
+            )
         }
     }
 
@@ -370,23 +355,11 @@ class DiaryViewEdit : AppCompatActivity() {
         getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
-    /*private fun createLocationRequest() {
-        val locationRequest = LocationRequest()
-        locationRequest.setInterval(10000)
-        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER)
-    }
-
-    override fun onLocationChanged(location : Location) {
-        lat = location.longitude.toString()
-        lon = location.longitude.toString()
-    }*/
-
-
     private fun getCurrentWeather() {
         var res: Call<JsonObject> = RetrofitClient
             .getInstance()
             .buildRetrofit()
-            .getCurrentWeather("7.421998333333335","-122.08400000000002","4dd8b7eb922a5d7e8da094cb922921f2")
+            .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
 
         res.enqueue(object: Callback<JsonObject> {
 
@@ -403,40 +376,40 @@ class DiaryViewEdit : AppCompatActivity() {
                 val descWeather = jsonObject.getString("description")
 
                 if (descWeather == "clear sky") { // 맑은 하늘
-                    Log.d("weather", "clear sky")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 맑음", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.sunny)
                 } else if (descWeather == "mist") { // 안개
-                    Log.d("weather", "mist")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 안개", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.mist)
                 } else if (descWeather == "few clouds") { // 조금 흐림
-                    Log.d("weather", "few clouds")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 구름 조금", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.few_cloud)
                 } else if (descWeather == "broken clouds") { // 흩어진 구름
-                    Log.d("weather", "broken clouds")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 구름 조금", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.few_cloud)
                 } else if (descWeather == "scattered clouds") { // 흩어진 구름
-                    Log.d("weather", "scattered clouds")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 구름 조금", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.few_cloud)
                 } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
-                    Log.d("weather", "overcast clouds")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 흐림", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.cloud)
                 }else if (descWeather == "light rain") { // 약한 비
-                    Log.d("weather", "light rain")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 약한 비", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.light_rain)
                 } else if (descWeather == "moderate rain") { // 비 - 보통
-                    Log.d("weather", "moderate rain")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 비", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.moderate_rain)
                 } else if (descWeather == "heavy intensity rain") { // 강한 비
-                    Log.d("weather", "heavy intensity rain")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 강한 비", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.heavy_rain)
                 } else if (descWeather == "thunderstorm") { // 천둥번개
-                    Log.d("weather", "thunderstorm")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 천둥번개", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.thunderstorm)
                 }else if (descWeather == "snow"){ // 눈
-                    Log.d("weather", "snow")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 눈", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.snow)
                 } else {
-                    Log.d("weather", "알 수 없음")
+                    Toast.makeText(this@DiaryViewEdit, "날씨 : 알 수 없음", Toast.LENGTH_SHORT).show()
                     current_weather.setImageResource(R.drawable.ic_baseline_refresh_24)
                 }
             }
