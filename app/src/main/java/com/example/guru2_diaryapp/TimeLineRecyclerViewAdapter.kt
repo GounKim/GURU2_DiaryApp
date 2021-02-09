@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
@@ -28,7 +29,7 @@ var itemClick:(DiaryData,Int)->Unit):
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
         var contentTv = view.findViewById<TextView>(R.id.tlitem_content_tv)
         var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
-        //var weatherIorn = view.findViewById
+        //var weatherIorn = view.findViewById<ImageView>(R.id.iv_weather)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: DiaryData, num: Int) {
