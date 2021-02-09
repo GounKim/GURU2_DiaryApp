@@ -4,11 +4,14 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -36,6 +39,7 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
     lateinit var selected_category : String
+    var currenturi:Uri?=null
 
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
@@ -46,7 +50,7 @@ class DiaryViewEdit : AppCompatActivity() {
         setContentView(R.layout.diary_view_edit)
 
         diary_et = findViewById(R.id.diary_et)
-        diary_bnv = findViewById(R.id.diary_bnv);
+        diary_bnv = findViewById(R.id.diary_bnv)
         image_preview = findViewById(R.id.image_preview)
         date_tv = findViewById(R.id.date_tv)
         category_spinner = findViewById(R.id.category_spinner)
@@ -170,7 +174,34 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 일기 내용 저장
     // 공유환경변수 사용 -> DB로 변경
-    private fun saveDiary(content : String) {
+    private fun svaeDiary(content : String) {
+        /*var pref = this.getPreferences(0)
+        var editor = pref.edit()
+
+        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
+
+        sqllitedb = myDBHelper.writableDatabase
+        /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
+                + diary_et')")*/
+
+    }
+
+
+    // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
+    private fun saveDiary(content: String){
+
+        myDBHelper = MyDBHelper(this)
+        sqllitedb = myDBHelper.writableDatabase
+        var reporting_date : String = date_tv.text.toString()
+        var weather : Int = 0
+
+        var category_id : Int = 0
+        var content = diary_et.text.toString()
+
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+
+        val changeProfilePath = currenturi?.let { absolutelyPath(it) }
+        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
 
     }
 
@@ -219,17 +250,34 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     // 갤러리에서 사진 가져오기
-    override protected fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
+
                 data?.data?.let { uri ->
                     image_preview.setImageURI(uri)
+                    currenturi = uri
                 }!!
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    // 절대경로 변환
+    private fun absolutelyPath(path: Uri): String? {
+
+        var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+        var c: Cursor? = contentResolver.query(path, proj, null, null, null)
+        var index = c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        if (c != null) {
+            c.moveToFirst()
+        }
+
+        var result = index?.let { c?.getString(it) }
+
+        return result
     }
 }

@@ -14,11 +14,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "472048867852-aje98doddeprue38ubp54f7jegc9k0c5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.guru2_diaryapp",
+            "certificate_hash": "65cd5a08ea103b29b7bd83fdefe64171e4cf7044"
+          }
+        },
+        {
           "client_id": "472048867852-f0if4is70tou46km6eacbpei9t4auc2r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.guru2_diaryapp",
             "certificate_hash": "42f2c08cca31bf8db6d77ea3dc0c2c03673a1df4"
+          }
+        },
+        {
+          "client_id": "472048867852-q7r0nsveb2f8051jql9487hges7c6gq7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.guru2_diaryapp",
+            "certificate_hash": "82764d88f93de21d0b6deb09a5f144cc7f33d79b"
+          }
+        },
+        {
+          "client_id": "472048867852-umg60r8cfl3ad87nh2bbkfcia8ai8qbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.guru2_diaryapp",
+            "certificate_hash": "553c2afe19e54458b358dadb456dc22e14015806"
           }
         },
         {
