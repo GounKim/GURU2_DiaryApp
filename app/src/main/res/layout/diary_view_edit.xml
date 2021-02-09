@@ -21,7 +21,8 @@
             android:layout_height="wrap_content"
             android:text="03(수)"
             android:textSize="18sp"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:layout_gravity="center_vertical"/>
 
         <Spinner
             android:id="@+id/category_spinner"
@@ -34,10 +35,9 @@
 
         <ImageView
             android:id="@+id/current_weather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_baseline_wb_sunny_24"
-            app:tint="@color/black"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/sunny"
             android:layout_margin="10dp" />
 
     </LinearLayout>

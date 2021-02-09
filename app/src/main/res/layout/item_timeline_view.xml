@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/search_border"
+    android:layout_margin="4dp"
     >
 
     <LinearLayout
@@ -48,10 +49,10 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/tlitem_pic_vp"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="100dp"
         android:layout_marginTop="16dp"
         android:background="#00BCD4"
-        android:visibility="visible">
+        android:visibility="gone">
 
     </androidx.viewpager2.widget.ViewPager2>
 
