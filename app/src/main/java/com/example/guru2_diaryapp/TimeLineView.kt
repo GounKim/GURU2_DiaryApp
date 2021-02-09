@@ -42,7 +42,7 @@ class TimeLineView : AppCompatActivity() {
             timeline_rv.layoutManager = LinearLayoutManager(this)
 
 
-        //최하단에 도달했을 때 (과거 글 추가 로드)
+        //스크롤이 최하단에 도달했을 때 글 더 불러오기
         if(!timeline_rv.canScrollVertically(1)){
 
         }
@@ -56,26 +56,39 @@ class TimeLineView : AppCompatActivity() {
         sqldb = myDBHelper.readableDatabase
         cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
-
         cursor.moveToPosition(BottomPost)
         var num = 0
         while (cursor.moveToNext() && num < 20) {
             val id = cursor.getInt(cursor.getColumnIndex("post_id"))
             val date =
                 cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            val weather =
+                    cursor.getInt(cursor.getColumnIndex("weather"))
             val category =
                 cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
                 cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add(DiaryData(id,date,category,content,null))
+            mydiaryData.add(DiaryData(id,date,weather,category,content,null))
             num++
         }
         sqldb.close()
         return mydiaryData
     }
 
+    //사진 정보를 불러오는 메소드
+    private fun loadImgs():ArrayList<String>{
+        var imgs = ArrayList<String>()
+        sqldb = myDBHelper.readableDatabase
+        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
+        while(cursor.moveToNext()){
+            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
+        }
+        return imgs
+    }
+
 }
 
 //날짜, 카테고리명, 본문, 사진 정보 리스트
-data class DiaryData(var id:Int, var reporting_date:Int,var category_name:String,var content:String,
+data class DiaryData(var id:Int, var reporting_date:Int, var weather:Int,
+                     var category_name:String,var content:String,
                      var imgs:ArrayList<String>?)
