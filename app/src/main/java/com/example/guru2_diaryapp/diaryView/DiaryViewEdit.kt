@@ -26,12 +26,9 @@ import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.JsonObject
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -47,8 +44,6 @@ class DiaryViewEdit : AppCompatActivity() {
     private var lon : String = ""
     private var apiID : String = "4dd8b7eb922a5d7e8da094cb922921f2"
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
     lateinit var dbManager: MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
     lateinit var diary_et : EditText
@@ -58,7 +53,6 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var category_spinner : Spinner
     lateinit var selected_category : String
     lateinit var current_weather : ImageView
-    lateinit var position : LatLng
 
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
@@ -218,10 +212,8 @@ class DiaryViewEdit : AppCompatActivity() {
     // 갤러리
     private fun selectGallery() {
         // 앨범 접근 권한
-        //var writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
-        //if (writePermission != PackageManager.PERMISSION_GRANTED || readPermission != PackageManager.PERMISSION_GRANTED) {
         if(readPermission != PackageManager.PERMISSION_GRANTED) {
             // 권한이 허용되지 않음
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -238,7 +230,7 @@ class DiaryViewEdit : AppCompatActivity() {
             } else {
                 // 처음 권한 요청
                 ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE/*, Manifest.permission.WRITE_EXTERNAL_STORAGE*/), REQUEST_READ_EXTERNAL_STORAGE)
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
             }
         } else {
             // 권한이 이미 허용됨
