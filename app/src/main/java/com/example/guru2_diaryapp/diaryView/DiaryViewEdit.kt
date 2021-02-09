@@ -59,7 +59,6 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var current_weather : ImageView
     var currenturi:Uri?=null
 
-
     var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
@@ -157,8 +156,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
-        saveDiary()
-        Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+        //svaeDiary(diary_et.text.toString())
         selected_category = categories[category_spinner.selectedItemPosition]
 
         // intent를 이용해서 Diary View에 내용 전달
@@ -193,6 +191,21 @@ class DiaryViewEdit : AppCompatActivity() {
         //super.onBackPressed()
     }
 
+    // 일기 내용 저장
+    // 공유환경변수 사용 -> DB로 변경
+    private fun svaeDiary(content : String) {
+        /*var pref = this.getPreferences(0)
+        var editor = pref.edit()
+
+        editor.putString("KEY_CONTENT", diary_et.text.toString()).apply()*/
+
+        sqllitedb = myDBHelper.writableDatabase
+        /*sqllitedb.execSQL("INSERT INTO diary_posts VALUES ('"
+                + diary_et')")*/
+
+    }
+
+
     // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
     private fun saveDiary(){
         myDBHelper = MyDBHelper(this)
@@ -203,9 +216,11 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = 0
         var content = diary_et.text.toString()
 
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+
         val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
-        // ,'$changeProfilePath'
+        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+
     }
 
     // 일기 내용 불러오기
@@ -218,11 +233,12 @@ class DiaryViewEdit : AppCompatActivity() {
         }
     }
 
-    // 갤러리
     private fun selectGallery() {
         // 앨범 접근 권한
+        //var writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 
+        //if (writePermission != PackageManager.PERMISSION_GRANTED || readPermission != PackageManager.PERMISSION_GRANTED) {
         if(readPermission != PackageManager.PERMISSION_GRANTED) {
             // 권한이 허용되지 않음
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -239,7 +255,7 @@ class DiaryViewEdit : AppCompatActivity() {
             } else {
                 // 처음 권한 요청
                 ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXTERNAL_STORAGE)
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE/*, Manifest.permission.WRITE_EXTERNAL_STORAGE*/), REQUEST_READ_EXTERNAL_STORAGE)
             }
         } else {
             // 권한이 이미 허용됨
