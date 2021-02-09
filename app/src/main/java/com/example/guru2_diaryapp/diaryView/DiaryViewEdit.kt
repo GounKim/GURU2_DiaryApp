@@ -400,37 +400,39 @@ class DiaryViewEdit : AppCompatActivity() {
 
                 val jsonArray = jsonObj.getJSONArray("weather")
                 val jsonObject = jsonArray.getJSONObject(0)
-                //val descWeather = jsonObject.getString("description")
+                val descWeather = jsonObject.getString("description")
 
-                val descWeather = "moderate rain"
-                if (descWeather == "broken clouds") { // 흩어진 구름
-                    Log.d("weather", "broken clouds")
-                    current_weather.setImageResource(R.drawable.few_cloud)
-                } else if (descWeather == "light rain") { // 약한 비
-                    Log.d("weather", "light rain")
-                    current_weather.setImageResource(R.drawable.light_rain)
-                } else if (descWeather == "haze") { // 안개
-                    Log.d("weather", "haze")
+                if (descWeather == "clear sky") { // 맑은 하늘
+                    Log.d("weather", "clear sky")
+                    current_weather.setImageResource(R.drawable.sunny)
+                } else if (descWeather == "mist") { // 안개
+                    Log.d("weather", "mist")
                     current_weather.setImageResource(R.drawable.mist)
-                } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
-                    Log.d("weather", "overcast clouds")
-                    current_weather.setImageResource(R.drawable.cloud)
-                } else if (descWeather == "moderate rain") { // 비 - 보통
-                    Log.d("weather", "moderate rain")
-                    current_weather.setImageResource(R.drawable.moderate_rain)
                 } else if (descWeather == "few clouds") { // 조금 흐림
                     Log.d("weather", "few clouds")
                     current_weather.setImageResource(R.drawable.few_cloud)
-                } else if (descWeather == "heavy intensity rain") { // 강한 비
-                    Log.d("weather", "heavy intensity rain")
-                    current_weather.setImageResource(R.drawable.heavy_rain)
-                } else if (descWeather == "clear sky") { // 맑은 하늘
-                    Log.d("weather", "clear sky")
-                    current_weather.setImageResource(R.drawable.sunny)
+                } else if (descWeather == "broken clouds") { // 흩어진 구름
+                    Log.d("weather", "broken clouds")
+                    current_weather.setImageResource(R.drawable.few_cloud)
                 } else if (descWeather == "scattered clouds") { // 흩어진 구름
                     Log.d("weather", "scattered clouds")
                     current_weather.setImageResource(R.drawable.few_cloud)
-                } else if (descWeather == "snow"){
+                } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
+                    Log.d("weather", "overcast clouds")
+                    current_weather.setImageResource(R.drawable.cloud)
+                }else if (descWeather == "light rain") { // 약한 비
+                    Log.d("weather", "light rain")
+                    current_weather.setImageResource(R.drawable.light_rain)
+                } else if (descWeather == "moderate rain") { // 비 - 보통
+                    Log.d("weather", "moderate rain")
+                    current_weather.setImageResource(R.drawable.moderate_rain)
+                } else if (descWeather == "heavy intensity rain") { // 강한 비
+                    Log.d("weather", "heavy intensity rain")
+                    current_weather.setImageResource(R.drawable.heavy_rain)
+                } else if (descWeather == "thunderstorm") { // 천둥번개
+                    Log.d("weather", "thunderstorm")
+                    current_weather.setImageResource(R.drawable.thunderstorm)
+                }else if (descWeather == "snow"){ // 눈
                     Log.d("weather", "snow")
                     current_weather.setImageResource(R.drawable.snow)
                 } else {
