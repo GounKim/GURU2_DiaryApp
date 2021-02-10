@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(),
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var categoryname: Button
+    lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(),
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
 
-        categoryname = bottomSheetDialog.findViewById(R.id.categoryName)!!
+        categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
@@ -120,14 +120,16 @@ class MainActivity : AppCompatActivity(),
             while (cursor.moveToNext()) {
 
                 if(cursor != null){
-                    categoryname.visibility = View.VISIBLE
+                    categoryLayout.visibility = View.VISIBLE
                     var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
-                    categoryname.text = categoryText
+                    val category = TextView(this)
+                    category.text = categoryText
+                    categoryLayout.addView(category,0)
                     moodImage.visibility = View.GONE
                 }
 
                 else if(cursor == null){
-                    categoryname.visibility == View.GONE
+                    categoryLayout.visibility == View.GONE
                     moodImage.visibility = View.VISIBLE
                 }
             }
@@ -193,7 +195,7 @@ class MainActivity : AppCompatActivity(),
             bottomSheetDialog.show()
         }
 
-        categoryname.setOnClickListener() {
+        categoryLayout.setOnClickListener() {
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             intent.putExtra("select_date", selectDate)
