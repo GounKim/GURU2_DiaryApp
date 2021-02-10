@@ -2,15 +2,13 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -27,7 +25,8 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+            CheckTrakerDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -129,19 +128,32 @@ class MainActivity : AppCompatActivity(),
                 }
             }
 
-            // 트래커 출력(?)
-            cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
+            // 트래커 영역
+            cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
 
-            var count = 0
+            mainTrackerLayout.removeAllViews()
+
             while (cursor.moveToNext()) {
-                var btnHabbit: Button = Button(this)
-                btnHabbit.id = count
-                btnHabbit.text = cursor.getString(0)
-                btnHabbit.width = MATCH_PARENT
-                btnHabbit.height = WRAP_CONTENT
-                mainTrackerLayout.addView(btnHabbit)
-            }
+                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
 
+                var btnHabbit: Button = Button(this)
+                btnHabbit.text = habit
+                var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
+                lp.setMargins(0,0,0,10)
+                btnHabbit.layoutParams = lp
+/*
+                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
+                    0 -> btnHabbit.setBackgroundResource(R.drawable.button_bad)
+                    1 -> btnHabbit.setBackgroundResource(R.drawable.button_soso)
+                    2 -> btnHabbit.setBackgroundResource(R.drawable.button_good)
+                }
+*/
+                changeButton(btnHabbit, habit, newDate)
+                mainTrackerLayout.addView(btnHabbit)
+                btnHabbit.setOnClickListener {
+                    show(btnHabbit, habit, newDate)
+                }
+            }
 
             /*
             mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요! 무드 부분도 주석처리 했습니다.
@@ -264,4 +276,36 @@ class MainActivity : AppCompatActivity(),
         return str_day[answer_day]
     }
 
+    private fun show(btn: Button, habit: String, newDate: Int) {
+        val newFragment = CheckTrakerDialog(btn, habit, newDate)
+        newFragment.show(supportFragmentManager,"dialog")
+    }
+
+    override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
+        sqldb = myDBHelper.writableDatabase
+        Toast.makeText(this, "$newDate , $habit , $habitLevel", Toast.LENGTH_SHORT).show()
+        sqldb.execSQL("UPDATE habit_check_lists SET check_result = $habitLevel WHERE reporting_date = '$newDate'AND habit = '$habit';")
+
+        changeButton(button, habit, newDate)
+    }
+
+    fun changeButton(button: Button, habit: String, newDate: Int) {
+        val cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
+
+        while(cursor.moveToNext()) {
+            var str_habit = cursor.getString(cursor.getColumnIndex("habit"))
+
+            if (str_habit == habit) {
+                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
+                    0 -> button.setBackgroundResource(R.drawable.button_bad)
+                    1 -> button.setBackgroundResource(R.drawable.button_soso)
+                    2 -> button.setBackgroundResource(R.drawable.button_good)
+                }
+                cursor.moveToLast()
+            }
+        }
+
+        cursor.close()
+    }
 }
