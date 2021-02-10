@@ -2,7 +2,6 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,7 +23,6 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -113,7 +111,7 @@ class MainActivity : AppCompatActivity(),
 
             sqldb = myDBHelper.readableDatabase
             var cursor: Cursor
-            cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+            cursor = sqldb.rawQuery("SELECT category_name FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                     "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
@@ -121,7 +119,7 @@ class MainActivity : AppCompatActivity(),
             while (cursor.moveToNext()) {
 
                 if(cursor != null){
-                    categoryLayout.visibility = View.VISIBLE
+
                     var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
                     val category = TextView(this)
                     category.text = categoryText
@@ -242,7 +240,7 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
         }

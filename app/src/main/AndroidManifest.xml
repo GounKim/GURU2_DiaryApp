@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.guru2_diaryapp">
 
     <!-- 인터넷 권한 -->
@@ -36,12 +37,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".category.CategoryActivity" />
         <activity android:name=".Tracker.Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SelectActivity" />
         <activity android:name=".TimeLineView" />
         <activity android:name=".diaryView.DiaryView" />
+        <activity android:name=".SettingsActivity" />
+
         <activity
             android:name=".diaryView.DiaryViewEdit"
             android:parentActivityName=".diaryView.DiaryView" />
