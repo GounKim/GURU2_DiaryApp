@@ -149,8 +149,10 @@ class DiaryView : AppCompatActivity() {
 
     fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE reporting_date = '${newDate}';", null)
+        //val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE reporting_date = '${newDate}';", null)
 
+        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_imgs" +
+                " ON diary_posts.post_id = diary_imgs.post_id WHERE post_id =  $postID;",null)
 
         if(cursor.moveToFirst()) {
             postID = cursor.getInt(cursor.getColumnIndex("post_id"))
@@ -168,6 +170,9 @@ class DiaryView : AppCompatActivity() {
             current_category.text = DiaryData().loadCategoryName(category)
 
             diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
+
+            val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+
         }
         sqllitedb.close()
     }

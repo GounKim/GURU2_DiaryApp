@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -33,6 +35,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 
 
 class DiaryViewEdit : AppCompatActivity() {
@@ -262,21 +265,30 @@ class DiaryViewEdit : AppCompatActivity() {
 
         //val changeProfilePath = currenturi?.let { absolutelyPath(it) }
         //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+
+        val image = image_preview.drawable
+        val bitmapDrawable = image as BitmapDrawable
+        val bitmap = bitmapDrawable?.bitmap
+        val stream = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+
+        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null, '${postID}', '{$byteArray}')")
     }
 
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
         Log.d("load", "date : ${date_tv.text}")
         Log.d("load", "content : ${diary_et.text}")
 
         if (cursor.moveToFirst()) {
-            val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
             val year = date / 10000
             val month = (date % 10000) / 100
             val day = date / 1000000
-            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
 
             val weather = cursor.getInt(cursor.getColumnIndex("weather"))
             DiaryData().loadWeatherIcon(weather, current_weather)
@@ -288,6 +300,7 @@ class DiaryViewEdit : AppCompatActivity() {
             Log.d("load2", "date : ${date_tv.text}")
             Log.d("load2", "content : ${diary_et.text}")
         }
+
 
         sqllitedb.close()
 
@@ -454,6 +467,7 @@ class DiaryViewEdit : AppCompatActivity() {
         getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
+    // 현재 날씨
     private fun getCurrentWeather() {
         var res: Call<JsonObject> = RetrofitClient
             .getInstance()
