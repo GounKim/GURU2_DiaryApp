@@ -89,11 +89,13 @@ class DiaryViewEdit : AppCompatActivity() {
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
 
-//        loadDiary()
+        loadDiary()
 
         /*// 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
+
+
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -330,16 +332,16 @@ class DiaryViewEdit : AppCompatActivity() {
                 dig.setMessage("현재 날씨 정보를 얻기 위해서는 인터넷 권한을 필요로 합니다.")
                 dig.setPositiveButton("확인") { dialog, which ->
                     ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                        arrayOf(Manifest.permission.INTERNET),
-                        REQUEST_WEATHER_CODE)
+                            arrayOf(Manifest.permission.INTERNET),
+                            REQUEST_WEATHER_CODE)
                 }
                 dig.setNegativeButton("취소", null)
                 dig.show()
             } else {
                 // 처음 권한 요청
                 ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                    arrayOf(Manifest.permission.INTERNET),
-                    REQUEST_WEATHER_CODE)
+                        arrayOf(Manifest.permission.INTERNET),
+                        REQUEST_WEATHER_CODE)
             }
         } else {
             // 인터넷 권한이 이미 허용됨
@@ -357,23 +359,23 @@ class DiaryViewEdit : AppCompatActivity() {
         if(finePermission != PackageManager.PERMISSION_GRANTED || coarsePermission != PackageManager.PERMISSION_GRANTED) { // 권한이 허용되지 않은 경우
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) { // 이전에 이미 권한이 거부되었을 때 설명
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) { // 이전에 이미 권한이 거부되었을 때 설명
 
                 var dig = AlertDialog.Builder(this)
                 dig.setTitle("권한이 필요한 이유")
                 dig.setMessage("현재 날씨 정보를 얻기 위해서는 위치 권한을 필요로 합니다.")
                 dig.setPositiveButton("확인") { dialog, which ->
                     ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                        REQUEST_GPS_CODE)
+                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                            REQUEST_GPS_CODE)
                 }
                 dig.setNegativeButton("취소", null)
                 dig.show()
             } else {
                 // 처음 권한 요청
                 ActivityCompat.requestPermissions(this@DiaryViewEdit,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                    REQUEST_GPS_CODE)
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                        REQUEST_GPS_CODE)
             }
         } else {
             // 권한이 이미 허용됨
@@ -395,10 +397,10 @@ class DiaryViewEdit : AppCompatActivity() {
                 override fun onProviderDisabled(provider: String) {}
             }
             locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                10000,
-                1f,
-                locationListener
+                    LocationManager.GPS_PROVIDER,
+                    10000,
+                    1f,
+                    locationListener
             )
         }
     }
@@ -409,18 +411,18 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     private fun getCurrentWeather() {
-        var res: Call<JsonObject> = RetrofitClient
-            .getInstance()
-            .buildRetrofit()
-            .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
+        var res: retrofit2.Call<JsonObject> = RetrofitClient
+                .getInstance()
+                .buildRetrofit()
+                .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
 
         res.enqueue(object: Callback<JsonObject> {
 
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
             }
 
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+            override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
                 var jsonObj = JSONObject(response.body().toString())
                 Log.d("weather", "Success :: $jsonObj")
 

@@ -103,11 +103,6 @@ class MainActivity : AppCompatActivity(),
             var day = date.day
             newDate = year * 10000 + month * 100 + day
 
-            // 테스트용
-            //thisWeek = thisWeek(year,month,day)
-            //Toast.makeText(this, "$thisWeek", Toast.LENGTH_SHORT).show()
-            //Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
-
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
@@ -133,23 +128,6 @@ class MainActivity : AppCompatActivity(),
                     moodImage.visibility = View.VISIBLE
                 }
             }
-
-
-            // 트래커 생성 test
-//            try {
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '물 2L 마시기', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '12시 이전 취침', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '12시 이전 취침', 0)")
-//            } catch (e: SQLiteConstraintException) {
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '물 2L 마시기', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210210")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210210")
-//            }
-
 
             // 트래커 출력(?)
             cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
@@ -232,8 +210,6 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.nav_tracker -> {
                 val intent = Intent(this, Tracker::class.java)
-                var thisWeek = thisWeek(CalendarDay.today().year, CalendarDay.today().month + 1, CalendarDay.today().day)
-                intent.putExtra("thisWeek", thisWeek.toString())
                 startActivity(intent)
             }
             R.id.nav_search -> {
@@ -286,20 +262,6 @@ class MainActivity : AppCompatActivity(),
         var answer_day = (5 + total_day) % 7
 
         return str_day[answer_day]
-    }
-
-    // 현재 주 시작일(월요일) 계산
-    fun thisWeek(year : Int, month : Int, day : Int): Int {
-        val strToday = getDayName(year, month, day)
-        when (strToday) {
-            "월" -> return (year * 10000 + month * 100 + day)
-            "화" -> return (year * 10000 + month * 100 + day - 1)
-            "수" -> return (year * 10000 + month * 100 + day - 2)
-            "목" -> return (year * 10000 + month * 100 + day - 3)
-            "금" -> return (year * 10000 + month * 100 + day - 4)
-            "토" -> return (year * 10000 + month * 100 + day - 5)
-            else -> return (year * 10000 + month * 100 + day - 6)
-        }
     }
 
 }
