@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(),
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var tvshortDiary: TextView
+    lateinit var categoryname: TextView
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(),
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
 
-        tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
+        categoryname = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
@@ -111,16 +111,16 @@ class MainActivity : AppCompatActivity(),
 
             sqldb = myDBHelper.readableDatabase
             var cursor: Cursor
-            cursor = sqldb.rawQuery("SELECT content "
-                    + "FROM diary_posts "
-                    + "WHERE reporting_date = '"+ newDate + "';", null)
+            cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+                    "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
+
+             //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             if (cursor.moveToFirst()) {
-                var diaryText = cursor.getString(0).toString()
-                var shortDiary = diaryText.substring(0, diaryText.indexOf("."))
-                tvshortDiary.text = shortDiary
+                var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                categoryname.text = categoryText
             } else {
-                tvshortDiary.text = "작성된 일기가 없습니다."
+                categoryname.text = "작성된 카테고리가 없습니다."
             }
 
             // 트래커 생성 test
@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(),
             bottomSheetDialog.show()
         }
 
-        tvshortDiary.setOnClickListener() {
+        categoryname.setOnClickListener() {
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             intent.putExtra("select_date", selectDate)
