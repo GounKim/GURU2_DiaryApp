@@ -89,13 +89,11 @@ class DiaryViewEdit : AppCompatActivity() {
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
 
-        loadDiary()
+//        loadDiary()
 
         /*// 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
-
-
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")

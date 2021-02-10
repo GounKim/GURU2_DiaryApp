@@ -26,12 +26,13 @@
             android:src="@drawable/ic__mood_add"
             android:layout_gravity="center" />
 
-        <TextView
+        <Button
             android:id="@+id/categoryName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="15dp"
+            android:layout_margin="10dp"
             android:background="@color/white"
-            android:layout_margin="10dp"/>
+            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout

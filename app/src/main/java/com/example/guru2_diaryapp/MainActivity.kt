@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity(),
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var categoryname: TextView
+    lateinit var categoryname: Button
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
@@ -116,12 +117,21 @@ class MainActivity : AppCompatActivity(),
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
-            if (cursor.moveToFirst()) {
-                var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
-                categoryname.text = categoryText
-            } else {
-                categoryname.text = "작성된 카테고리가 없습니다."
+            while (cursor.moveToNext()) {
+
+                if(cursor != null){
+                    categoryname.visibility = View.VISIBLE
+                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                    categoryname.text = categoryText
+                    moodImage.visibility = View.GONE
+                }
+
+                else if(cursor == null){
+                    categoryname.visibility == View.GONE
+                    moodImage.visibility = View.VISIBLE
+                }
             }
+
 
             // 트래커 생성 test
 //            try {
