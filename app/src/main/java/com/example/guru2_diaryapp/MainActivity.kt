@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -110,16 +111,14 @@ class MainActivity : AppCompatActivity(),
 
             sqldb = myDBHelper.readableDatabase
             var cursor: Cursor
-            cursor = sqldb.rawQuery("SELECT category_name "
-                    + "FROM diary_categorys INNER JOIN diary_posts ON  "
-                    + " reporting_date = '"+ newDate + "';", null)
+            cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+                    "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             if (cursor.moveToFirst()) {
-                var categoryText = cursor.getString(0).toString()
-                var category = categoryText.substring(0, categoryText.indexOf("."))
-                categoryname.text = category
+                var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                categoryname.text = categoryText
             } else {
                 categoryname.text = "작성된 카테고리가 없습니다."
             }
