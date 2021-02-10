@@ -45,11 +45,7 @@ class CategoryActivity : AppCompatActivity() {
         viewPager2.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            when(position) {
-                0 -> tab.text = tabList[0].second
-                1 -> tab.text = tabList[1].second
-                else -> tab.text = tabList[2].second
-            }
+            tab.text = tabList[position].second
         }.attach()
 
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
