@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteStatement
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
@@ -266,7 +267,7 @@ class DiaryViewEdit : AppCompatActivity() {
         //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
 
         val image = image_preview.drawable
-        val bitmapDrawable = image as BitmapDrawable
+        val bitmapDrawable = image as BitmapDrawable?
         val bitmap = bitmapDrawable?.bitmap
         val stream = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)

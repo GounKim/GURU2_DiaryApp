@@ -174,6 +174,16 @@ class DiaryView : AppCompatActivity() {
         }
         cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
 
+        if(cursor.moveToFirst())
+        {
+            do {
+                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file"))
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+
+                diary_image.setImageBitmap(bitmap)
+            } while(cursor.moveToNext())
+        }
         sqllitedb.close()
     }
 }
