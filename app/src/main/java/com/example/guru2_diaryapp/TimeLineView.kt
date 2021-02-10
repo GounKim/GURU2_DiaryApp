@@ -32,7 +32,7 @@ class TimeLineView : AppCompatActivity() {
         timeline_rv = findViewById(R.id.timeLineRv)
 
             TimeLineData.addAll(PageDown(0))
-            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this,timeline_rv){
+            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
                 data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
                 var intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 intent.putExtra("post_id",data.reporting_date)
