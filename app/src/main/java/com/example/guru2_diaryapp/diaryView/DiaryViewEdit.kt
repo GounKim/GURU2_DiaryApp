@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
@@ -58,9 +59,9 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var selected_category : String
     lateinit var current_weather : ImageView
     var currenturi:Uri?=null
+    var postID : Int = 0
 
-
-    var newDate : Int = 0
+    //var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
 
@@ -81,11 +82,18 @@ class DiaryViewEdit : AppCompatActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         category_spinner.adapter = adapter
 
-        // 달력에서 선택한 날짜 받아오기
+        myDBHelper = MyDBHelper(this)
+
+        // DiaryView에서 postId 값 가져오기
+        postID = intent.getIntExtra("postID", 0)
+
+        loadDiary()
+
+        /*// 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
 
-        myDBHelper = MyDBHelper(this)
+
 
         // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
@@ -107,7 +115,7 @@ class DiaryViewEdit : AppCompatActivity() {
             image_preview.visibility = View.VISIBLE
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
             image_preview.setImageBitmap(bitmap);
-        }
+        }*/
 
         //loadDiary()
 
@@ -157,10 +165,13 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
+        // 세이브 테스트용
         saveDiary()
         Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-        selected_category = categories[category_spinner.selectedItemPosition]
 
+
+        selected_category = categories[category_spinner.selectedItemPosition]
+        /*
         // intent를 이용해서 Diary View에 내용 전달
         var intent = Intent(this, DiaryView::class.java)
         intent.putExtra("diary_content", diary_et.text.toString())
@@ -185,7 +196,7 @@ class DiaryViewEdit : AppCompatActivity() {
             resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             val byteArray: ByteArray = stream.toByteArray()
             intent.putExtra("diary_image", byteArray)
-        }
+        }*/
 
         startActivity(intent)
         Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
@@ -193,6 +204,7 @@ class DiaryViewEdit : AppCompatActivity() {
         //super.onBackPressed()
     }
 
+    // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
     // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
     private fun saveDiary(){
         myDBHelper = MyDBHelper(this)
@@ -212,12 +224,33 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 일기 내용 불러오기
     private fun loadDiary() {
-        var pref = this.getPreferences(0)
+        sqllitedb = myDBHelper.readableDatabase
+        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
+
+        cursor.moveToFirst()
+
+        val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+        val year = date / 10000
+        val month = (date % 10000) / 100
+        val day = date / 1000000
+        date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+
+        val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+        DiaryData().loadWeatherIcon(weather, current_weather)
+
+        val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+        selected_category = DiaryData().loadCategoryName(category)
+
+        diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+
+        sqllitedb.close()
+
+        /*var pref = this.getPreferences(0)
         var content = pref.getString("KEY_CONTENT", "")
 
         if(content != "") {
             diary_et.setText(content.toString())
-        }
+        }*/
     }
 
     // 갤러리
@@ -376,18 +409,18 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     private fun getCurrentWeather() {
-        var res: retrofit2.Call<JsonObject> = RetrofitClient
+        var res: Call<JsonObject> = RetrofitClient
             .getInstance()
             .buildRetrofit()
             .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
 
         res.enqueue(object: Callback<JsonObject> {
 
-            override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
             }
 
-            override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 var jsonObj = JSONObject(response.body().toString())
                 Log.d("weather", "Success :: $jsonObj")
 
