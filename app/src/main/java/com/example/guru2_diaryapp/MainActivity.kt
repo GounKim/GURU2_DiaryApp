@@ -2,7 +2,6 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
@@ -22,9 +22,7 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener {
@@ -35,21 +33,21 @@ class MainActivity : AppCompatActivity(),
     // 메뉴
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
+    lateinit var toolbar:Toolbar
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var tvshortDiary: TextView
+    lateinit var categoryname: TextView
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
-    var arr_btn = ArrayList<Int>()  // 트래커 버튼 리스트
 
     // DB
     lateinit var myDBHelper: MyDBHelper
-    lateinit var sqldb: SQLiteDatabase
+    lateinit var sqldb:SQLiteDatabase
 
     // 일기로 전달될 날짜
-    lateinit var selectDate: String
-    var newDate: Int = 0
+    lateinit var selectDate : String
+    var newDate : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +55,10 @@ class MainActivity : AppCompatActivity(),
 
         myDBHelper = MyDBHelper(this)
         calendarView = findViewById(R.id.calendarView)
+
+        //툴바를 액션바로 설정
+        toolbar = findViewById(R.id.Maintoolbar)
+        setSupportActionBar(toolbar)
 
         // actionbar의 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -72,9 +74,10 @@ class MainActivity : AppCompatActivity(),
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
 
-        tvshortDiary = bottomSheetDialog.findViewById(R.id.shortDiary)!!
+        categoryname = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
+
 
 
         // 달력 생성
@@ -85,7 +88,7 @@ class MainActivity : AppCompatActivity(),
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
         calendarView.setCurrentDate(Date(System.currentTimeMillis()))
-        calendarView.setDateSelected(Date(System.currentTimeMillis()), true)
+        calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco())
@@ -107,18 +110,32 @@ class MainActivity : AppCompatActivity(),
 
             sqldb = myDBHelper.readableDatabase
             var cursor: Cursor
-            cursor = sqldb.rawQuery("SELECT content "
-                    + "FROM diary_posts "
-                    + "WHERE reporting_date = '" + newDate + "';", null)
+            cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+                    "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
+
+             //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             if (cursor.moveToFirst()) {
-                var diaryText = cursor.getString(0).toString()
-                var shortDiary = diaryText.substring(0, diaryText.indexOf("."))
-                tvshortDiary.text = shortDiary
+                var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
+                categoryname.text = categoryText
             } else {
-                tvshortDiary.text = "작성된 일기가 없습니다."
+                categoryname.text = "작성된 카테고리가 없습니다."
             }
 
+            // 트래커 생성 test
+//            try {
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '물 2L 마시기', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '1시간 운동', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '12시 이전 취침', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '1시간 운동', 0)")
+//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '12시 이전 취침', 0)")
+//            } catch (e: SQLiteConstraintException) {
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '물 2L 마시기', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210209")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210210")
+//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210210")
+//            }
 
             // 트래커 영역
             cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
@@ -168,10 +185,10 @@ class MainActivity : AppCompatActivity(),
             bottomSheetDialog.show()
         }
 
-        tvshortDiary.setOnClickListener() {
+        categoryname.setOnClickListener() {
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-            intent.putExtra("select_date", selectDate)
+            intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
             intent.putExtra("newDate", newDate)
             startActivity(intent)
         }
@@ -223,21 +240,22 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawers()
-        } else {
+        }
+        else {
             super.onBackPressed()
         }
     }
 
     // 요일 구하기
-    fun getDayName(year: Int, month: Int, day: Int): String {
+    fun getDayName(year : Int, month : Int, day : Int): String {
         val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
-        var month_day = Array<Int>(12) { 31 }
+        var month_day = Array<Int>(12) {31}
         var total_day = 0
 
         // 년
-        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
             month_day[1] = 29
         } else {
             month_day[1] = 28
@@ -248,8 +266,8 @@ class MainActivity : AppCompatActivity(),
         month_day[10] = 30
 
         // 월
-        for (i in 1..month - 1 step 1) {
-            total_day += month_day[i - 1]
+        for(i in 1..month-1 step 1) {
+            total_day += month_day[i-1]
         }
 
         // 일
@@ -261,7 +279,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // 현재 주 시작일(월요일) 계산
-    fun thisWeek(year: Int, month: Int, day: Int): Int {
+    fun thisWeek(year : Int, month : Int, day : Int): Int {
         val strToday = getDayName(year, month, day)
         when (strToday) {
             "월" -> return (year * 10000 + month * 100 + day)
@@ -273,5 +291,5 @@ class MainActivity : AppCompatActivity(),
             else -> return (year * 10000 + month * 100 + day - 6)
         }
     }
-}
 
+}

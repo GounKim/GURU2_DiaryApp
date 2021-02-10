@@ -5,8 +5,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,7 +66,7 @@ class TimeLineView : AppCompatActivity() {
                 cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
                 cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add(DiaryData(id,date,weather,category,content,null))
+            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
         sqldb.close()
@@ -88,7 +86,3 @@ class TimeLineView : AppCompatActivity() {
 
 }
 
-//날짜, 카테고리명, 본문, 사진 정보 리스트
-data class DiaryData(var id:Int, var reporting_date:Int, var weather:Int,
-                     var category_name:String,var content:String,
-                     var imgs:ArrayList<String>?)

@@ -6,39 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".diaryView.DiaryViewEdit">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brown_4"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         app:layout_constraintBottom_toTopOf="@+id/diary_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <TextView
             android:id="@+id/date_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
             android:text="03(수)"
-            android:textSize="18sp"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_vertical"/>
+            android:textSize="18sp" />
 
         <Spinner
             android:id="@+id/category_spinner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:textSize="18sp"/>
+            android:layout_weight="8"
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/current_weather"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/sunny"
-            android:layout_margin="10dp" />
+            android:layout_weight="1"
+            app:srcCompat="@drawable/sunny" />
 
     </LinearLayout>
 
@@ -46,25 +59,27 @@
         android:id="@+id/diary_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/diary_bnv"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        android:orientation="vertical">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <ImageView
+            android:id="@+id/image_preview"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="#C5C5C5"
+            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
 
         <EditText
             android:id="@+id/diary_et"
             android:layout_width="match_parent"
-            android:layout_height="316dp"
-            android:layout_margin="10dp"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
             android:gravity="top"
             android:hint="일기를 작성하세요" />
-
-        <ImageView
-            android:id="@+id/image_preview"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"/>
 
     </LinearLayout>
 
