@@ -26,7 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp"
         android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.LoginActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- Intro -->
         <activity
             android:name=".IntroActivity"
@@ -45,6 +50,7 @@
         <activity android:name=".TimeLineView" />
         <activity android:name=".diaryView.DiaryView" />
         <activity android:name=".SettingsActivity" />
+
 
         <activity
             android:name=".diaryView.DiaryViewEdit"

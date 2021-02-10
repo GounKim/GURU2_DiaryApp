@@ -20,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var btngoogleSignIn: SignInButton
     private lateinit var btnLoginSkip: Button
-
+    private lateinit var btngoogleSignOut : Button
     //firebase Auth
     private lateinit var firebaseAuth: FirebaseAuth
 
@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
 
         btngoogleSignIn = findViewById(R.id.btn_googleSignIn)
         btnLoginSkip = findViewById(R.id.loginSkip)
-
+        btngoogleSignOut = findViewById(R.id.btn_googleSignOut)
         btnLoginSkip.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
         //btn_googleSignIn.setOnClickListener (this) // 구글 로그인 버튼
         btngoogleSignIn.setOnClickListener { signIn() }
-
+        btngoogleSignOut.setOnClickListener {signOut()}
         //Google 로그인 옵션 구성. requestIdToken 및 Email 요청
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -63,9 +63,9 @@ class LoginActivity : AppCompatActivity() {
     public override fun onStart() {
         super.onStart()
         val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account !== null) { // 이미 로그인 되어있을시 바로 메인 액티비티로 이동
+        /*if (account !== null) { // 이미 로그인 되어있을시 바로 메인 액티비티로 이동
             toMainActivity(firebaseAuth.currentUser)
-        }
+        }*/
     }
 
     // onActivityResult
@@ -129,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
 
         // Google sign out
         googleSignInClient.signOut().addOnCompleteListener(this) {
-            //updateUI(null)
+            finish()
         }
 
     }
