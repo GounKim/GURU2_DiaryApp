@@ -56,12 +56,13 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
     lateinit var current_weather : ImageView
-    lateinit var descWeather : String
+
 
     var currenturi:Uri?=null
     var postID : Int = 0
     var newDate : Int = 0
-    var selected_category : String = "알 수 없음"
+    var selected_category : String = ""
+    var descWeather : String = ""
 
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
@@ -91,12 +92,15 @@ class DiaryViewEdit : AppCompatActivity() {
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
         date_tv.text = intent.getStringExtra("select_date")
+        newDate = intent.getIntExtra("newDate", 0)
 
+        Log.d("load", "date : ${date_tv.text}")
+        Log.d("load", "content : ${diary_et.text}")
 
         loadDiary()
 
         /*// 달력에서 선택한 날짜 받아오기
-        newDate = intent.getIntExtra("newDate", 0)
+
                 // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
         if(diary_text == null) { // 가져온 것이 아무것도 없다면
@@ -157,6 +161,7 @@ class DiaryViewEdit : AppCompatActivity() {
         when(item?.itemId) {
             // 메인 화면으로 이동
             R.id.action_main -> {
+                saveDiary()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
@@ -168,10 +173,10 @@ class DiaryViewEdit : AppCompatActivity() {
     // 뒤로가기 동작
     override fun onBackPressed() {
         // 세이브 테스트용
-        saveDiary()
-        var intent = Intent(this, DiaryView::class.java)
-        Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-        selected_category = categories[category_spinner.selectedItemPosition]
+        //saveDiary()
+        //var intent = Intent(this, DiaryView::class.java)
+        //Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
+        //
         /*
         // intent를 이용해서 Diary View에 내용 전달
 
@@ -199,10 +204,10 @@ class DiaryViewEdit : AppCompatActivity() {
             intent.putExtra("diary_image", byteArray)
         }*/
 
-        startActivity(intent)
-        Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
+        //startActivity(intent)
+        //Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
         // 뒤로가는 동작이 되지 않으면 아래의 코드도 넣기
-        //super.onBackPressed()
+        super.onBackPressed()
     }
 
     // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
@@ -240,7 +245,7 @@ class DiaryViewEdit : AppCompatActivity() {
         }
 
         var category_id : Int = 0
-
+        selected_category = categories[category_spinner.selectedItemPosition]
         if(selected_category == "일상") {
             category_id = 1
         } else if (selected_category == "여행") {
@@ -248,22 +253,23 @@ class DiaryViewEdit : AppCompatActivity() {
         } else if (selected_category == "교환일기") {
             category_id = 3
         } else {
-            category_id = 4
+            category_id = 0
         }
-
 
         var content = diary_et.text.toString()
 
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
-        val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+        //val changeProfilePath = currenturi?.let { absolutelyPath(it) }
+        //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
     }
 
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
         val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
+        Log.d("load", "date : ${date_tv.text}")
+        Log.d("load", "content : ${diary_et.text}")
 
         if (cursor.moveToFirst()) {
             val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
@@ -279,7 +285,10 @@ class DiaryViewEdit : AppCompatActivity() {
             selected_category = DiaryData().loadCategoryName(category)
 
             diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+            Log.d("load2", "date : ${date_tv.text}")
+            Log.d("load2", "content : ${diary_et.text}")
         }
+
         sqllitedb.close()
 
         /*var pref = this.getPreferences(0)

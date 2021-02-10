@@ -35,7 +35,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:text="03(수)"
-            android:textAlignment="center"
             android:textSize="18sp" />
 
         <TextView
@@ -84,23 +83,6 @@
                     android:text="작성된 일기가 없습니다." />
             </LinearLayout>
         </ScrollView>
-
-
-        <ImageView
-            android:id="@+id/diary_image"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:background="#D3D3D3"
-            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
-
-        <TextView
-            android:id="@+id/diary_tv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="16dp"
-            android:text="text 예시" />
-
     </LinearLayout>
 
 

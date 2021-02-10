@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(),
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             if (cursor.moveToFirst()) {
-                var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
                 categoryname.text = categoryText
             } else {
                 categoryname.text = "작성된 카테고리가 없습니다."

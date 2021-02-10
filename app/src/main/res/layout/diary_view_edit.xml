@@ -36,7 +36,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:text="03(수)"
-            android:textAlignment="center"
             android:textSize="18sp" />
 
         <Spinner

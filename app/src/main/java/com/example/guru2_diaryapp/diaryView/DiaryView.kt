@@ -57,7 +57,7 @@ class DiaryView : AppCompatActivity() {
         newDate = intent.getIntExtra("newDate", 0)
         date_tv.text = intent.getStringExtra("select_date")
 
-        //loadDiary()
+        loadDiary()
 
         // 선택한 카테고리 가져오기
         /*var category_text = intent.getStringExtra("selected_category")
@@ -95,6 +95,7 @@ class DiaryView : AppCompatActivity() {
         diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("postID", postID)
+            intent.putExtra("newDate", newDate)
             intent.putExtra("select_date", date_tv.text.toString()) // 날짜 넘겨주기
             startActivity(intent)
 
@@ -154,11 +155,11 @@ class DiaryView : AppCompatActivity() {
         if(cursor.moveToFirst()) {
             postID = cursor.getInt(cursor.getColumnIndex("post_id"))
 
-            val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
             val year = date / 10000
             val month = (date % 10000) / 100
             val day = date / 1000000
-            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
 
             val weather = cursor.getInt(cursor.getColumnIndex("weather"))
             DiaryData().loadWeatherIcon(weather, current_weather)
