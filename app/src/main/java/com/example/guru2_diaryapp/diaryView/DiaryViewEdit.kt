@@ -168,8 +168,6 @@ class DiaryViewEdit : AppCompatActivity() {
         // 세이브 테스트용
         saveDiary()
         Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-
-
         selected_category = categories[category_spinner.selectedItemPosition]
         /*
         // intent를 이용해서 Diary View에 내용 전달
