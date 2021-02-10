@@ -35,9 +35,15 @@ class DiaryView : AppCompatActivity() {
     lateinit var sqllitedb : SQLiteDatabase
     var postID : Int = 0
 
+    lateinit var toolbar:androidx.appcompat.widget.Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.diary_view)
+
+        //툴바 장착
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         diary_tv = findViewById(R.id.diary_tv)
         diary_image = findViewById(R.id.diary_image)
@@ -51,7 +57,7 @@ class DiaryView : AppCompatActivity() {
         newDate = intent.getIntExtra("newDate", 0)
         date_tv.text = intent.getStringExtra("select_date")
 
-        loadDiary()
+        //loadDiary()
 
         // 선택한 카테고리 가져오기
         /*var category_text = intent.getStringExtra("selected_category")
