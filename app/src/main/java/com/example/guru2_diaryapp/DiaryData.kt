@@ -14,6 +14,7 @@ class DiaryData {
 
     constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, nothing: Nothing?) {
         this.id = id
+        this.reporting_date = date
         this.weather = weather
         this.category_name = category_name
         this.content = content.toString()

@@ -16,11 +16,6 @@ class ViewPagerFragmentAdapter(fa : FragmentActivity) : FragmentStateAdapter(fa)
     }
 
     override fun createFragment(position: Int): Fragment {
-        return when(position) {
-            TYPE_DAILY -> ViewPagerFragmentDaily()
-            TYPE_TRAVEL -> ViewPagerFragmentTravel()
-            else -> ViewPagerFragmentExchange()
+        return ViewPagerFragment()
         }
     }
-
-}

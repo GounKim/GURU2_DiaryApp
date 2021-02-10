@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.R
 
-class ViewPagerFragmentTravel : Fragment() {
+class ViewPagerFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
 
