@@ -2,6 +2,7 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity(),
                     moodImage.visibility = View.GONE
                 }
 
-                else if(cursor == null){
+                else{
                     categoryLayout.visibility == View.GONE
                     moodImage.visibility = View.VISIBLE
                 }

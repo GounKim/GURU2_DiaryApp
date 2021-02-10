@@ -35,6 +35,7 @@ class MyDBHelper(
 
         //기본 카테고리 자동 생성
         sql = "INSERT INTO diary_categorys VALUES (0,'basic cookie');"
+
         db?.execSQL(sql)
         Log.d("DB","실행"+sql)
 
