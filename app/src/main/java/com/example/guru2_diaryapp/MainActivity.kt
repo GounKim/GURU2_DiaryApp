@@ -2,11 +2,13 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
@@ -22,6 +24,7 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity(),
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
-    lateinit var categoryname: TextView
+    lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
 
@@ -74,7 +77,7 @@ class MainActivity : AppCompatActivity(),
         bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(R.layout.activity_main_bottom_sheet_dialog)
 
-        categoryname = bottomSheetDialog.findViewById(R.id.categoryName)!!
+        categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
@@ -115,11 +118,21 @@ class MainActivity : AppCompatActivity(),
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
-            if (cursor.moveToFirst()) {
-                var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
-                categoryname.text = categoryText
-            } else {
-                categoryname.text = "작성된 카테고리가 없습니다."
+            while (cursor.moveToNext()) {
+
+                if(cursor != null){
+                    categoryLayout.visibility = View.VISIBLE
+                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                    val category = TextView(this)
+                    category.text = categoryText
+                    categoryLayout.addView(category,0)
+                    moodImage.visibility = View.GONE
+                }
+
+                else{
+                    categoryLayout.visibility == View.GONE
+                    moodImage.visibility = View.VISIBLE
+                }
             }
 
             // 트래커 생성 test
@@ -182,7 +195,7 @@ class MainActivity : AppCompatActivity(),
             bottomSheetDialog.show()
         }
 
-        categoryname.setOnClickListener() {
+        categoryLayout.setOnClickListener() {
 
             val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
             intent.putExtra("select_date", selectDate) // 날짜 넘겨주기

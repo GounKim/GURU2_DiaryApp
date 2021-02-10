@@ -60,7 +60,6 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var category_spinner : Spinner
     lateinit var current_weather : ImageView
 
-
     var currenturi:Uri?=null
     var postID : Int = 0
     var newDate : Int = 0
