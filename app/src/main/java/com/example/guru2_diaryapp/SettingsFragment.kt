@@ -4,6 +4,7 @@ package com.example.guru2_diaryapp
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
@@ -13,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
  class SettingsFragment : PreferenceFragmentCompat() {
 
     lateinit var prefs : SharedPreferences
-    lateinit var keywordScreen : PreferenceScreen
+    lateinit var theme : ListPreference
 
     lateinit var intent: Intent
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -25,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth
          addPreferencesFromResource(R.xml.settings)
 
         prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-
 
 
      }
