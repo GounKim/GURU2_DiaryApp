@@ -27,6 +27,7 @@ class ViewPagerFragment : Fragment() {
         recyclerView = view.findViewById(R.id.rvName)
 
         var dataSet : List<Int> = (1..5).toList()
+
         recyclerView.adapter = CategoryRecyclerViewAdapter(dataSet)
         recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
     }
