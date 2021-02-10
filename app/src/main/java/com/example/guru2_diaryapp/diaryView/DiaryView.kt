@@ -142,24 +142,24 @@ class DiaryView : AppCompatActivity() {
         sqllitedb = myDBHelper.readableDatabase
         val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE reporting_date = '${newDate}';", null)
 
-        cursor.moveToFirst()
 
-        postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+        if(cursor.moveToFirst()) {
+            postID = cursor.getInt(cursor.getColumnIndex("post_id"))
 
-        val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-        val year = date / 10000
-        val month = (date % 10000) / 100
-        val day = date / 1000000
-        date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+            val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            val year = date / 10000
+            val month = (date % 10000) / 100
+            val day = date / 1000000
+            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
 
-        val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-        DiaryData().loadWeatherIcon(weather, current_weather)
+            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+            DiaryData().loadWeatherIcon(weather, current_weather)
 
-        val category = cursor.getInt(cursor.getColumnIndex("category_id"))
-        current_category.text = DiaryData().loadCategoryName(category)
+            val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+            current_category.text = DiaryData().loadCategoryName(category)
 
-        diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
-
+            diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
+        }
         sqllitedb.close()
     }
 }

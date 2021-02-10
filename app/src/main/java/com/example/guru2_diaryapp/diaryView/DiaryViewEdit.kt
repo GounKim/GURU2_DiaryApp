@@ -227,21 +227,21 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb = myDBHelper.readableDatabase
         val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
 
-        cursor.moveToFirst()
+        if (cursor.moveToFirst()) {
+            val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            val year = date / 10000
+            val month = (date % 10000) / 100
+            val day = date / 1000000
+            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
 
-        val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-        val year = date / 10000
-        val month = (date % 10000) / 100
-        val day = date / 1000000
-        date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+            DiaryData().loadWeatherIcon(weather, current_weather)
 
-        val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-        DiaryData().loadWeatherIcon(weather, current_weather)
+            val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+            selected_category = DiaryData().loadCategoryName(category)
 
-        val category = cursor.getInt(cursor.getColumnIndex("category_id"))
-        selected_category = DiaryData().loadCategoryName(category)
-
-        diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+            diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+        }
 
         sqllitedb.close()
 
