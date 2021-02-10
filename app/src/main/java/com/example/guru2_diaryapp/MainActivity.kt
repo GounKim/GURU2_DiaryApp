@@ -2,6 +2,7 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -44,11 +45,11 @@ class MainActivity : AppCompatActivity(),
 
     // DB
     lateinit var myDBHelper: MyDBHelper
-    lateinit var sqldb:SQLiteDatabase
+    lateinit var sqldb: SQLiteDatabase
 
     // 일기로 전달될 날짜
-    lateinit var selectDate : String
-    var newDate : Int = 0
+    lateinit var selectDate: String
+    var newDate: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +77,6 @@ class MainActivity : AppCompatActivity(),
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
 
-
         // 달력 생성
         calendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(),
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
         calendarView.setCurrentDate(Date(System.currentTimeMillis()))
-        calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
+        calendarView.setDateSelected(Date(System.currentTimeMillis()), true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco())
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(),
             var cursor: Cursor
             cursor = sqldb.rawQuery("SELECT content "
                     + "FROM diary_posts "
-                    + "WHERE reporting_date = '"+ newDate + "';", null)
+                    + "WHERE reporting_date = '" + newDate + "';", null)
 
             if (cursor.moveToFirst()) {
                 var diaryText = cursor.getString(0).toString()
@@ -118,21 +118,6 @@ class MainActivity : AppCompatActivity(),
             } else {
                 tvshortDiary.text = "작성된 일기가 없습니다."
             }
-
-            // 트래커 생성 test
-//            try {
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '물 2L 마시기', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '12시 이전 취침', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '12시 이전 취침', 0)")
-//            } catch (e: SQLiteConstraintException) {
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '물 2L 마시기', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210210")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210210")
-//            }
 
 
             // 트래커 영역
@@ -238,22 +223,21 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawers()
-        }
-        else {
+        } else {
             super.onBackPressed()
         }
     }
 
     // 요일 구하기
-    fun getDayName(year : Int, month : Int, day : Int): String {
+    fun getDayName(year: Int, month: Int, day: Int): String {
         val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
-        var month_day = Array<Int>(12) {31}
+        var month_day = Array<Int>(12) { 31 }
         var total_day = 0
 
         // 년
-        if((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
             month_day[1] = 29
         } else {
             month_day[1] = 28
@@ -264,8 +248,8 @@ class MainActivity : AppCompatActivity(),
         month_day[10] = 30
 
         // 월
-        for(i in 1..month-1 step 1) {
-            total_day += month_day[i-1]
+        for (i in 1..month - 1 step 1) {
+            total_day += month_day[i - 1]
         }
 
         // 일
@@ -277,7 +261,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     // 현재 주 시작일(월요일) 계산
-    fun thisWeek(year : Int, month : Int, day : Int): Int {
+    fun thisWeek(year: Int, month: Int, day: Int): Int {
         val strToday = getDayName(year, month, day)
         when (strToday) {
             "월" -> return (year * 10000 + month * 100 + day)
@@ -289,5 +273,5 @@ class MainActivity : AppCompatActivity(),
             else -> return (year * 10000 + month * 100 + day - 6)
         }
     }
-
 }
+
