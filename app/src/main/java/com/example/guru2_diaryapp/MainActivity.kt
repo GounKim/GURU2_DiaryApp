@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(),
     // 메뉴
     lateinit var drawerLayout: DrawerLayout
     lateinit var navigationView: NavigationView
+    lateinit var toolbar:Toolbar
 
     // BottomSheetDialog (하단 슬라이드)
     lateinit var bottomSheetDialog: BottomSheetDialog
@@ -53,6 +55,10 @@ class MainActivity : AppCompatActivity(),
 
         myDBHelper = MyDBHelper(this)
         calendarView = findViewById(R.id.calendarView)
+
+        //툴바를 액션바로 설정
+        toolbar = findViewById(R.id.Maintoolbar)
+        setSupportActionBar(toolbar)
 
         // actionbar의 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
