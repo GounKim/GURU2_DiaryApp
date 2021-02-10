@@ -56,12 +56,14 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var image_preview : ImageView
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
-    lateinit var selected_category : String
     lateinit var current_weather : ImageView
+    lateinit var descWeather : String
+
     var currenturi:Uri?=null
     var postID : Int = 0
+    var newDate : Int = 0
+    var selected_category : String = "알 수 없음"
 
-    //var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
 
@@ -86,16 +88,14 @@ class DiaryViewEdit : AppCompatActivity() {
 
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
+        date_tv.text = intent.getStringExtra("select_date")
+
 
         loadDiary()
 
         /*// 달력에서 선택한 날짜 받아오기
-        date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
-
-
-
-        // 일기에서 작성된 글을 가져오기
+                // 일기에서 작성된 글을 가져오기
         var diary_text = intent.getStringExtra("diary_content")
         if(diary_text == null) { // 가져온 것이 아무것도 없다면
 
@@ -167,11 +167,12 @@ class DiaryViewEdit : AppCompatActivity() {
     override fun onBackPressed() {
         // 세이브 테스트용
         saveDiary()
+        var intent = Intent(this, DiaryView::class.java)
         Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
         selected_category = categories[category_spinner.selectedItemPosition]
         /*
         // intent를 이용해서 Diary View에 내용 전달
-        var intent = Intent(this, DiaryView::class.java)
+
         intent.putExtra("diary_content", diary_et.text.toString())
         intent.putExtra("selected_category", selected_category)
         intent.putExtra("select_date", date_tv.text.toString())
@@ -207,17 +208,54 @@ class DiaryViewEdit : AppCompatActivity() {
     private fun saveDiary(){
         myDBHelper = MyDBHelper(this)
         sqllitedb = myDBHelper.writableDatabase
-        var reporting_date : String = date_tv.text.toString()
+        var reporting_date : Int = newDate
         var weather : Int = 0
 
+        if (descWeather == "clear sky") { // 맑은 하늘
+            weather = 1
+        } else if (descWeather == "mist") { // 안개
+            weather = 2
+        } else if (descWeather == "few clouds") { // 조금 흐림
+            weather = 13
+        } else if (descWeather == "broken clouds") { // 흩어진 구름
+            weather = 4
+        } else if (descWeather == "scattered clouds") { // 흩어진 구름
+            weather = 5
+        } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
+            weather = 6
+        }else if (descWeather == "light rain") { // 약한 비
+            weather = 7
+        } else if (descWeather == "moderate rain") { // 비 - 보통
+            weather = 8
+        } else if (descWeather == "heavy intensity rain") { // 강한 비
+            weather = 9
+        } else if (descWeather == "thunderstorm") { // 천둥번개
+            weather = 10
+        }else if (descWeather == "snow"){ // 눈
+            weather = 11
+        } else {
+            weather = 12
+        }
+
         var category_id : Int = 0
+
+        if(selected_category == "일상") {
+            category_id = 1
+        } else if (selected_category == "여행") {
+            category_id = 2
+        } else if (selected_category == "교환일기") {
+            category_id = 3
+        } else {
+            category_id = 4
+        }
+
+
         var content = diary_et.text.toString()
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
         val changeProfilePath = currenturi?.let { absolutelyPath(it) }
         sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
-
     }
 
     // 일기 내용 불러오기
@@ -240,7 +278,6 @@ class DiaryViewEdit : AppCompatActivity() {
 
             diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
         }
-
         sqllitedb.close()
 
         /*var pref = this.getPreferences(0)
@@ -424,7 +461,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
                 val jsonArray = jsonObj.getJSONArray("weather")
                 val jsonObject = jsonArray.getJSONObject(0)
-                val descWeather = jsonObject.getString("description")
+                descWeather = jsonObject.getString("description")
 
                 if (descWeather == "clear sky") { // 맑은 하늘
                     Toast.makeText(this@DiaryViewEdit, "날씨 : 맑음", Toast.LENGTH_SHORT).show()

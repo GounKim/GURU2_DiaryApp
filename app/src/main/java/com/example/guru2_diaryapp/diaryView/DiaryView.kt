@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
@@ -47,8 +48,8 @@ class DiaryView : AppCompatActivity() {
         myDBHelper = MyDBHelper(this)
 
         // 달력에서 선택한 날짜 받아오기
-        //date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", 0)
+        date_tv.text = intent.getStringExtra("select_date")
 
         loadDiary()
 
@@ -88,6 +89,7 @@ class DiaryView : AppCompatActivity() {
         diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("postID", postID)
+            intent.putExtra("select_date", date_tv.text.toString()) // 날짜 넘겨주기
             startActivity(intent)
 
             /*val intent = Intent(this, DiaryViewEdit::class.java)
