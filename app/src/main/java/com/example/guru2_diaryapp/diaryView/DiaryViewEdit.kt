@@ -278,9 +278,7 @@ class DiaryViewEdit : AppCompatActivity() {
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
-        Log.d("load", "date : ${date_tv.text}")
-        Log.d("load", "content : ${diary_et.text}")
+        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
         if (cursor.moveToFirst()) {
             /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
@@ -296,9 +294,8 @@ class DiaryViewEdit : AppCompatActivity() {
             selected_category = DiaryData().loadCategoryName(category)
 
             diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
-            Log.d("load2", "date : ${date_tv.text}")
-            Log.d("load2", "content : ${diary_et.text}")
         }
+
 
 
         sqllitedb.close()

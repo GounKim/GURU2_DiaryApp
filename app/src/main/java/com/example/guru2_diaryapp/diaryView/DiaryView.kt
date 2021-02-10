@@ -56,6 +56,7 @@ class DiaryView : AppCompatActivity() {
         // 달력에서 선택한 날짜 받아오기
         newDate = intent.getIntExtra("newDate", 0)
         date_tv.text = intent.getStringExtra("select_date")
+        postID = intent.getIntExtra("postID", -1)
 
         loadDiary()
 
@@ -149,13 +150,13 @@ class DiaryView : AppCompatActivity() {
 
     fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        //val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE reporting_date = '${newDate}';", null)
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
-        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_imgs" +
-                " ON diary_posts.post_id = diary_imgs.post_id WHERE post_id =  $postID;",null)
+        //val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_imgs" +
+                //" ON diary_posts.post_id = diary_imgs.post_id WHERE post_id =  $postID;",null)
 
         if(cursor.moveToFirst()) {
-            postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+            //postID = cursor.getInt(cursor.getColumnIndex("post_id"))
 
             /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
             val year = date / 10000
@@ -170,10 +171,9 @@ class DiaryView : AppCompatActivity() {
             current_category.text = DiaryData().loadCategoryName(category)
 
             diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
-
-            val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-
         }
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
+
         sqllitedb.close()
     }
 }
