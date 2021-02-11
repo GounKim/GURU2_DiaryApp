@@ -31,8 +31,6 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
     lateinit var sqlitedb: SQLiteDatabase
     lateinit var toolbar: Toolbar
 
-    lateinit var trackerTable: TableLayout
-
     lateinit var trackerCal: MaterialCalendarView
     lateinit var tvHabit: TextView
 
@@ -43,6 +41,7 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
     var thisYear: Int = CalendarDay.today().year
     var thisMonth: Int = CalendarDay.today().month + 1
+    var calView = ArrayList<MaterialCalendarView>(30)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +77,6 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
         trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
 
-        var calView = ArrayList<MaterialCalendarView>(30)
-
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
         nCursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists", null)
@@ -91,7 +88,7 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
                 if (str_habit != "mood") {
                     var linearLayout: LinearLayout = LinearLayout(this)
                     var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-                    layoutlp.setMargins(10,50,10,10)
+                    layoutlp.setMargins(10,10,10,10)
                     layoutlp.gravity = CENTER
                     linearLayout.layoutParams = layoutlp
                     linearLayout.orientation = LinearLayout.VERTICAL
@@ -108,17 +105,17 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
                             .setCalendarDisplayMode(CalendarMode.MONTHS)
                             .commit()
                     var callp = LinearLayout.LayoutParams(485, 485)
-                    callp.setMargins(0,40,0,0)
+                    callp.setMargins(20,30,0,0)
                     calendarView.layoutParams = callp
                     calendarView.topbarVisible = false
                     calendarView.addDecorator(SundDayDeco())
                     calendarView.addDecorator(SaturdayDeco())
-                    //calendarView.id = 1000
                     calView.add(calendarView)
 
                     linearLayout.addView(textView)
                     linearLayout.addView(calendarView)
                     trackerLayout.addView(linearLayout)
+                    if (calView.size % 2 == 0) trackerLayout.rowCount++
                 }
                 else { tvHabit.text = str_habit }
 
@@ -211,8 +208,14 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item?.itemId) {
+            R.id.add_menu -> {
+                show()
+            }
+            R.id.del_menu -> {
 
-        //Toast.makeText(this, "$dd", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         return super.onOptionsItemSelected(item)
     }
@@ -222,27 +225,36 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         newFragment.show(supportFragmentManager,"dialog")
     }
 
-    override fun onInputedData(title: String) {
-        var tableRow: TableRow = TableRow(this)
-        tableRow.setBackgroundColor(Color.WHITE)
+    override fun onInputedData(habitTitle: String) {
+        var linearLayout: LinearLayout = LinearLayout(this)
+        var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
+        layoutlp.setMargins(10,50,10,10)
+        layoutlp.gravity = CENTER
+        linearLayout.layoutParams = layoutlp
+        linearLayout.orientation = LinearLayout.VERTICAL
+        var textView: TextView = TextView(this)
+        textView.text = habitTitle
+        textView.textSize = 17f
+        textView.gravity = CENTER
 
-        var tvTitle: TextView = TextView(this)
-        tvTitle.text = title
-        tvTitle.textSize = 20f
-        tvTitle.gravity = Gravity.CENTER
-        tableRow.addView(tvTitle)
+        var calendarView: MaterialCalendarView = MaterialCalendarView(this)
+        calendarView.state().edit()
+                .setFirstDayOfWeek(Calendar.MONDAY)
+                .setMaximumDate(CalendarDay.from(2000, 0, 1))
+                .setMaximumDate(CalendarDay.from(2100, 11, 31))
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit()
+        var callp = LinearLayout.LayoutParams(485, 485)
+        callp.setMargins(0,40,0,0)
+        calendarView.layoutParams = callp
+        calendarView.topbarVisible = false
+        calendarView.addDecorator(SundDayDeco())
+        calendarView.addDecorator(SaturdayDeco())
+        calView.add(calendarView)
 
-        for (i in 1 .. 7) {
-            var imageView: ImageView = ImageView(this)
-            imageView.id = 100 + i
-            //imageView.setImageResource(R.drawable.ic_blue_circle)
-            imageView.foregroundGravity = Gravity.CENTER
-            tableRow.addView(imageView)
-        }
-
-        trackerTable.addView(tableRow)
-
-        Toast.makeText(this, "$title", Toast.LENGTH_SHORT).show()
+        linearLayout.addView(textView)
+        linearLayout.addView(calendarView)
+        trackerLayout.addView(linearLayout)
     }
 
     fun writeCalDate(year: Int, month: Int) {
