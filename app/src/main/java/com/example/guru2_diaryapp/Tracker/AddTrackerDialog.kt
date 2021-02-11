@@ -18,7 +18,7 @@ class AddTrackerDialog: DialogFragment() {
     lateinit var btnCancle: Button
 
     interface OnCompleteListener{
-        fun onInputedData(title: String)
+        fun onInputedData(habit: String)
     }
 
     lateinit var mCallback: OnCompleteListener
@@ -51,7 +51,6 @@ class AddTrackerDialog: DialogFragment() {
             dismiss()
             mCallback.onInputedData(title)
         }
-
 
         return builder.create()
     }

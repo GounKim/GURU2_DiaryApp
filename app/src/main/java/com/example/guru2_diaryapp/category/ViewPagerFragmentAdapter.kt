@@ -13,5 +13,5 @@ class ViewPagerFragmentAdapter(fa : FragmentActivity, size:Int) : FragmentStateA
 
     override fun createFragment(position: Int): Fragment {
         return ViewPagerFragment()
-        }
     }
+}

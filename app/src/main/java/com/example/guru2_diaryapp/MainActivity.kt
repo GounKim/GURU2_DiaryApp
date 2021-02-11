@@ -30,7 +30,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+            CheckTrakerDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -97,7 +98,8 @@ class MainActivity : AppCompatActivity(),
         calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
-        calendarView.addDecorator(OnDayDeco())
+        calendarView.addDecorator(OnDayDeco(this))
+        //calendarView.addDecorator(MoodDeco())
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -105,11 +107,6 @@ class MainActivity : AppCompatActivity(),
             var month = date.month + 1
             var day = date.day
             newDate = year * 10000 + month * 100 + day
-
-            // 테스트용
-            //thisWeek = thisWeek(year,month,day)
-            //Toast.makeText(this, "$thisWeek", Toast.LENGTH_SHORT).show()
-            //Toast.makeText(this, "$year , $month, $day, $newDate", Toast.LENGTH_SHORT).show()
 
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
@@ -180,35 +177,32 @@ class MainActivity : AppCompatActivity(),
                 }
             }
 
-            // 트래커 생성 test
-//            try {
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '물 2L 마시기', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210209, '12시 이전 취침', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '1시간 운동', 0)")
-//                sqldb.execSQL("INSERT INTO habit_check_lists VALUES(20210210, '12시 이전 취침', 0)")
-//            } catch (e: SQLiteConstraintException) {
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '물 2L 마시기', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210209")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '1시간 운동', check_result = 0  WHERE 20210210")
-//                sqldb.execSQL("UPDATE habit_check_lists SET habit = '12시 이전 취침', check_result = 0  WHERE 20210210")
-//            }
+            // 트래커 영역
+            cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
 
+            mainTrackerLayout.removeAllViews()
 
-            // 트래커 출력(?)
-            cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
-
-            var count = 0
             while (cursor.moveToNext()) {
-                var btnHabbit: Button = Button(this)
-                btnHabbit.id = count
-                btnHabbit.text = cursor.getString(0)
-                btnHabbit.width = MATCH_PARENT
-                btnHabbit.height = WRAP_CONTENT
-                mainTrackerLayout.addView(btnHabbit)
-            }
+                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
 
+                var btnHabbit: Button = Button(this)
+                btnHabbit.text = habit
+                var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
+                lp.setMargins(0,0,0,10)
+                btnHabbit.layoutParams = lp
+/*
+                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
+                    0 -> btnHabbit.setBackgroundResource(R.drawable.button_bad)
+                    1 -> btnHabbit.setBackgroundResource(R.drawable.button_soso)
+                    2 -> btnHabbit.setBackgroundResource(R.drawable.button_good)
+                }
+*/
+                changeButton(btnHabbit, habit, newDate)
+                mainTrackerLayout.addView(btnHabbit)
+                btnHabbit.setOnClickListener {
+                    show(btnHabbit, habit, newDate)
+                }
+            }
 
             /*
             mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요! 무드 부분도 주석처리 했습니다.
@@ -277,8 +271,6 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.nav_tracker -> {
                 val intent = Intent(this, Tracker::class.java)
-                var thisWeek = thisWeek(CalendarDay.today().year, CalendarDay.today().month + 1, CalendarDay.today().day)
-                intent.putExtra("thisWeek", thisWeek.toString())
                 startActivity(intent)
             }
             R.id.nav_search -> {
@@ -333,18 +325,36 @@ class MainActivity : AppCompatActivity(),
         return str_day[answer_day]
     }
 
-    // 현재 주 시작일(월요일) 계산
-    fun thisWeek(year : Int, month : Int, day : Int): Int {
-        val strToday = getDayName(year, month, day)
-        when (strToday) {
-            "월" -> return (year * 10000 + month * 100 + day)
-            "화" -> return (year * 10000 + month * 100 + day - 1)
-            "수" -> return (year * 10000 + month * 100 + day - 2)
-            "목" -> return (year * 10000 + month * 100 + day - 3)
-            "금" -> return (year * 10000 + month * 100 + day - 4)
-            "토" -> return (year * 10000 + month * 100 + day - 5)
-            else -> return (year * 10000 + month * 100 + day - 6)
-        }
+    private fun show(btn: Button, habit: String, newDate: Int) {
+        val newFragment = CheckTrakerDialog(btn, habit, newDate)
+        newFragment.show(supportFragmentManager,"dialog")
     }
 
+    override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
+        sqldb = myDBHelper.writableDatabase
+        Toast.makeText(this, "$newDate , $habit , $habitLevel", Toast.LENGTH_SHORT).show()
+        sqldb.execSQL("UPDATE habit_check_lists SET check_result = $habitLevel WHERE reporting_date = '$newDate'AND habit = '$habit';")
+
+        changeButton(button, habit, newDate)
+    }
+
+    fun changeButton(button: Button, habit: String, newDate: Int) {
+        val cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
+
+        while(cursor.moveToNext()) {
+            var str_habit = cursor.getString(cursor.getColumnIndex("habit"))
+
+            if (str_habit == habit) {
+                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
+                    0 -> button.setBackgroundResource(R.drawable.button_bad)
+                    1 -> button.setBackgroundResource(R.drawable.button_soso)
+                    2 -> button.setBackgroundResource(R.drawable.button_good)
+                }
+                cursor.moveToLast()
+            }
+        }
+
+        cursor.close()
+    }
 }
