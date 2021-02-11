@@ -186,7 +186,7 @@ class DiaryView : AppCompatActivity() {
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
                 diary_image.setImageBitmap(bitmap)
-            } while(cursor.moveToNext())
+            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
         }
         sqllitedb.close()
     }

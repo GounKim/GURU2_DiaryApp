@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteStatement
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
@@ -273,7 +274,6 @@ class DiaryViewEdit : AppCompatActivity() {
                 val stream = ByteArrayOutputStream()
                 bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 val byteArray = stream.toByteArray()
-                //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null, '${postID}', '{$byteArray}')")
                 var insQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
                 var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
                 stmt.bindBlob(1, byteArray)
@@ -287,7 +287,7 @@ class DiaryViewEdit : AppCompatActivity() {
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
         if (cursor.moveToFirst()) {
             /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
@@ -304,9 +304,18 @@ class DiaryViewEdit : AppCompatActivity() {
 
             diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
         }
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
 
+        if(cursor.moveToFirst())
+        {
+            do {
+                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
-
+                image_preview.setImageBitmap(bitmap)
+            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
+        }
         sqllitedb.close()
 
         /*var pref = this.getPreferences(0)
