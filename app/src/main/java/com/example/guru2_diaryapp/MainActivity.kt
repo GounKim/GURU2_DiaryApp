@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
-
             var year = date.year
             var month = date.month + 1
             var day = date.day
@@ -224,15 +223,6 @@ class MainActivity : AppCompatActivity(),
 
             bottomSheetDialog.show()
         }
-
-        categoryLayout.setOnClickListener() {
-
-            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-            intent.putExtra("select_date", selectDate)
-            intent.putExtra("newDate", newDate)
-            startActivity(intent)
-        }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

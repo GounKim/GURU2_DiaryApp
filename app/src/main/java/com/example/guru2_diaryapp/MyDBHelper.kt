@@ -35,6 +35,7 @@ class MyDBHelper(
 
         //기본 카테고리 자동 생성
         sql = "INSERT INTO diary_categorys VALUES (0,'basic cookie');"
+
         db?.execSQL(sql)
         Log.d("DB","실행"+sql)
 
@@ -49,7 +50,7 @@ class MyDBHelper(
 
         //이미지 경로 저장 테이블
         db?.execSQL("CREATE TABLE diary_imgs(img_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "post_id INTEGER,img_dir TEXT NOT NULL," +
+                "post_id INTEGER,img_file BLOB NOT NULL," +
                 "CONSTRAINT post_id_fk FOREIGN KEY (post_id) REFERENCES diary_posts (post_id)" +
                 "ON DELETE CASCADE);")
     }
