@@ -18,5 +18,11 @@
     <style name="IntroTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">@drawable/intro_background</item>
     </style>
+    <style name="Theme.App.Small" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="mainTextSize">@dimen/main_text_size_0</item> </style>
+    <style name="Theme.App.Medium" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="mainTextSize">@dimen/main_text_size_1</item> </style>
+    <style name="Theme.App.Large" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="mainTextSize">@dimen/main_text_size_2</item> </style>
 
 </resources>

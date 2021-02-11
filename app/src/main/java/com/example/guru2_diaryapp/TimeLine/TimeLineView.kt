@@ -5,6 +5,9 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.ContextMenu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,6 +87,26 @@ class TimeLineView : AppCompatActivity() {
             imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
         }
         return imgs
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        menuInflater.inflate(R.menu.context, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when(item?.itemId){
+            R.id.action_copy ->{
+
+                return true
+            }
+            R.id.action_delete ->{
+
+                return true
+            }
+
+        }
+        return super.onContextItemSelected(item)
     }
 
 }
