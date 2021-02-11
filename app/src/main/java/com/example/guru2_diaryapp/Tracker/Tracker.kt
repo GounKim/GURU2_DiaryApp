@@ -1,21 +1,19 @@
 package com.example.guru2_diaryapp.Tracker
 
 
-import android.annotation.SuppressLint
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
-import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.Gravity
 import android.view.Gravity.CENTER
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.widget.Toolbar
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.MoodDeco
@@ -31,9 +29,9 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqlitedb: SQLiteDatabase
+    lateinit var toolbar: Toolbar
 
     lateinit var trackerTable: TableLayout
-    lateinit var btnAddDialog: Button
 
     lateinit var trackerCal: MaterialCalendarView
     lateinit var tvHabit: TextView
@@ -46,10 +44,13 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
     var thisYear: Int = CalendarDay.today().year
     var thisMonth: Int = CalendarDay.today().month + 1
 
-    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
+
+        //툴바를 액션바로 설정
+        toolbar = findViewById(R.id.Maintoolbar)
+        setSupportActionBar(toolbar)
 
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
@@ -160,12 +161,6 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         }
         //else { show() }
 
-
-        // HABBIT 추가
-        //btnAddDialog.setOnClickListener { show() }
-
-        //Toast.makeText(this, "$dd", Toast.LENGTH_SHORT).show()
-
         /* Month 이동 */
         // 모든 캘린더뷰 아이디 받아오기
         var calYear = thisYear
@@ -208,8 +203,18 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
             trackerCal.goToNext()
         }
 
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.tracker_menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        //Toast.makeText(this, "$dd", Toast.LENGTH_SHORT).show()
+
+        return super.onOptionsItemSelected(item)
     }
 
     private fun show() {

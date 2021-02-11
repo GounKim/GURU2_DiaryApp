@@ -6,26 +6,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/Maintoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brown_4"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/borderlessButtonStyle"
+        tools:ignore="MissingConstraints" />
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_weight="1"
         android:gravity="center"
         android:text="TRACKER"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/brown_5"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Maintoolbar" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
         tools:layout_editor_absoluteX="20dp">
 
         <ImageView
@@ -58,7 +68,6 @@
         android:id="@+id/trackerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:columnCount="3"
         android:rowCount="2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,9 +99,9 @@
                 android:id="@+id/trackerCal"
                 android:layout_width="185dp"
                 android:layout_height="185dp"
-                android:layout_margin="5dp"
                 android:layout_row="1"
                 android:layout_column="0"
+                android:layout_margin="5dp"
                 app:mcv_selectionColor="#0098c2"
                 app:mcv_showOtherDates="defaults"
                 tools:ignore="MissingClass,MissingConstraints" />
