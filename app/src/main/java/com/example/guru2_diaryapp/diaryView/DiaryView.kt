@@ -1,39 +1,40 @@
 package com.example.guru2_diaryapp.diaryView
 
+import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.media.Image
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
-import org.w3c.dom.Text
-import java.io.ByteArrayOutputStream
 
 
 class DiaryView : AppCompatActivity() {
     lateinit var diary_tv : TextView
     lateinit var diary_image : ImageView
     lateinit var date_tv : TextView
-    var newDate : Int = 0
     lateinit var current_category : TextView
     lateinit var current_weather : ImageView
+    lateinit var linearLayout: LinearLayout
 
     lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
     var postID : Int = 0
+    var newDate : Int = 0
 
     lateinit var toolbar:androidx.appcompat.widget.Toolbar
 
@@ -50,6 +51,7 @@ class DiaryView : AppCompatActivity() {
         date_tv = findViewById(R.id.date_tv)
         current_category = findViewById(R.id.current_category)
         current_weather = findViewById(R.id.current_weather)
+        linearLayout = findViewById(R.id.diary_linear)
 
         myDBHelper = MyDBHelper(this)
 
@@ -61,81 +63,23 @@ class DiaryView : AppCompatActivity() {
         if(postID != -1)
         {
             loadDiary()
+        }  else { // 저장된 일기가 없으면, diary_image 안보이게 하기
+            diary_image.visibility = View.GONE
         }
-
-
-        // 선택한 카테고리 가져오기
-        /*var category_text = intent.getStringExtra("selected_category")
-        if(category_text == null) { // 가져온 것이 없다면
-            current_category.text = "카테고리"
-        }
-        else {
-            current_category.text = category_text
-        }
-
-        // 편집화면에서 작성한 글을 가져오기
-        var diary_text = intent.getStringExtra("diary_content")
-        if(diary_text == null) { // 가져온 것이 아무것도 없다면
-            diary_tv.text = "등록된 일기가 없습니다"
-        }
-        else {
-            diary_tv.text = diary_text
-        }
-
-        // 편집화면에서 등록한 이미지 가져오기
-        val byteArray = intent.getByteArrayExtra("diary_image")
-        if(byteArray == null)
-        {
-            diary_image.visibility = View.INVISIBLE
-        }
-        else
-        {
-            diary_image.visibility = View.VISIBLE
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-            diary_image.setImageBitmap(bitmap);
-        }*/
-
 
         // 일기 편집 화면으로 이동
-        diary_tv.setOnClickListener {
+        linearLayout.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("postID", postID)
             intent.putExtra("newDate", newDate)
             intent.putExtra("select_date", date_tv.text.toString()) // 날짜 넘겨주기
             startActivity(intent)
-
-            /*val intent = Intent(this, DiaryViewEdit::class.java)
-            intent.putExtra("select_date", date_tv.text.toString())
-            intent.putExtra("newDate", newDate)
-            intent.putExtra("selected_category", current_category.toString())
-            intent.putExtra("diary_content", diary_text)
-            // 이미지가 없다면
-            if(diary_image.getDrawable() == null)
-            {
-
-            }
-            // 이미지가 있다면
-            else
-            {
-                val stream = ByteArrayOutputStream()
-                val bitmap = (diary_image.getDrawable() as BitmapDrawable).bitmap
-                val scale = (1024 / bitmap.width.toFloat())
-                val image_w = (bitmap.width * scale).toInt()
-                val image_h = (bitmap.height * scale).toInt()
-                val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
-                resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                val byteArray: ByteArray = stream.toByteArray()
-                intent.putExtra("diary_image", byteArray)
-            }
-            startActivity(intent)*/
         }
-
-
     }
 
     // 상단에 메뉴
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_top, menu)
+        menuInflater.inflate(R.menu.menu_top_diary_view, menu)
         return true
     }
 
@@ -147,6 +91,26 @@ class DiaryView : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
+            R.id.action_delete -> {
+                if(postID != -1) {
+                    var dig = AlertDialog.Builder(this)
+                    dig.setTitle("삭제 메시지")
+                    dig.setMessage("해당 일기를 삭제하시겠습니까?")
+                    dig.setPositiveButton("확인") { dialog, which ->
+                        deleteDiary()
+                        Toast.makeText(this, "일기가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        this.finish()
+                        val intent = Intent(this, DiaryView::class.java)
+                        startActivity(intent)
+                    }
+                    dig.setNegativeButton("취소", null)
+                    dig.show()
+                    //val intent = Intent(this, MainActivity::class.java)
+                    //startActivity(intent)
+                } else {
+                    Toast.makeText(this, "삭제할 일기가 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -155,9 +119,6 @@ class DiaryView : AppCompatActivity() {
     fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
         var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
-
-        //val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_imgs" +
-                //" ON diary_posts.post_id = diary_imgs.post_id WHERE post_id =  $postID;",null)
 
         if(cursor.moveToFirst()) {
             //postID = cursor.getInt(cursor.getColumnIndex("post_id"))
@@ -189,6 +150,13 @@ class DiaryView : AppCompatActivity() {
             } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
         }
         sqllitedb.close()
+    }
+
+    fun deleteDiary() {
+        sqllitedb = myDBHelper.writableDatabase
+        sqllitedb.execSQL("DELETE FROM diary_posts WHERE post_id = $postID;")
+        // 해당 글에 해당하는 사진들을 모두 지우기
+        sqllitedb.execSQL("DELETE FROM diary_imgs WHERE post_id = $postID;")
     }
 }
 

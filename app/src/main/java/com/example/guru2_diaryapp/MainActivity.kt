@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
@@ -121,18 +122,14 @@ class MainActivity : AppCompatActivity(),
             categoryLayout.removeAllViews()
             val categories = ArrayList<TextView>()
             val postIds = ArrayList<Int>()
-
-            //var mydiaryData = ArrayList<DiaryData>(0)
             var i : Int = 0
-
 
             if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
                 i = 0
                 do{
-                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
                     postID = cursor.getInt(cursor.getColumnIndex("post_id"))
                     postIds.add(postID)
-                    //mydiaryData[i] = (DiaryData(postID, categoryText))
 
                     categoryLayout.visibility = View.VISIBLE
                     moodImage.visibility = View.GONE
@@ -141,14 +138,6 @@ class MainActivity : AppCompatActivity(),
                     category.text = categoryText
                     categoryLayout.addView(category,0)
                     categories.add(category)
-
-                    /*categories[i].setOnClickListener() {
-                        val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                        intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                        intent.putExtra("newDate", newDate)
-                        intent.putExtra("postID", postID)
-                        startActivity(intent)
-                    }*/
                     i++
                 } while(cursor.moveToNext())
             } else { // 작성된 글이 없을떄
@@ -233,15 +222,6 @@ class MainActivity : AppCompatActivity(),
 
             bottomSheetDialog.show()
         }
-
-        /*categoryLayout.setOnClickListener() {
-
-            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-            intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-            intent.putExtra("newDate", newDate)
-            startActivity(intent)
-        }*/
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

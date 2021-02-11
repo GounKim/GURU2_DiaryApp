@@ -102,32 +102,6 @@ class DiaryViewEdit : AppCompatActivity() {
             loadDiary()
         }
 
-        /*// 달력에서 선택한 날짜 받아오기
-
-                // 일기에서 작성된 글을 가져오기
-        var diary_text = intent.getStringExtra("diary_content")
-        if(diary_text == null) { // 가져온 것이 아무것도 없다면
-
-        }
-        else {
-            diary_et.setText(diary_text)
-        }
-
-        // 일기에 등록된 이미지 가져오기
-        val byteArray = intent.getByteArrayExtra("diary_image")
-        if(byteArray == null)
-        {
-            image_preview.visibility = View.INVISIBLE
-        }
-        else
-        {
-            image_preview.visibility = View.VISIBLE
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-            image_preview.setImageBitmap(bitmap);
-        }*/
-
-        //loadDiary()
-
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when(item?.itemId) {
