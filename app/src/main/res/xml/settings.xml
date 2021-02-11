@@ -8,14 +8,14 @@
             android:key="loginOption">
             <intent android:action="android.intent.action.LoginActivity"/>
         </PreferenceScreen>
-
     </PreferenceCategory>
     <PreferenceCategory android:title="테마">
         <ListPreference
+            android:title="테마"
             android:key="theme_list"
             android:entries="@array/array_themes"
-            android:entryValues="@array/array_themes"
-            android:title="테마" />
+            android:entryValues="@array/array_themes">
+        </ListPreference>
         <ListPreference
             android:key="date_list"
             android:entries="@array/array_dates"

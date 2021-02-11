@@ -11,4 +11,6 @@
             <attr name="navitint" format="color"/>
         </declare-styleable>
 
+    <attr name="mainTextSize" format="reference"/>
+
 </resources>
