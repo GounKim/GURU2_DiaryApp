@@ -67,6 +67,7 @@ class DiaryViewEdit : AppCompatActivity() {
     var newDate : Int = 0
     var selected_category : String = ""
     var descWeather : String = ""
+    var imgID :Int = -1
 
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
@@ -129,7 +130,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 상단에 메뉴
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_top, menu)
+        menuInflater.inflate(R.menu.menu_top_diary_edit, menu)
         return true
     }
 
@@ -138,7 +139,17 @@ class DiaryViewEdit : AppCompatActivity() {
         when(item?.itemId) {
             // 메인 화면으로 이동
             R.id.action_main -> {
-                saveDiary()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.action_save -> {
+                if (postID == -1)
+                {
+                    saveDiary()
+                } else {
+                    updateDiary()
+                }
+                Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
@@ -163,49 +174,12 @@ class DiaryViewEdit : AppCompatActivity() {
     // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
     // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
     private fun saveDiary(){
-        myDBHelper = MyDBHelper(this)
         sqllitedb = myDBHelper.writableDatabase
+
         var reporting_date : Int = newDate
-        var weather : Int = 0
-
-        if (descWeather == "clear sky") { // 맑은 하늘
-            weather = 1
-        } else if (descWeather == "mist") { // 안개
-            weather = 2
-        } else if (descWeather == "few clouds") { // 조금 흐림
-            weather = 13
-        } else if (descWeather == "broken clouds") { // 흩어진 구름
-            weather = 4
-        } else if (descWeather == "scattered clouds") { // 흩어진 구름
-            weather = 5
-        } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
-            weather = 6
-        }else if (descWeather == "light rain") { // 약한 비
-            weather = 7
-        } else if (descWeather == "moderate rain") { // 비 - 보통
-            weather = 8
-        } else if (descWeather == "heavy intensity rain") { // 강한 비
-            weather = 9
-        } else if (descWeather == "thunderstorm") { // 천둥번개
-            weather = 10
-        }else if (descWeather == "snow"){ // 눈
-            weather = 11
-        } else {
-            weather = 12
-        }
-
-        var category_id : Int = 0
+        var weather : Int = DiaryData().saveWeatherID(descWeather)
         selected_category = categories[category_spinner.selectedItemPosition]
-        if(selected_category == "일상") {
-            category_id = 1
-        } else if (selected_category == "여행") {
-            category_id = 2
-        } else if (selected_category == "교환일기") {
-            category_id = 3
-        } else {
-            category_id = 0
-        }
-
+        var category_id : Int = DiaryData().saveCategoryID(selected_category)
         var content = diary_et.text.toString()
 
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
@@ -244,7 +218,8 @@ class DiaryViewEdit : AppCompatActivity() {
             date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
 
             val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-            DiaryData().loadWeatherIcon(weather, current_weather)
+            descWeather = DiaryData().setWeatherDesc(weather)
+            DiaryData().setWeatherIcon(weather, current_weather)
 
             val category = cursor.getInt(cursor.getColumnIndex("category_id"))
             selected_category = DiaryData().loadCategoryName(category)
@@ -256,7 +231,7 @@ class DiaryViewEdit : AppCompatActivity() {
         if(cursor.moveToFirst())
         {
             do {
-                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
@@ -264,13 +239,38 @@ class DiaryViewEdit : AppCompatActivity() {
             } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
         }
         sqllitedb.close()
+    }
 
-        /*var pref = this.getPreferences(0)
-        var content = pref.getString("KEY_CONTENT", "")
+    // 일기 내용 업데이트
+    private fun updateDiary() {
+        sqllitedb = myDBHelper.writableDatabase
 
-        if(content != "") {
-            diary_et.setText(content.toString())
-        }*/
+        var reporting_date : Int = newDate
+        var weather : Int = DiaryData().saveWeatherID(descWeather)
+        selected_category = categories[category_spinner.selectedItemPosition]
+        var category_id : Int = DiaryData().saveCategoryID(selected_category)
+        var content = diary_et.text.toString()
+
+        sqllitedb.execSQL("UPDATE diary_posts SET reporting_date = $reporting_date, weather = $weather, category_id = $category_id, content = '$content' WHERE post_id = $postID")
+
+        try {
+            // 사진은 기존 사진 삭제 후 저장
+            // 한 일기에 여러개의 사진이 저장되어있을 경우, 모두 지우고 다시 저장하는게 나을 것 같아서 이렇게 했는데
+            // 더 좋은 방법이 있으면 알려주세요
+            sqllitedb.execSQL("DELETE FROM diary_imgs WHERE post_id = $postID;")
+            val image = image_preview.drawable
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val byteArray = stream.toByteArray()
+            var udtQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
+            var stmt : SQLiteStatement = sqllitedb.compileStatement(udtQuery)
+            stmt.bindBlob(1, byteArray)
+            stmt.execute()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+
+        }
     }
 
     // 갤러리

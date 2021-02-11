@@ -51,7 +51,6 @@ class DiaryView : AppCompatActivity() {
         date_tv = findViewById(R.id.date_tv)
         current_category = findViewById(R.id.current_category)
         current_weather = findViewById(R.id.current_weather)
-        linearLayout = findViewById(R.id.diary_linear)
 
         myDBHelper = MyDBHelper(this)
 
@@ -66,13 +65,22 @@ class DiaryView : AppCompatActivity() {
         }
 
         // 일기 편집 화면으로 이동
-        linearLayout.setOnClickListener {
+        // 텍스트만 선택하니 이동이 잘안돼서 이미지 클릭도 추가했어요
+        diary_image.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("postID", postID)
             intent.putExtra("newDate", newDate)
             intent.putExtra("select_date", date_tv.text.toString()) // 날짜 넘겨주기
             startActivity(intent)
         }
+        diary_tv.setOnClickListener {
+            val intent = Intent(this, DiaryViewEdit::class.java)
+            intent.putExtra("postID", postID)
+            intent.putExtra("newDate", newDate)
+            intent.putExtra("select_date", date_tv.text.toString()) // 날짜 넘겨주기
+            startActivity(intent)
+        }
+
     }
 
     // 상단에 메뉴
@@ -126,7 +134,7 @@ class DiaryView : AppCompatActivity() {
             date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
 
             val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-            DiaryData().loadWeatherIcon(weather, current_weather)
+            DiaryData().setWeatherIcon(weather, current_weather)
 
             val category = cursor.getInt(cursor.getColumnIndex("category_id"))
             current_category.text = DiaryData().loadCategoryName(category)
