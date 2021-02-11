@@ -61,7 +61,7 @@ class TimeLineView : AppCompatActivity() {
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         cursor.moveToPosition(BottomPost)
         var num = 0
-        while (cursor.moveToNext() && num < 20) {
+        while (cursor.moveToNext() && num < 50) {
             val id = cursor.getInt(cursor.getColumnIndex("post_id"))
             val date =
                 cursor.getInt(cursor.getColumnIndex("reporting_date"))

@@ -2,9 +2,7 @@ package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Context
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -59,6 +57,5 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
         override fun getItemCount(): Int {
             return data.size
         }
-
 }
 
