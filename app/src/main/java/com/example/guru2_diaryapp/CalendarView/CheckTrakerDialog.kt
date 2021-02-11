@@ -1,10 +1,9 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.CalendarView
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
-import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button

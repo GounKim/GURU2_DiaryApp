@@ -3,6 +3,7 @@ package com.example.guru2_diaryapp;
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -16,6 +17,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
+import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
@@ -26,7 +29,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
-            CheckTrakerDialog.OnCompleteListener{
+            CheckTrakerDialog.OnCompleteListener, AddTrackerDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
+    lateinit var imgViewAdd: ImageView
 
     // DB
     lateinit var myDBHelper: MyDBHelper
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity(),
         categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
+        imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
 
 
 
@@ -142,18 +147,16 @@ class MainActivity : AppCompatActivity(),
                 var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
                 lp.setMargins(0,0,0,10)
                 btnHabbit.layoutParams = lp
-/*
-                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
-                    0 -> btnHabbit.setBackgroundResource(R.drawable.button_bad)
-                    1 -> btnHabbit.setBackgroundResource(R.drawable.button_soso)
-                    2 -> btnHabbit.setBackgroundResource(R.drawable.button_good)
-                }
-*/
+
                 changeButton(btnHabbit, habit, newDate)
                 mainTrackerLayout.addView(btnHabbit)
                 btnHabbit.setOnClickListener {
                     show(btnHabbit, habit, newDate)
                 }
+            }
+
+            imgViewAdd.setOnClickListener {
+                addShow()
             }
 
             /*
@@ -308,5 +311,15 @@ class MainActivity : AppCompatActivity(),
         }
 
         cursor.close()
+    }
+
+    // 트래커 추가
+    private fun addShow() {
+        val newFragment = AddTrackerDialog()
+        newFragment.show(supportFragmentManager,"dialog")
+    }
+    override fun onInputedData(habitTitle: String) {
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
     }
 }
