@@ -1,22 +1,31 @@
 package com.example.guru2_diaryapp.Tracker
 
 
+import android.annotation.SuppressLint
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.Gravity
+import android.view.Gravity.CENTER
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
+import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.MoodDeco
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
@@ -29,6 +38,15 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
     lateinit var trackerCal: MaterialCalendarView
     lateinit var tvHabit: TextView
 
+    lateinit var trackerLayout: GridLayout
+    lateinit var ivPreMonth: ImageView
+    lateinit var ivNextMonth: ImageView
+    lateinit var tvYearMonth: TextView
+
+    var thisYear: Int = CalendarDay.today().year
+    var thisMonth: Int = CalendarDay.today().month + 1
+
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
@@ -39,19 +57,27 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         trackerCal = findViewById(R.id.trackerCal)
         tvHabit = findViewById(R.id.tvHabbit)
 
+        trackerLayout = findViewById(R.id.trackerLayout)
+        ivPreMonth = findViewById(R.id.imgViewPreMonth)
+        ivNextMonth = findViewById(R.id.imgViewNextMonth)
+        tvYearMonth = findViewById(R.id.tvYearMonth)
+
         trackerCal.state().edit()
                 .setFirstDayOfWeek(Calendar.MONDAY)
                 .setMaximumDate(CalendarDay.from(2000, 0, 1))
                 .setMaximumDate(CalendarDay.from(2100, 11, 31))
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
+        trackerCal.topbarVisible = false
         //trackerCal.setCurrentDate(Date(System.currentTimeMillis()))
         //trackerCal.setDateSelected(Date(System.currentTimeMillis()),true)
-        //trackerCal.addDecorator(SundDayDeco())
-        //trackerCal.addDecorator(SaturdayDeco())
+        trackerCal.addDecorator(SundDayDeco())
+        trackerCal.addDecorator(SaturdayDeco())
+        //trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(2021,3,20)))
 
         trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
 
+        var calView = ArrayList<MaterialCalendarView>(30)
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
@@ -59,43 +85,77 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
         if (nCursor.moveToFirst()) {
             while (nCursor.moveToNext()) {
-                nCursor.moveToNext()    // 첫번째가 mood라서 한칸 옮겼어요.
-
-                // Habit 텍스트로 설정(이후 텍스트는 생성해야되요!)
                 var str_habit = nCursor.getString(nCursor.getColumnIndex("habit")).toString()
-                tvHabit.text = str_habit
+
+                if (str_habit != "mood") {
+                    var linearLayout: LinearLayout = LinearLayout(this)
+                    var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
+                    layoutlp.setMargins(10,50,10,10)
+                    layoutlp.gravity = CENTER
+                    linearLayout.layoutParams = layoutlp
+                    linearLayout.orientation = LinearLayout.VERTICAL
+                    var textView: TextView = TextView(this)
+                    textView.text = str_habit
+                    textView.textSize = 17f
+                    textView.gravity = CENTER
+
+                    var calendarView: MaterialCalendarView = MaterialCalendarView(this)
+                    calendarView.state().edit()
+                            .setFirstDayOfWeek(Calendar.MONDAY)
+                            .setMaximumDate(CalendarDay.from(2000, 0, 1))
+                            .setMaximumDate(CalendarDay.from(2100, 11, 31))
+                            .setCalendarDisplayMode(CalendarMode.MONTHS)
+                            .commit()
+                    var callp = LinearLayout.LayoutParams(485, 485)
+                    callp.setMargins(0,40,0,0)
+                    calendarView.layoutParams = callp
+                    calendarView.topbarVisible = false
+                    calendarView.addDecorator(SundDayDeco())
+                    calendarView.addDecorator(SaturdayDeco())
+                    //calendarView.id = 1000
+                    calView.add(calendarView)
+
+                    linearLayout.addView(textView)
+                    linearLayout.addView(calendarView)
+                    trackerLayout.addView(linearLayout)
+                }
+                else { tvHabit.text = str_habit }
+
                 cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists WHERE habit = '${str_habit}';",null)
 
+                // 첫 커서는 mood
+
                 while (cCursor.moveToNext()) {
-                    Toast.makeText(this, "들어옴", Toast.LENGTH_SHORT).show()
                     var date = cCursor.getString(cCursor.getColumnIndex("reporting_date")).toInt()
-                    var isChecked = cCursor.getString(cCursor.getColumnIndex("check_result")).toInt()
+                    var checkLevel = cCursor.getString(cCursor.getColumnIndex("check_result")).toInt()
 
                     var year = date / 10000
                     var month = (date % 10000) / 100
                     var day = (date % 10000) % 100
 
-                    Toast.makeText(this, "$date , $year , $month , $day", Toast.LENGTH_SHORT).show()
+                    if (str_habit == "mood") {
+                        trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(year, month, day), checkLevel))
+                    }
+                    else {
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, month - 1, day)
 
-                    val calendar = Calendar.getInstance()
-                    calendar.set(year, month - 1, day)
-
-                    when (isChecked) {
-                        0 -> {
-                            trackerCal.selectionColor = Color.parseColor("#ff5555")
-                            trackerCal.setDateSelected(calendar, true);
-                        }
-                        1 -> {
-                            trackerCal.selectionColor = Color.parseColor("#fca70a")
-                            trackerCal.setDateSelected(calendar, true);
-                        }
-                        2 -> {
-                            trackerCal.selectionColor = Color.parseColor("#ace5f0")
-                            trackerCal.setDateSelected(calendar, true);
+                        when (checkLevel) {
+                            0 -> {
+                                trackerCal.selectionColor = Color.parseColor("#ff5555")
+                                trackerCal.setDateSelected(calendar, true);
+                            }
+                            1 -> {
+                                trackerCal.selectionColor = Color.parseColor("#fca70a")
+                                trackerCal.setDateSelected(calendar, true);
+                            }
+                            2 -> {
+                                trackerCal.selectionColor = Color.parseColor("#ace5f0")
+                                trackerCal.setDateSelected(calendar, true);
+                            }
                         }
                     }
                 }
-                break
             }
         }
         //else { show() }
@@ -103,6 +163,51 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
 
         // HABBIT 추가
         //btnAddDialog.setOnClickListener { show() }
+
+        //Toast.makeText(this, "$dd", Toast.LENGTH_SHORT).show()
+
+        /* Month 이동 */
+        // 모든 캘린더뷰 아이디 받아오기
+        var calYear = thisYear
+        var calMonth = thisMonth
+        if (calMonth.toString().length < 2) {
+            tvYearMonth.text = "$calYear.0$calMonth"
+        }
+        else {
+            tvYearMonth.text = "$calYear.$calMonth"
+        }
+        ivPreMonth.setOnClickListener {
+            if (calMonth > 1) {
+                calMonth--
+            }
+            else {
+                calYear--
+                calMonth = 12
+            }
+            writeCalDate(calYear, calMonth)
+            trackerCal.goToPrevious()
+            for (i in calView) {
+                i.goToPrevious()
+            }
+        }
+
+        ivNextMonth.setOnClickListener {
+            if (calMonth < 12) {
+                calMonth++
+                tvYearMonth.text = "$calYear.$calMonth"
+            }
+            else {
+                calYear++
+                calMonth = 1
+                tvYearMonth.text = "$calYear.$calMonth"
+            }
+            writeCalDate(calYear, calMonth)
+            for (i in calView) {
+                i.goToNext()
+            }
+            trackerCal.goToNext()
+        }
+
 
 
     }
@@ -135,5 +240,13 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         Toast.makeText(this, "$title", Toast.LENGTH_SHORT).show()
     }
 
+    fun writeCalDate(year: Int, month: Int) {
+        if (month.toString().length < 2) {
+            tvYearMonth.text = "$year.0$month"
+        }
+        else {
+            tvYearMonth.text = "$year.$month"
+        }
+    }
 
 }

@@ -92,7 +92,8 @@ class MainActivity : AppCompatActivity(),
         calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
-        calendarView.addDecorator(OnDayDeco())
+        calendarView.addDecorator(OnDayDeco(this))
+        //calendarView.addDecorator(MoodDeco())
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
