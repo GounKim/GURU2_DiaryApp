@@ -1,25 +1,22 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Context
-import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import androidx.recyclerview.widget.RecyclerView.GONE
 import androidx.viewpager2.widget.ViewPager2
+import com.example.guru2_diaryapp.DiaryData
+import com.example.guru2_diaryapp.R
 
 //타임라인뷰, 검색, 카테고리 내 일기 목록 출력에 사용할 recyclerView 의 adapter
 //클릭 이벤트를 람다식으로 처리
 
 class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Context, var item: RecyclerView,
-var itemClick:(DiaryData,Int)->Unit):
+                                  var itemClick:(DiaryData, Int)->Unit):
         Adapter<TimeLineRecyclerViewAdapter.ItemViewHolder>() {
 
     //뷰홀더 클래스 내부 클래스로 선언
@@ -50,7 +47,8 @@ var itemClick:(DiaryData,Int)->Unit):
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineRecyclerViewAdapter.ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        Log.d("test","검색 테스트")
         var view = LayoutInflater.from(context).inflate(R.layout.item_timeline_view, parent, false)
         return ItemViewHolder(view,itemClick)
     }

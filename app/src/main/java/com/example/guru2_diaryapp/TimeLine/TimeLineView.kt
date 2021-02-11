@@ -1,16 +1,19 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.LinearLayout
+import android.view.ContextMenu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guru2_diaryapp.DiaryData
+import com.example.guru2_diaryapp.MyDBHelper
+import com.example.guru2_diaryapp.R
 import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class TimeLineView : AppCompatActivity() {
@@ -22,7 +25,7 @@ class TimeLineView : AppCompatActivity() {
 
     //View
     lateinit var timeline_rv: RecyclerView
-    private var recyclerViewAdapter: TimeLineRecyclerViewAdapter?= null
+    lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +35,9 @@ class TimeLineView : AppCompatActivity() {
         timeline_rv = findViewById(R.id.timeLineRv)
 
             TimeLineData.addAll(PageDown(0))
-            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this,timeline_rv){
+            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
                 data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
-                var intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                var intent = Intent(this, DiaryView::class.java)
                 intent.putExtra("post_id",data.reporting_date)
                 startActivity(intent)
             }
@@ -84,6 +87,26 @@ class TimeLineView : AppCompatActivity() {
             imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
         }
         return imgs
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        menuInflater.inflate(R.menu.context, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when(item?.itemId){
+            R.id.action_copy ->{
+
+                return true
+            }
+            R.id.action_delete ->{
+
+                return true
+            }
+
+        }
+        return super.onContextItemSelected(item)
     }
 
 }
