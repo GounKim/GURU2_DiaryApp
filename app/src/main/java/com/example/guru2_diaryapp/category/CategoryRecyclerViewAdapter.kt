@@ -11,11 +11,9 @@ import com.example.guru2_diaryapp.R
 class CategoryRecyclerViewAdapter(var dataSet : List<Int>) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.MyViewHolder>() {
     inner class MyViewHolder(ItemView : View) : RecyclerView.ViewHolder(ItemView) {
         var diary_title_left : TextView = ItemView.findViewById(R.id.diary_title_left)
-        var diary_title_right : TextView = ItemView.findViewById(R.id.diary_title_right)
 
         fun bind(position : Int) {
             diary_title_left.text = "일기 ${2 * position + 1}"
-            diary_title_right.text = "일기 ${2 * position + 2}"
         }
     }
 
