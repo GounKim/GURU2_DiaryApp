@@ -65,7 +65,7 @@
             android:id="@+id/diary_image"
             android:layout_width="200dp"
             android:layout_height="300dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
 
         <ScrollView
             android:layout_width="match_parent"

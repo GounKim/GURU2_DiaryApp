@@ -63,8 +63,6 @@ class DiaryView : AppCompatActivity() {
         if(postID != -1)
         {
             loadDiary()
-        }  else { // 저장된 일기가 없으면, diary_image 안보이게 하기
-            diary_image.visibility = View.GONE
         }
 
         // 일기 편집 화면으로 이동
@@ -100,13 +98,11 @@ class DiaryView : AppCompatActivity() {
                         deleteDiary()
                         Toast.makeText(this, "일기가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
                         this.finish()
-                        val intent = Intent(this, DiaryView::class.java)
+                        val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     }
                     dig.setNegativeButton("취소", null)
                     dig.show()
-                    //val intent = Intent(this, MainActivity::class.java)
-                    //startActivity(intent)
                 } else {
                     Toast.makeText(this, "삭제할 일기가 없습니다.", Toast.LENGTH_SHORT).show()
                 }

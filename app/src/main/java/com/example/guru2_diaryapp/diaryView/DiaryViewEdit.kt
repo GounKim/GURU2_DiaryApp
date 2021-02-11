@@ -149,42 +149,15 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
-        // 세이브 테스트용
-        //saveDiary()
-        //var intent = Intent(this, DiaryView::class.java)
-        //Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-        //
-        /*
-        // intent를 이용해서 Diary View에 내용 전달
-
-        intent.putExtra("diary_content", diary_et.text.toString())
-        intent.putExtra("selected_category", selected_category)
-        intent.putExtra("select_date", date_tv.text.toString())
-        intent.putExtra("newDate", newDate)
-
-        // 선택한 이미지가 없다면
-        if(image_preview.getDrawable() == null)
-        {
-
+        var dig = AlertDialog.Builder(this)
+        dig.setTitle("작성 취소")
+        dig.setMessage("일기 작성을 취소하시겠습니까?")
+        dig.setPositiveButton("확인") { dialog, which ->
+            super.onBackPressed()
         }
-        // 선택한 이미지가 있다면
-        else
-        {
-            val stream = ByteArrayOutputStream()
-            val bitmap = (image_preview.getDrawable() as BitmapDrawable).bitmap
-            val scale = (1024 / bitmap.width.toFloat())
-            val image_w = (bitmap.width * scale).toInt()
-            val image_h = (bitmap.height * scale).toInt()
-            val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
-            resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            val byteArray: ByteArray = stream.toByteArray()
-            intent.putExtra("diary_image", byteArray)
-        }*/
+        dig.setNegativeButton("취소", null)
+        dig.show()
 
-        //startActivity(intent)
-        //Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-        // 뒤로가는 동작이 되지 않으면 아래의 코드도 넣기
-        super.onBackPressed()
     }
 
     // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
@@ -237,10 +210,10 @@ class DiaryViewEdit : AppCompatActivity() {
 
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
-        if (postID == -1) { // 새 글 저장 -> 위에서 부여된 post id가져와 사진 저장하기
-            var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
-            if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 => (최근 작성글)
-            {
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
+        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 부분 가져와서 사진 넣기
+        {
+            try {
                 postID = cursor.getInt(cursor.getColumnIndex("post_id"))
                 val image = image_preview.drawable
                 val bitmapDrawable = image as BitmapDrawable?
@@ -252,8 +225,8 @@ class DiaryViewEdit : AppCompatActivity() {
                 var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
                 stmt.bindBlob(1, byteArray)
                 stmt.execute()
+            } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
 
-                Log.d("image save test", "사진 저장 완료")
             }
         }
     }
@@ -348,21 +321,6 @@ class DiaryViewEdit : AppCompatActivity() {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    // 절대경로 변환
-    private fun absolutelyPath(path: Uri): String? {
-
-        var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-        var c: Cursor? = contentResolver.query(path, proj, null, null, null)
-        var index = c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        if (c != null) {
-            c.moveToFirst()
-        }
-
-        var result = index?.let { c?.getString(it) }
-
-        return result
     }
 
     // 날씨 관련 접근 권한
