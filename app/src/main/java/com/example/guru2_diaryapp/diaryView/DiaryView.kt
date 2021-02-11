@@ -29,7 +29,6 @@ class DiaryView : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var current_category : TextView
     lateinit var current_weather : ImageView
-    lateinit var linearLayout: LinearLayout
 
     lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
@@ -51,7 +50,6 @@ class DiaryView : AppCompatActivity() {
         date_tv = findViewById(R.id.date_tv)
         current_category = findViewById(R.id.current_category)
         current_weather = findViewById(R.id.current_weather)
-        linearLayout = findViewById(R.id.diary_linear)
 
         myDBHelper = MyDBHelper(this)
 

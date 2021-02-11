@@ -38,6 +38,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class DiaryViewEdit : AppCompatActivity() {
@@ -106,10 +108,10 @@ class DiaryViewEdit : AppCompatActivity() {
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when(item?.itemId) {
-                R.id.mood -> {
+                R.id.mood -> { // 삭제 예정
 
                 }
-                R.id.weather -> {
+                R.id.weather -> { // 현재 날씨 추가
                     weatherPermission()
                 }
                 R.id.current_time -> {
@@ -473,5 +475,13 @@ class DiaryViewEdit : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    // 현재 시간
+    private fun getCurrentTime() : String {
+        val now = Calendar.getInstance().time
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now)
+
+        return dateFormat
     }
 }
