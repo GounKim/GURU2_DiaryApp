@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_themes">
+        <item>다크</item>
         <item>쿠키</item>
     </string-array>
     <string-array name="array_dates">
@@ -8,8 +9,8 @@
         <item>2020.01.01</item>
     </string-array>
     <string-array name="array_fonts">
-        <item>굴림</item>
-        <item>궁서체</item>
+        <item>나눔고딕</item>
+        <item>나눔바른펜</item>
     </string-array>
     <string-array name="array_text_size">
         <item>작게</item>

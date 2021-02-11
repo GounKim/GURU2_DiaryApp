@@ -29,6 +29,7 @@ class DiaryView : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var current_category : TextView
     lateinit var current_weather : ImageView
+    lateinit var linearLayout: LinearLayout
 
     lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase

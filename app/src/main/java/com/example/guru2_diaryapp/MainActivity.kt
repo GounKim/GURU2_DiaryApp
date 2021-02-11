@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.TimeLine.TimeLineView
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
@@ -254,11 +255,11 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_search -> {
-                val intent = Intent(this, SelectActivity::class.java)
+                val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
         }

@@ -5,13 +5,14 @@
     android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/diary_img"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_baseline_book_24" />
 
     <TextView
-        android:id="@+id/diary_title_left"
+        android:id="@+id/diary_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
