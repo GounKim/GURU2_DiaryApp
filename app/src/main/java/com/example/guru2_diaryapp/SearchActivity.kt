@@ -33,7 +33,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_select)
+        setContentView(R.layout.activity_search)
 
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.search_rv)
