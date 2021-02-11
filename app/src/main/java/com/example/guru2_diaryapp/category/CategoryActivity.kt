@@ -18,7 +18,9 @@ class CategoryActivity : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb:SQLiteDatabase
 
+    //카테고리 정보 저장 페어
     var tabList = ArrayList<Pair<Int,String>>()
+    var timeLineData = ArrayList<DiaryData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +30,33 @@ class CategoryActivity : AppCompatActivity() {
         viewPager2 = findViewById(R.id.category_vp)
 
         myDBHelper = MyDBHelper(this)
-        sqldb = myDBHelper.readableDatabase
 
+
+
+        //카테고리별로 글 로딩
+        for (i in tabList){
+            loadPosts(i)
+        }
+
+        viewPager2.adapter = ViewPagerFragmentAdapter(this, tabList.size )
+        viewPager2.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+        //뷰페이저로 카테고리 탭 생성
+        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+            tab.text = tabList[position].second
+        }.attach()
+
+        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+            }
+        })
+    }
+
+
+    //카테고리 정보 조회
+    fun loadCategory(): ArrayList<Pair<Int, String>> {
+        sqldb = myDBHelper.readableDatabase
         var cursor:Cursor
         cursor = sqldb.rawQuery("SELECT * FROM diary_categorys;",null)
 
@@ -43,18 +70,7 @@ class CategoryActivity : AppCompatActivity() {
         cursor.close()
         sqldb.close()
 
-        viewPager2.adapter = ViewPagerFragmentAdapter(this, tabList.size)
-        viewPager2.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-
-        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
-            tab.text = tabList[position].second
-        }.attach()
-
-        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-            }
-        })
+        return tabList
     }
 
     //카테고리 페어를 입력받는다.
@@ -62,7 +78,8 @@ class CategoryActivity : AppCompatActivity() {
         var myDiaryData = ArrayList<DiaryData>()
         var cursor:Cursor
 
-        //입력받은 카테고리의 글을 20개 로딩
+        //카테고리의 글을 20개씩 로딩.
+        //임시 테이블을 생성해 글별로 대표 이미지를 한장씩 선별한 뒤 JOIN
         sqldb = myDBHelper.writableDatabase
         sqldb.execSQL("CREATE TEMPORARY TABLE TMP AS SELECT img_id, post_id, img_dir FROM (SELECT img_id, post_id, img_dir, ROW_NUMBER() OVER (PARTITION BY post_id ORDER BY img_id DESC) as RowIdx FROM diary_imgs) AS img_id WHERE RowIdx = 1;",null)
         cursor = sqldb.rawQuery("SELECT diary_posts.post_id, diary_posts.reporting_date, diary_posts.content, TMP.img_dir FROM diary_posts LEFT OUTER JOIN TMP ON diary_posts.post_id = TMP.post_id ORDER BY reporting_date DESC;",null)

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.R
 
 class ViewPagerFragment : Fragment() {
@@ -26,9 +27,7 @@ class ViewPagerFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.rvName)
 
-        var dataSet : List<Int> = (1..5).toList()
-
-        recyclerView.adapter = CategoryRecyclerViewAdapter(dataSet)
+        recyclerView.adapter = CategoryRecyclerViewAdapter(data)
         recyclerView.layoutManager = LinearLayoutManager(view.context, RecyclerView.VERTICAL, false)
     }
 }

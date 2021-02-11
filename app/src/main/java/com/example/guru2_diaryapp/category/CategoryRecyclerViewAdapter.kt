@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.R
 
-class CategoryRecyclerViewAdapter(var dataSet : List<Int>) : RecyclerView.Adapter<CategoryRecyclerViewAdapter.MyViewHolder>() {
+class CategoryRecyclerViewAdapter(var dataSet : ArrayList<DiaryData>)
+    : RecyclerView.Adapter<CategoryRecyclerViewAdapter.MyViewHolder>() {
+
     inner class MyViewHolder(ItemView : View) : RecyclerView.ViewHolder(ItemView) {
         var diary_title_left : TextView = ItemView.findViewById(R.id.diary_title_left)
 
         fun bind(position : Int) {
-            diary_title_left.text = "일기 ${2 * position + 1}"
+            diary_title_left.text = dataSet[position].content
         }
     }
 
