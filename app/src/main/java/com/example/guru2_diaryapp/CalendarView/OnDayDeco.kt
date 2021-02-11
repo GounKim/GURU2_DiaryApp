@@ -3,6 +3,7 @@ package com.example.guru2_diaryapp.CalendarView
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
@@ -16,8 +17,8 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.coroutines.coroutineContext
 
-class OnDayDeco() : DayViewDecorator {
-
+class OnDayDeco(context: Context) : DayViewDecorator {
+    //val drawable: Drawable = context?.getDrawable(R.drawable.ic_mood_good)!!
     var date: CalendarDay = CalendarDay.today()
 
     fun OnDayDeco() {
@@ -32,7 +33,7 @@ class OnDayDeco() : DayViewDecorator {
         view?.addSpan(StyleSpan(Typeface.BOLD))
         view?.addSpan(RelativeSizeSpan(1.5f))
         view?.addSpan(ForegroundColorSpan(Color.parseColor("#733E1F")))
-        //view?.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.rectangle)!!)
+        //view?.setBackgroundDrawable(drawable)
     }
 
     fun setDate(date: Date) {

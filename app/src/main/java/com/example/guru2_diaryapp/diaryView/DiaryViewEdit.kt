@@ -7,6 +7,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteStatement
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -33,6 +37,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 
 
 class DiaryViewEdit : AppCompatActivity() {
@@ -55,12 +60,14 @@ class DiaryViewEdit : AppCompatActivity() {
     lateinit var image_preview : ImageView
     lateinit var date_tv : TextView
     lateinit var category_spinner : Spinner
-    lateinit var selected_category : String
     lateinit var current_weather : ImageView
+
     var currenturi:Uri?=null
     var postID : Int = 0
+    var newDate : Int = 0
+    var selected_category : String = ""
+    var descWeather : String = ""
 
-    //var newDate : Int = 0
     // 일기 작성시 선택할 카테고리 배열
     val categories = arrayOf("일기", "여행", "교환일기")
 
@@ -88,38 +95,12 @@ class DiaryViewEdit : AppCompatActivity() {
 
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
-
-        loadDiary()
-
-        /*// 달력에서 선택한 날짜 받아오기
         date_tv.text = intent.getStringExtra("select_date")
-        newDate = intent.getIntExtra("newDate", 0)
+        newDate = intent.getIntExtra("newDate", -1)
 
-
-
-        // 일기에서 작성된 글을 가져오기
-        var diary_text = intent.getStringExtra("diary_content")
-        if(diary_text == null) { // 가져온 것이 아무것도 없다면
-
+        if(postID != -1) {
+            loadDiary()
         }
-        else {
-            diary_et.setText(diary_text)
-        }
-
-        // 일기에 등록된 이미지 가져오기
-        val byteArray = intent.getByteArrayExtra("diary_image")
-        if(byteArray == null)
-        {
-            image_preview.visibility = View.INVISIBLE
-        }
-        else
-        {
-            image_preview.visibility = View.VISIBLE
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray!!.size)
-            image_preview.setImageBitmap(bitmap);
-        }*/
-
-        //loadDiary()
 
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -157,6 +138,7 @@ class DiaryViewEdit : AppCompatActivity() {
         when(item?.itemId) {
             // 메인 화면으로 이동
             R.id.action_main -> {
+                saveDiary()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
@@ -167,43 +149,15 @@ class DiaryViewEdit : AppCompatActivity() {
 
     // 뒤로가기 동작
     override fun onBackPressed() {
-        // 세이브 테스트용
-        saveDiary()
-        Toast.makeText(this, "저장되었습니다", Toast.LENGTH_SHORT).show()
-
-
-        selected_category = categories[category_spinner.selectedItemPosition]
-        /*
-        // intent를 이용해서 Diary View에 내용 전달
-        var intent = Intent(this, DiaryView::class.java)
-        intent.putExtra("diary_content", diary_et.text.toString())
-        intent.putExtra("selected_category", selected_category)
-        intent.putExtra("select_date", date_tv.text.toString())
-        intent.putExtra("newDate", newDate)
-
-        // 선택한 이미지가 없다면
-        if(image_preview.getDrawable() == null)
-        {
-
+        var dig = AlertDialog.Builder(this)
+        dig.setTitle("작성 취소")
+        dig.setMessage("일기 작성을 취소하시겠습니까?")
+        dig.setPositiveButton("확인") { dialog, which ->
+            super.onBackPressed()
         }
-        // 선택한 이미지가 있다면
-        else
-        {
-            val stream = ByteArrayOutputStream()
-            val bitmap = (image_preview.getDrawable() as BitmapDrawable).bitmap
-            val scale = (1024 / bitmap.width.toFloat())
-            val image_w = (bitmap.width * scale).toInt()
-            val image_h = (bitmap.height * scale).toInt()
-            val resize = Bitmap.createScaledBitmap(bitmap, image_w, image_h, true)
-            resize.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            val byteArray: ByteArray = stream.toByteArray()
-            intent.putExtra("diary_image", byteArray)
-        }*/
+        dig.setNegativeButton("취소", null)
+        dig.show()
 
-        startActivity(intent)
-        Toast.makeText(this, "일기가 저장되었습니다.", Toast.LENGTH_SHORT).show()
-        // 뒤로가는 동작이 되지 않으면 아래의 코드도 넣기
-        //super.onBackPressed()
     }
 
     // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
@@ -211,40 +165,104 @@ class DiaryViewEdit : AppCompatActivity() {
     private fun saveDiary(){
         myDBHelper = MyDBHelper(this)
         sqllitedb = myDBHelper.writableDatabase
-        var reporting_date : String = date_tv.text.toString()
+        var reporting_date : Int = newDate
         var weather : Int = 0
 
+        if (descWeather == "clear sky") { // 맑은 하늘
+            weather = 1
+        } else if (descWeather == "mist") { // 안개
+            weather = 2
+        } else if (descWeather == "few clouds") { // 조금 흐림
+            weather = 13
+        } else if (descWeather == "broken clouds") { // 흩어진 구름
+            weather = 4
+        } else if (descWeather == "scattered clouds") { // 흩어진 구름
+            weather = 5
+        } else if (descWeather == "overcast clouds") { // 흐린 구름, 많은 구름
+            weather = 6
+        }else if (descWeather == "light rain") { // 약한 비
+            weather = 7
+        } else if (descWeather == "moderate rain") { // 비 - 보통
+            weather = 8
+        } else if (descWeather == "heavy intensity rain") { // 강한 비
+            weather = 9
+        } else if (descWeather == "thunderstorm") { // 천둥번개
+            weather = 10
+        }else if (descWeather == "snow"){ // 눈
+            weather = 11
+        } else {
+            weather = 12
+        }
+
         var category_id : Int = 0
+        selected_category = categories[category_spinner.selectedItemPosition]
+        if(selected_category == "일상") {
+            category_id = 1
+        } else if (selected_category == "여행") {
+            category_id = 2
+        } else if (selected_category == "교환일기") {
+            category_id = 3
+        } else {
+            category_id = 0
+        }
+
         var content = diary_et.text.toString()
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date,''$weather,''$category_id,''$content'')")
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
-        val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
+        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 부분 가져와서 사진 넣기
+        {
+            try {
+                postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+                val image = image_preview.drawable
+                val bitmapDrawable = image as BitmapDrawable?
+                val bitmap = bitmapDrawable?.bitmap
+                val stream = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val byteArray = stream.toByteArray()
+                var insQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
+                var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
+                stmt.bindBlob(1, byteArray)
+                stmt.execute()
+            } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
 
+            }
+        }
     }
 
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        val cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id = '${postID}';", null)
+        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
-        cursor.moveToFirst()
+        if (cursor.moveToFirst()) {
+            /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            val year = date / 10000
+            val month = (date % 10000) / 100
+            val day = date / 1000000
+            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
 
-        val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-        val year = date / 10000
-        val month = (date % 10000) / 100
-        val day = date / 1000000
-        date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"
+            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+            DiaryData().loadWeatherIcon(weather, current_weather)
 
-        val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-        DiaryData().loadWeatherIcon(weather, current_weather)
+            val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+            selected_category = DiaryData().loadCategoryName(category)
 
-        val category = cursor.getInt(cursor.getColumnIndex("category_id"))
-        selected_category = DiaryData().loadCategoryName(category)
+            diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+        }
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
 
-        diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+        if(cursor.moveToFirst())
+        {
+            do {
+                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
+                image_preview.setImageBitmap(bitmap)
+            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
+        }
         sqllitedb.close()
 
         /*var pref = this.getPreferences(0)
@@ -303,21 +321,6 @@ class DiaryViewEdit : AppCompatActivity() {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    // 절대경로 변환
-    private fun absolutelyPath(path: Uri): String? {
-
-        var proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-        var c: Cursor? = contentResolver.query(path, proj, null, null, null)
-        var index = c?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        if (c != null) {
-            c.moveToFirst()
-        }
-
-        var result = index?.let { c?.getString(it) }
-
-        return result
     }
 
     // 날씨 관련 접근 권한
@@ -410,25 +413,26 @@ class DiaryViewEdit : AppCompatActivity() {
         getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
+    // 현재 날씨
     private fun getCurrentWeather() {
-        var res: Call<JsonObject> = RetrofitClient
-            .getInstance()
-            .buildRetrofit()
-            .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
+        var res: retrofit2.Call<JsonObject> = RetrofitClient
+                .getInstance()
+                .buildRetrofit()
+                .getCurrentWeather(lat,lon,apiID) // avd로 실행할 경우 구글 본사가 현재 위치로 나타남
 
         res.enqueue(object: Callback<JsonObject> {
 
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
             }
 
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+            override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
                 var jsonObj = JSONObject(response.body().toString())
                 Log.d("weather", "Success :: $jsonObj")
 
                 val jsonArray = jsonObj.getJSONArray("weather")
                 val jsonObject = jsonArray.getJSONObject(0)
-                val descWeather = jsonObject.getString("description")
+                descWeather = jsonObject.getString("description")
 
                 if (descWeather == "clear sky") { // 맑은 하늘
                     Toast.makeText(this@DiaryViewEdit, "날씨 : 맑음", Toast.LENGTH_SHORT).show()

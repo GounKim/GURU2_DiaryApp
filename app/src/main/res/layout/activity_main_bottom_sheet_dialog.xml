@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:minHeight="250dp"
         android:layout_margin="10dp"
         android:layout_weight="1"
         android:orientation="vertical">
@@ -26,12 +27,17 @@
             android:src="@drawable/ic__mood_add"
             android:layout_gravity="center" />
 
-        <TextView
-            android:id="@+id/categoryName"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:layout_margin="10dp"/>
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/categoryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
     </LinearLayout>
 
     <LinearLayout

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.guru2_diaryapp">
 
     <!-- 인터넷 권한 -->
@@ -23,9 +24,14 @@
         android:label=""
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GURU2_DiaryApp"
+        android:theme="@style/cookie"
         android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.LoginActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- Intro -->
         <activity
             android:name=".IntroActivity"
@@ -36,12 +42,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".category.CategoryActivity" />
         <activity android:name=".Tracker.Tracker" />
         <activity android:name=".SelectResultActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".TimeLine.TimeLineView" />
         <activity android:name=".diaryView.DiaryView" />
+        <activity android:name=".SettingsActivity" />
+
+
         <activity
             android:name=".diaryView.DiaryViewEdit"
             android:parentActivityName=".diaryView.DiaryView" />
