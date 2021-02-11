@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -21,6 +22,9 @@ class SearchActivity : AppCompatActivity() {
     lateinit var cursor: Cursor
     var TimeLineData = ArrayList<DiaryData>()
     lateinit var searchKW:String
+
+    //검색 옵션
+    lateinit var search: SpannableStringBuilder
 
     //View
     lateinit var search_et:EditText

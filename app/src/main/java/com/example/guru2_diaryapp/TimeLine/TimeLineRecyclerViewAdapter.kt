@@ -1,6 +1,7 @@
 package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,7 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        Log.d("test","검색 테스트")
         var view = LayoutInflater.from(context).inflate(R.layout.item_timeline_view, parent, false)
         return ItemViewHolder(view,itemClick)
     }
