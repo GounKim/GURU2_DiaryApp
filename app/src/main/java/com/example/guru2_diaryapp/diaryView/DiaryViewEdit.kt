@@ -115,6 +115,7 @@ class DiaryViewEdit : AppCompatActivity() {
                     weatherPermission()
                 }
                 R.id.current_time -> {
+                    diary_et.append(getCurrentTime())
 
                 }
                 R.id.sticker -> {
