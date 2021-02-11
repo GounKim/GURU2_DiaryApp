@@ -58,7 +58,11 @@ class DiaryView : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         postID = intent.getIntExtra("postID", -1)
 
-        loadDiary()
+        if(postID != -1)
+        {
+            loadDiary()
+        }
+
 
         // 선택한 카테고리 가져오기
         /*var category_text = intent.getStringExtra("selected_category")
@@ -178,7 +182,7 @@ class DiaryView : AppCompatActivity() {
         {
             do {
                 val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file"))
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
                 diary_image.setImageBitmap(bitmap)

@@ -95,12 +95,11 @@ class DiaryViewEdit : AppCompatActivity() {
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
         date_tv.text = intent.getStringExtra("select_date")
-        newDate = intent.getIntExtra("newDate", 0)
+        newDate = intent.getIntExtra("newDate", -1)
 
-        Log.d("load", "date : ${date_tv.text}")
-        Log.d("load", "content : ${diary_et.text}")
-
-        loadDiary()
+        if(postID != -1) {
+            loadDiary()
+        }
 
         /*// 달력에서 선택한 날짜 받아오기
 
@@ -263,17 +262,26 @@ class DiaryViewEdit : AppCompatActivity() {
 
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
-        //val changeProfilePath = currenturi?.let { absolutelyPath(it) }
-        //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null,null,'$changeProfilePath')")
+        if (postID == -1) { // 새 글 저장 -> 위에서 부여된 post id가져와 사진 저장하기
+            var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
+            if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 => (최근 작성글)
+            {
+                postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+                val image = image_preview.drawable
+                val bitmapDrawable = image as BitmapDrawable?
+                val bitmap = bitmapDrawable?.bitmap
+                val stream = ByteArrayOutputStream()
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val byteArray = stream.toByteArray()
+                //sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null, '${postID}', '{$byteArray}')")
+                var insQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
+                var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
+                stmt.bindBlob(1, byteArray)
+                stmt.execute()
 
-        val image = image_preview.drawable
-        val bitmapDrawable = image as BitmapDrawable?
-        val bitmap = bitmapDrawable?.bitmap
-        val stream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        val byteArray = stream.toByteArray()
-
-        sqllitedb.execSQL("INSERT INTO diary_imgs VALUES (null, '${postID}', '{$byteArray}')")
+                Log.d("image save test", "사진 저장 완료")
+            }
+        }
     }
 
     // 일기 내용 불러오기
