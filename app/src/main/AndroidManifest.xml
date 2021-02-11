@@ -24,7 +24,7 @@
         android:label=""
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GURU2_DiaryApp"
+        android:theme="@style/cookie"
         android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
         <activity android:name=".LoginActivity">
             <intent-filter>

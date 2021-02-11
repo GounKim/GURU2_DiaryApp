@@ -12,24 +12,11 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
     </style>
 
     <!-- intro theme. -->
     <style name="IntroTheme" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">@drawable/intro_background</item>
     </style>
-    <style name="cookie" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/brown_1</item>
-        <item name="colorPrimaryVariant">@color/brown_5</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/brown_2</item>
-        <item name="colorSecondaryVariant">@color/brown_4</item>
-        <item name="colorOnSecondary">@color/brown_4</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/brown_3</item>
-        <!-- Customize your theme here. -->
-    </style>
+
 </resources>
