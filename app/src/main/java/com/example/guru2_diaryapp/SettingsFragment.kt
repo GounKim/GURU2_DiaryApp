@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
      lateinit var editor : SharedPreferences.Editor
      lateinit var theme : ListPreference
      lateinit var date : ListPreference
+     lateinit var font : ListPreference
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
 
     }
@@ -39,6 +40,13 @@ import com.google.firebase.auth.FirebaseAuth
         }
         if(!prefs.getString("date_list", "").equals("2020.01.01")){
             date.summary = prefs.getString("date_list", "2020.01.01");
+        }
+        font = this!!.findPreference("fonts_list")!!
+        if(!prefs.getString("fonts_list", "").equals("")){
+            font.summary = prefs.getString("fonts_list", "기본");
+        }
+        if(!prefs.getString("fonts_list", "").equals("")){
+            font.summary = prefs.getString("fonts_list", "나눔바른펜");
         }
      }
 
