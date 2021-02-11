@@ -16,13 +16,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.TimeLine.TimeLineView
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
 
 class MainActivity : AppCompatActivity(),

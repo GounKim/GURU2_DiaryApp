@@ -1,16 +1,16 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.guru2_diaryapp.DiaryData
+import com.example.guru2_diaryapp.MyDBHelper
+import com.example.guru2_diaryapp.R
 import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class TimeLineView : AppCompatActivity() {
@@ -34,7 +34,7 @@ class TimeLineView : AppCompatActivity() {
             TimeLineData.addAll(PageDown(0))
             recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
                 data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
-                var intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                var intent = Intent(this, DiaryView::class.java)
                 intent.putExtra("post_id",data.reporting_date)
                 startActivity(intent)
             }

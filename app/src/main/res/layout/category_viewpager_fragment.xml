@@ -8,6 +8,7 @@
         android:id="@+id/rvName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/category_recyclerview_item"/>
+        android:overScrollMode="never"
+        tools:listitem="@layout/category_recyclerview_item" />
 
 </FrameLayout>

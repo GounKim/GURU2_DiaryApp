@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TimeLineView">
+    tools:context=".TimeLine.TimeLineView">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/timeLineRv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        tools:listitem="@layout/item_timeline_view" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>
