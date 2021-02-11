@@ -39,7 +39,7 @@
         <activity android:name=".category.CategoryActivity" />
         <activity android:name=".Tracker.Tracker" />
         <activity android:name=".SelectResultActivity" />
-        <activity android:name=".SelectActivity" />
+        <activity android:name=".SearchActivity" />
         <activity android:name=".TimeLine.TimeLineView" />
         <activity android:name=".diaryView.DiaryView" />
         <activity

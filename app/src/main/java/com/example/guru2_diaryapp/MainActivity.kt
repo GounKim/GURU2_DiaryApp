@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_search -> {
-                val intent = Intent(this, SelectActivity::class.java)
+                val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_settings -> {

@@ -1,45 +1,58 @@
-package com.example.guru2_diaryapp.TimeLine
+package com.example.guru2_diaryapp
 
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.guru2_diaryapp.DiaryData
-import com.example.guru2_diaryapp.MyDBHelper
-import com.example.guru2_diaryapp.R
+import com.example.guru2_diaryapp.TimeLine.TimeLineRecyclerViewAdapter
 import com.example.guru2_diaryapp.diaryView.DiaryView
 
-class TimeLineView : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
+
     //DB
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
-    lateinit var cursor:Cursor
+    lateinit var cursor: Cursor
     var TimeLineData = ArrayList<DiaryData>()
+    lateinit var searchKW:String
 
     //View
+    lateinit var search_et:EditText
     lateinit var timeline_rv: RecyclerView
     lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timeline_view)
+        setContentView(R.layout.activity_select)
 
         myDBHelper = MyDBHelper(this)
-        timeline_rv = findViewById(R.id.timeLineRv)
+        timeline_rv = findViewById(R.id.search_rv)
+        search_et = findViewById(R.id.edtSearch)
 
-            TimeLineData.addAll(PageDown(0))
-            recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
-                data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
-                var intent = Intent(this, DiaryView::class.java)
-                intent.putExtra("post_id",data.reporting_date)
-                startActivity(intent)
+        search_et.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                searchKW = search_et.text.toString()
+                TimeLineData = PageDown(0)
+                true
+            }else{
+                false
             }
-            timeline_rv.adapter = recyclerViewAdapter
-            timeline_rv.layoutManager = LinearLayoutManager(this)
+        }
+
+        recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
+            data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}", Toast.LENGTH_SHORT).show()
+            var intent = Intent(this, DiaryView::class.java)
+            intent.putExtra("post_id",data.reporting_date)
+            startActivity(intent)
+        }
+        timeline_rv.adapter = recyclerViewAdapter
+        timeline_rv.layoutManager = LinearLayoutManager(this)
 
 
         //스크롤이 최하단에 도달했을 때 글 더 불러오기
@@ -51,23 +64,24 @@ class TimeLineView : AppCompatActivity() {
 
 
     //추가로 글 불러오기
-    private fun PageDown(BottomPost:Int):ArrayList<DiaryData>{
+    private fun PageDown(LastIndex:Int):ArrayList<DiaryData>{
         var mydiaryData = ArrayList<DiaryData>()
         sqldb = myDBHelper.readableDatabase
         cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
-                " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
-        cursor.moveToPosition(BottomPost)
+                " ON diary_posts.category_id = diary_categorys.category_id WHERE LIKE '%${searchKW}%' " +
+                "ORDER BY reporting_date DESC;",null)
+        cursor.moveToPosition(LastIndex)
         var num = 0
         while (cursor.moveToNext() && num < 20) {
             val id = cursor.getInt(cursor.getColumnIndex("post_id"))
             val date =
-                cursor.getInt(cursor.getColumnIndex("reporting_date"))
+                    cursor.getInt(cursor.getColumnIndex("reporting_date"))
             val weather =
                     cursor.getInt(cursor.getColumnIndex("weather"))
             val category =
-                cursor.getString(cursor.getColumnIndex("category_name"))
+                    cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
-                cursor.getString(cursor.getColumnIndex("content"))
+                    cursor.getString(cursor.getColumnIndex("content"))
             mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
@@ -85,6 +99,4 @@ class TimeLineView : AppCompatActivity() {
         }
         return imgs
     }
-
 }
-
