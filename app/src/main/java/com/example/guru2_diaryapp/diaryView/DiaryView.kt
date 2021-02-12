@@ -120,7 +120,7 @@ class DiaryView : AppCompatActivity() {
         var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                 "ON diary_posts.category_id = diary_categorys.category_id WHERE post_id =  $postID", null)
 
-        if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
+        if(cursor.moveToFirst()) {
             try {
                 val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
                 DiaryData().setWeatherIcon(weather, current_weather)
