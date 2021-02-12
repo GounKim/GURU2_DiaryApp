@@ -50,11 +50,6 @@ class MyDBHelper(
 
     }
 
-    fun resetTable(db:SQLiteDatabase,table:String): Boolean {
-        db?.execSQL("DELETE FROM $table;")
-        return true
-    }
-
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE diary_posts;")
         db?.execSQL("DROP TABLE diary_categorys;")

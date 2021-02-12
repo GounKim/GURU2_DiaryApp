@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -20,14 +19,15 @@ class SearchActivity : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor: Cursor
+
+    //타임라인
     var TimeLineData = ArrayList<DiaryData>()
+
+    //검색 키워드
     lateinit var searchKW:String
 
-    //검색 옵션
-    lateinit var search: SpannableStringBuilder
-
     //View
-    lateinit var search_et:EditText
+    lateinit var search_v:EditText
     lateinit var timeline_rv: RecyclerView
     lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
@@ -37,11 +37,11 @@ class SearchActivity : AppCompatActivity() {
 
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.search_rv)
-        search_et = findViewById(R.id.edtSearch)
+        search_v = findViewById(R.id.search_v)
 
-        search_et.setOnEditorActionListener { _, actionId, _ ->
+        search_v.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                searchKW = search_et.text.toString()
+                searchKW = search_v.text.toString()
                 TimeLineData = PageDown(0)
                 true
             }else{
@@ -86,6 +86,8 @@ class SearchActivity : AppCompatActivity() {
                     cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
+
+            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
             mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
@@ -93,14 +95,4 @@ class SearchActivity : AppCompatActivity() {
         return mydiaryData
     }
 
-    //사진 정보를 불러오는 메소드
-    private fun loadImgs():ArrayList<String>{
-        var imgs = ArrayList<String>()
-        sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(cursor.moveToNext()){
-            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
-        }
-        return imgs
-    }
 }

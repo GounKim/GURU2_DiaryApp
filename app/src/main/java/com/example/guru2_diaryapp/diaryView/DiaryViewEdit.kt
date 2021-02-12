@@ -16,7 +16,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -43,11 +42,12 @@ import java.util.*
 
 
 class DiaryViewEdit : AppCompatActivity() {
-
+    // 권한 관련 변수
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
     private val REQUEST_WEATHER_CODE = 1001
     private val REQUEST_GPS_CODE = 1002
+    // 날씨 관련 변수
     private var lat : String = ""
     private var lon : String = ""
     private var apiID : String = "4dd8b7eb922a5d7e8da094cb922921f2"
@@ -101,33 +101,25 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", -1)
 
-        if(postID != -1) {
-            loadDiary()
+        if(postID != -1) {  // 등록된 글이 있다면
+            loadDiary() // 해당 글 가져오기
         }
 
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when(item?.itemId) {
-                R.id.mood -> { // 삭제 예정
-
-                }
                 R.id.weather -> { // 현재 날씨 추가
                     weatherPermission()
                 }
-                R.id.current_time -> {
-
+                R.id.current_time -> { // 현재 시간 추가
+                    diary_et.append(getCurrentTime())
                 }
-                R.id.sticker -> {
-
-                }
-                R.id.image -> {
+                R.id.image -> { // 이미지 추가
                     selectGallery()
                 }
             }
             return@OnNavigationItemSelectedListener true
         })
-
-
     }
 
     // 상단에 메뉴
@@ -145,11 +137,11 @@ class DiaryViewEdit : AppCompatActivity() {
                 startActivity(intent)
             }
             R.id.action_save -> {
-                if (postID == -1)
+                if (postID == -1) // 이전에 작성된 글이 없다면
                 {
-                    saveDiary()
-                } else {
-                    updateDiary()
+                    saveDiary() // 저장
+                } else { // 작성된 글이 있다면
+                    updateDiary() // 업데이트
                 }
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
@@ -161,7 +153,7 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     // 뒤로가기 동작
-    override fun onBackPressed() {
+    override fun onBackPressed() { // 일기 작성이 취소됩니다.
         var dig = AlertDialog.Builder(this)
         dig.setTitle("작성 취소")
         dig.setMessage("일기 작성을 취소하시겠습니까?")
@@ -184,13 +176,14 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = DiaryData().saveCategoryID(selected_category)
         var content = diary_et.text.toString()
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content',null)")
 
         var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
-        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 부분 가져와서 사진 넣기
+        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 가져와서 사진 넣기 (해당 날짜의 글이 여러 글일 경우 대비)
         {
             try {
                 postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+                // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
                 val image = image_preview.drawable
                 val bitmapDrawable = image as BitmapDrawable?
                 val bitmap = bitmapDrawable?.bitmap
@@ -212,34 +205,33 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb = myDBHelper.readableDatabase
         var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
-        if (cursor.moveToFirst()) {
-            /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            val year = date / 10000
-            val month = (date % 10000) / 100
-            val day = date / 1000000
-            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
-
-            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+        if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
+            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날시
             descWeather = DiaryData().setWeatherDesc(weather)
             DiaryData().setWeatherIcon(weather, current_weather)
 
-            val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+            val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
             selected_category = DiaryData().loadCategoryName(category)
 
-            diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+            diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
         }
-        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // postID에 해당하는 사진 가져오기
 
-        if(cursor.moveToFirst())
-        {
-            do {
-                imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+        try {
+            if(cursor.moveToFirst())
+            {
+                do {
+                    imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                    val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
-                image_preview.setImageBitmap(bitmap)
-            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
+                    image_preview.setImageBitmap(bitmap)
+                } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠 -> 테이블 변경 후 수정하기
+            }
+        } catch (rte : RuntimeException) {
+            Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
+
         sqllitedb.close()
     }
 
@@ -401,7 +393,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 override fun onProviderEnabled(provider: String) {}
                 override fun onProviderDisabled(provider: String) {}
             }
-            locationManager.requestLocationUpdates(
+            locationManager.requestLocationUpdates( // 위치 업데이트 관련
                 LocationManager.GPS_PROVIDER,
                 10000,
                 1f,
@@ -426,6 +418,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
             override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
+                Toast.makeText(this@DiaryViewEdit, "날씨를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
@@ -480,7 +473,7 @@ class DiaryViewEdit : AppCompatActivity() {
     // 현재 시간
     private fun getCurrentTime() : String {
         val now = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now)
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now) // 시:분 형태
 
         return dateFormat
     }

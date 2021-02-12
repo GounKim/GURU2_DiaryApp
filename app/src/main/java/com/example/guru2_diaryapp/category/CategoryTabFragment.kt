@@ -80,13 +80,13 @@ class CategoryTabFragment : Fragment() {
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
 
-            val img = cursor.getString(cursor.getColumnIndex("img_file"))
+            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
             //null 값일 경우 오류가 난다면 예외처리 작업할 것
 
             myDiaryData.add(
                     DiaryData(
                             id, date, 0,
-                            "${category.second}", content, img
+                            "${category.second}", content, null
                     )
             )
             num++

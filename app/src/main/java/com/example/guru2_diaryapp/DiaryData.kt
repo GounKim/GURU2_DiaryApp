@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp
 
+import android.graphics.Bitmap
 import android.widget.ImageView
 
 class DiaryData {
@@ -8,17 +9,17 @@ class DiaryData {
     var weather:Int = 0
     var category_name: String = ""
     var content:String = ""
-    var img:String? = null
+    var imgs: Bitmap?= null
 
     constructor()
 
-    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, img:String?) {
+    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, imgs:Bitmap?) {
         this.id = id
         this.reporting_date = date
         this.weather = weather
         this.category_name = category_name
         this.content = content.toString()
-        this.img = img
+        this.imgs = imgs
     }
 
     // 공유 드라이브에 올려둔 날씨 파일 참고
