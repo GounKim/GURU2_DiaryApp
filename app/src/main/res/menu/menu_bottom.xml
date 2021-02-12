@@ -3,12 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 <!-- bottomnavigationview는 3~5개의 메뉴 아이템만 사용 가능-->
     <item
-        android:id="@+id/mood"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_add_reaction_24"
-        android:title="무드" />
-    <item
         android:id="@+id/weather"
         app:showAsAction="ifRoom"
         android:enabled="true"
@@ -20,12 +14,6 @@
         android:enabled="true"
         android:icon="@drawable/ic_baseline_access_time_24"
         android:title="시간" />
-    <item
-        android:id="@+id/sticker"
-        app:showAsAction="ifRoom"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_emoji_nature_24"
-        android:title="스티커" />
     <item
         android:id="@+id/image"
         app:showAsAction="ifRoom"
