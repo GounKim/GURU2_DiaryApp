@@ -103,7 +103,11 @@ class TimeLineView : AppCompatActivity() {
         val item = recyclerViewAdapter?.item[pos]
         val pos_id = recyclerViewAdapter?.pos_id
         DeletePost(pos_id)
-        recyclerViewAdapter.notifyDataSetChanged()
+
+        var intent:Intent = getIntent()
+        finish()
+        startActivity(intent)
+
         return true
 
     }
