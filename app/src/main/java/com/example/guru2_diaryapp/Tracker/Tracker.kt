@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER
 import android.view.Menu
@@ -240,6 +241,7 @@ class Tracker : AppCompatActivity(),
     // 추가 창 띄우기
     private fun addShow() {
         val newFragment = AddTrackerDialog()
+        Log.d("add","추가창 테스트")
         newFragment.show(supportFragmentManager,"dialog")
     }
 
