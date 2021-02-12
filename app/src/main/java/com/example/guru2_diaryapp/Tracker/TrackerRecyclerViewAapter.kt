@@ -94,9 +94,7 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
             trackerCal.addDecorator(SundDayDeco())
             trackerCal.addDecorator(SaturdayDeco())
             trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
-            trackerCal.isPagingEnabled = false
-
-            Toast.makeText(context, "${intDate.size}", Toast.LENGTH_SHORT).show()
+            //trackerCal.isPagingEnabled = false
 
             for (i in intDate.indices) {
                 //trackerCal.id = 1000 + i
@@ -106,7 +104,7 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
                 var day = (intDate[i] % 10000) % 100
 
                 if (strHabit == "mood") { // strHabit == "mood" -> habit이 mood일 경우
-                    trackerCal.addDecorator(MoodDeco(context, CalendarDay.from(year, month - 1, day), intCheck[i]))
+                    //trackerCal.addDecorator(MoodDeco(context, CalendarDay.from(year, month - 1, day), intCheck[i]))
                 }
                 else {
                     val calendar = Calendar.getInstance()
