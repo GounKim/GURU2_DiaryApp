@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/backgroundColor">
 
     <!-- 미리보기 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="250dp"
         android:layout_margin="10dp"
         android:layout_weight="1"
+        android:minHeight="250dp"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:text="일기"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -24,8 +23,8 @@
             android:id="@+id/moodImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic__mood_add"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:src="@drawable/ic__mood_add" />
 
         <ScrollView
             android:layout_width="match_parent"
