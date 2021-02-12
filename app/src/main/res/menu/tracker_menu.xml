@@ -6,7 +6,9 @@
         android:id="@+id/del_menu"
         android:icon="@drawable/ic_baseline_horizontal_rule_24"
         android:title="del_menu"
-        app:showAsAction="always" />
+        app:showAsAction="always" >
+    </item>
+
     <item
         android:id="@+id/add_menu"
         android:icon="@drawable/ic_baseline_add_24"

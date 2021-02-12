@@ -4,6 +4,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,8 @@ import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
+import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
+import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
@@ -33,7 +36,7 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
-            CheckTrakerDialog.OnCompleteListener{
+            CheckTrakerDialog.OnCompleteListener, AddTrackerDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
+    lateinit var imgViewAdd: ImageView
 
     // DB
     lateinit var myDBHelper: MyDBHelper
@@ -86,6 +90,7 @@ class MainActivity : AppCompatActivity(),
         categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
+        imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
 
 
 
@@ -105,6 +110,7 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
+
             var year = date.year
             var month = date.month + 1
             var day = date.day
@@ -121,10 +127,9 @@ class MainActivity : AppCompatActivity(),
 
             // 그전에 만들어진 category view들 없애기
             categoryLayout.removeAllViews()
-
-            val categories = ArrayList<TextView>() // 카테고리들이 담길 배열
-            val postIds = ArrayList<Int>() // postID들이 담길 배열
-            var i : Int = 0 // 카테고리 개수 세는 용도
+            val categories = ArrayList<TextView>()
+            val postIds = ArrayList<Int>()
+            var i : Int = 0
 
             if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
                 i = 0
@@ -152,16 +157,16 @@ class MainActivity : AppCompatActivity(),
 
                 categoryLayout.setOnClickListener {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate)
+                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
                     intent.putExtra("newDate", newDate)
                     startActivity(intent)
                 }
             }
 
-            for (x in 0..i-1) { // 여러개의 카테고리가 생긴 경우, 각각 클릭 리스너 넣어주기
+            for (x in 0..i-1) {
                 categories[x].setOnClickListener() {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate)
+                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
                     intent.putExtra("newDate", newDate)
                     intent.putExtra("postID", postIds[x])
                     startActivity(intent)
@@ -181,18 +186,16 @@ class MainActivity : AppCompatActivity(),
                 var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
                 lp.setMargins(0,0,0,10)
                 btnHabbit.layoutParams = lp
-/*
-                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
-                    0 -> btnHabbit.setBackgroundResource(R.drawable.button_bad)
-                    1 -> btnHabbit.setBackgroundResource(R.drawable.button_soso)
-                    2 -> btnHabbit.setBackgroundResource(R.drawable.button_good)
-                }
-*/
+
                 changeButton(btnHabbit, habit, newDate)
                 mainTrackerLayout.addView(btnHabbit)
                 btnHabbit.setOnClickListener {
                     show(btnHabbit, habit, newDate)
                 }
+            }
+
+            imgViewAdd.setOnClickListener {
+                addShow()
             }
 
             /*
@@ -338,5 +341,15 @@ class MainActivity : AppCompatActivity(),
         }
 
         cursor.close()
+    }
+
+    // 트래커 추가
+    private fun addShow() {
+        val newFragment = AddTrackerDialog()
+        newFragment.show(supportFragmentManager,"dialog")
+    }
+    override fun onInputedData(habitTitle: String) {
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
     }
 }

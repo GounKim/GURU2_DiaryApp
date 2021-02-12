@@ -11,8 +11,6 @@ import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.core.view.get
-import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.DiaryData
@@ -72,10 +70,8 @@ class TimeLineView : AppCompatActivity() {
         postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         postCursor.moveToPosition(BottomPost)
-        imgCursor = sqldb.rawQuery("SELECT * FROM diary_imgs ORDER BY reporting_date DESC;", null)
-        imgCursor.moveToPosition(BottomPost)
         var num = 0
-        while (postCursor.moveToNext() && imgCursor.moveToNext() && num < 20) {
+        while (postCursor.moveToNext()) {
             val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
             val date =
                     postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
@@ -87,37 +83,19 @@ class TimeLineView : AppCompatActivity() {
                     postCursor.getString(postCursor.getColumnIndex("content"))
             // blob을 가져와서 decode하면 bitmap 형태가 돼서 이렇게 바꿔봤어요.
             // 아니다 싶으면 적용 안하셔도 됩니다
-            val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
-            val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-            mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
+            //val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
+            //val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
         sqldb.close()
         return mydiaryData
     }
 
-    //사진 정보를 불러오는 메소드
-    /*private fun loadImgs():ArrayList<String>{
-        var imgs = ArrayList<String>()
-        sqldb = myDBHelper.readableDatabase
-        postCursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(postCursor.moveToNext()){
-            imgs.add(postCursor.getString(postCursor.getColumnIndex("img_dir")))
-        }
-        return imgs
-    }*/
-
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        menuInflater.inflate(R.menu.context, menu)
-    }
-
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val pos = recyclerViewAdapter?.pos
-        val item = recyclerViewAdapter?.item[pos]
-        val pos_id = recyclerViewAdapter?.pos_id
+        val pos_id = recyclerViewAdapter.pos_id
         DeletePost(pos_id)
-
         var intent:Intent = getIntent()
         finish()
         startActivity(intent)

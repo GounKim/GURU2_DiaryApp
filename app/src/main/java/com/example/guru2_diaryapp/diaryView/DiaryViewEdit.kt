@@ -176,7 +176,7 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = DiaryData().saveCategoryID(selected_category)
         var content = diary_et.text.toString()
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content',null)")
 
         var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
         if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 가져와서 사진 넣기 (해당 날짜의 글이 여러 글일 경우 대비)

@@ -9,7 +9,7 @@ class DiaryData {
     var weather:Int = 0
     var category_name: String = ""
     var content:String = ""
-    var imgs:Bitmap ?= null
+    var imgs: Bitmap?= null
 
     constructor()
 
