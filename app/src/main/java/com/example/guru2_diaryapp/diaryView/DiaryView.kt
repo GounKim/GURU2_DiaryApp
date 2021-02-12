@@ -130,11 +130,13 @@ class DiaryView : AppCompatActivity() {
         cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // 이미지 가져오기
 
         try {
-            val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-            val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-            val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+            if(cursor.moveToFirst()) {
+                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
-            diary_image.setImageBitmap(bitmap)
+                diary_image.setImageBitmap(bitmap)
+            }
         } catch (rte : RuntimeException) // 저장된 사진 용량이 2M가 넘을 경우
         {
             Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
