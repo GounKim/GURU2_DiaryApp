@@ -30,6 +30,11 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
         mPosition = position
     }
 
+    fun upDate() {
+        notifyDataSetChanged()
+        notifyDataSetChanged()
+    }
+
     fun addItem(trData: TrackerData) {
         dataList.add(trData)
         notifyDataSetChanged()
@@ -64,6 +69,16 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
         private val trackerCal = itemView.findViewById<MaterialCalendarView>(R.id.trackerCal)
 
         fun bind(trData: TrackerData, context: Context) {
+            /* val leftArrow = itemView.findViewById<ImageView>(R.id.imgViewPreMonth)
+            val rightArrow = itemView.findViewById<ImageView>(R.id.imgViewNextMonth)
+
+            leftArrow.setOnClickListener {
+                trackerCal.goToPrevious()
+            }
+            rightArrow.setOnClickListener {
+                trackerCal.goToNext()
+            }*/
+
             var intDate = trData.reportingDate
             var strHabit = trData.habit
             var intCheck = trData.checkResult
@@ -79,17 +94,17 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
             trackerCal.addDecorator(SundDayDeco())
             trackerCal.addDecorator(SaturdayDeco())
             trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
-            //Toast.makeText(context, "${trData.reportingDate.size}", Toast.LENGTH_SHORT).show()
+            //trackerCal.isPagingEnabled = false
 
             for (i in intDate.indices) {
-                trackerCal.id = 1000 + i
+                //trackerCal.id = 1000 + i
 
                 var year = intDate[i] / 10000
                 var month = (intDate[i] % 10000) / 100
                 var day = (intDate[i] % 10000) % 100
 
                 if (strHabit == "mood") { // strHabit == "mood" -> habit이 mood일 경우
-                    trackerCal.addDecorator(MoodDeco(context, CalendarDay.from(year, month, day), intCheck[i]))
+                    //trackerCal.addDecorator(MoodDeco(context, CalendarDay.from(year, month - 1, day), intCheck[i]))
                 }
                 else {
                     val calendar = Calendar.getInstance()
