@@ -30,6 +30,11 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
         mPosition = position
     }
 
+    fun upDate() {
+        notifyDataSetChanged()
+        notifyDataSetChanged()
+    }
+
     fun addItem(trData: TrackerData) {
         dataList.add(trData)
         notifyDataSetChanged()
@@ -64,6 +69,16 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
         private val trackerCal = itemView.findViewById<MaterialCalendarView>(R.id.trackerCal)
 
         fun bind(trData: TrackerData, context: Context) {
+            /* val leftArrow = itemView.findViewById<ImageView>(R.id.imgViewPreMonth)
+            val rightArrow = itemView.findViewById<ImageView>(R.id.imgViewNextMonth)
+
+            leftArrow.setOnClickListener {
+                trackerCal.goToPrevious()
+            }
+            rightArrow.setOnClickListener {
+                trackerCal.goToNext()
+            }*/
+
             var intDate = trData.reportingDate
             var strHabit = trData.habit
             var intCheck = trData.checkResult
@@ -79,6 +94,7 @@ class TrackerRecyclerViewAapter(val context: Context, val dataList: ArrayList<Tr
             trackerCal.addDecorator(SundDayDeco())
             trackerCal.addDecorator(SaturdayDeco())
             trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
+            trackerCal.isPagingEnabled = false
             //Toast.makeText(context, "${trData.reportingDate.size}", Toast.LENGTH_SHORT).show()
 
             for (i in intDate.indices) {

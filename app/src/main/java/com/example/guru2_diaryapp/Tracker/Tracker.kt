@@ -70,7 +70,7 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
         var nCursor : Cursor    // habit_lists 용
         nCursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists", null)
 
-        var id: Int = 1000
+        var id: Int = 1
         if (nCursor.moveToFirst()) {
             while (nCursor.moveToNext()) {
                 dateList.clear()
@@ -86,7 +86,9 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
 
                 }
                 trackerData.add(TrackerData(str_habit, dateList, levelList))
-                calView.add(id++)
+                //calView.add(id++)
+                id++
+                if (id == 2) break
             }
         }
         else { addShow() }
@@ -111,10 +113,6 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
                 calMonth = 12
             }
             writeCalDate(calYear, calMonth)
-            for (i in calView) {
-                val calendarView = findViewById<MaterialCalendarView>(i)
-                calendarView.goToPrevious()
-            }
         }
 
         ivNextMonth.setOnClickListener {
@@ -128,12 +126,15 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
                 tvYearMonth.text = "$calYear.$calMonth"
             }
             writeCalDate(calYear, calMonth)
-            for (i in calView) {
-                val calendarView = findViewById<MaterialCalendarView>(i)
-                calendarView.goToNext()
-            }
+//            for (i in calView) {
+//                val calendarView = findViewById<MaterialCalendarView>(i)
+//                calendarView.goToNext()
+//             }
         }
 
+        nCursor.close()
+        myDBHelper.close()
+        sqlitedb.close()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -145,9 +146,11 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
         when (item?.itemId) {
             R.id.add_menu -> {
                 addShow()
+                tAdapter.upDate()
             }
             R.id.del_menu -> {
                 delShow()
+                tAdapter.upDate()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -157,17 +160,21 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
     private fun addShow() {
         val newFragment = AddTrackerDialog()
         newFragment.show(supportFragmentManager,"dialog")
+        tAdapter.upDate()
     }
 
     private fun delShow() {
         val newFragment = DelTrackerDialog()
         newFragment.show(supportFragmentManager,"dialog")
+        tAdapter.upDate()
     }
 
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
         sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
+
+        tAdapter.upDate()
 
         //var intent = Intent(this, Tracker::class.java)
        //startActivity(intent)
@@ -178,8 +185,9 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
         sqlitedb = myDBHelper.writableDatabase
         sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit'")
 
-        var intent = Intent(this, Tracker::class.java)
-        startActivity(intent)
+        tAdapter.upDate()
+        //var intent = Intent(this, Tracker::class.java)
+        //startActivity(intent)
     }
 
     fun writeCalDate(year: Int, month: Int) {
