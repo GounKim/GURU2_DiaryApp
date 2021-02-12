@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
 class MyDBHelper(
-        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,1) {
+        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,2) {
     lateinit var sql:String
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -48,11 +48,6 @@ class MyDBHelper(
         db?.execSQL(sql)
         Log.d("DB","실행"+sql)
 
-    }
-
-    fun resetTable(db:SQLiteDatabase,table:String): Boolean {
-        db?.execSQL("DELETE FROM $table;")
-        return true
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
