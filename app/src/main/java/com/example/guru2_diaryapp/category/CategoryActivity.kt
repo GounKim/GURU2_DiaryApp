@@ -88,12 +88,12 @@ class CategoryActivity : AppCompatActivity() {
 
     }
 
+    //카테고리 삭제 추가 메뉴
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.category_edit,menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    //카테고리 삭제 추가 메뉴
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item?.itemId){
 
@@ -108,11 +108,17 @@ class CategoryActivity : AppCompatActivity() {
 
                 alert.setPositiveButton("확인"){ dialog, which ->
                     var name = category_name.text.toString()
-                    sqldb = myDBHelper.writableDatabase
-                    sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
-                    sqldb.close()
-                    Toast.makeText(applicationContext,"$name 카테고리가 생성되었습니다.",
-                        Toast.LENGTH_SHORT).show()
+
+                    if(name != null) {
+                        sqldb = myDBHelper.writableDatabase
+                        sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
+                        sqldb.close()
+                        Toast.makeText(applicationContext, "$name 카테고리가 생성되었습니다.",
+                                Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",
+                                Toast.LENGTH_SHORT).show()
+                    }
 
                     //새로고침
                     finish()
@@ -127,11 +133,18 @@ class CategoryActivity : AppCompatActivity() {
             //카테고리 삭제
             R.id.action_delete_cate->{
 
-                val tabList = Array<String>(tabList.size,{i->tabList[i].second})
-                var selected:String? = null    //삭제할 카테고리
+                //카테고리가 하나뿐일 경우 삭제하지 못하게 함
+                if (tabList.size <= 1){
+                    Toast.makeText(applicationContext, "삭제할 카테고리가 없습니다.",
+                            Toast.LENGTH_SHORT).show()
+                    return false
+                }
 
+                val tabList = Array<String>(tabList.size,{i->tabList[i].second})    //삭제 가능한 카테고리 리스트
+                var selected:String? = null                                         //선택된 카테고리
+
+                //선택창
                 var alert:AlertDialog.Builder = AlertDialog.Builder(this)
-
                 alert.setTitle("카테고리 삭제")
                 alert.setSingleChoiceItems(tabList,0, DialogInterface.OnClickListener{
                     dialog, which ->
@@ -148,6 +161,7 @@ class CategoryActivity : AppCompatActivity() {
                         Toast.makeText(applicationContext, "$selected 카테고리가 삭제되었습니다.",
                                 Toast.LENGTH_SHORT).show()
                         sqldb.close()
+
                     } else{
                         Toast.makeText(applicationContext, "선택하지 않아 취소되었습니다.",
                                 Toast.LENGTH_SHORT).show()
@@ -159,7 +173,57 @@ class CategoryActivity : AppCompatActivity() {
                 }
 
                 alert.setNegativeButton("취소",null)
+
                 alert.show()
+            }
+
+            R.id.action_rename_cate ->{
+                val tabList = Array<String>(tabList.size,{i->tabList[i].second})
+                var selected:String? = null
+
+                //수정할 카테고리 이름을 입력받을 창
+                var alertDialog:AlertDialog.Builder = AlertDialog.Builder(this)
+                var newName_edt:EditText = EditText(this)
+                alertDialog.setView(newName_edt)
+
+                //선택 후 입력창 팝업
+                alertDialog.setPositiveButton("확인"){ dialog, which ->
+                    var newName = newName_edt.text.toString()
+
+                    if (newName != null){
+                        sqldb = myDBHelper.writableDatabase
+                        sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
+                                    "WHERE category_name = '$selected';")
+                        sqldb.close()
+
+                        Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
+                                Toast.LENGTH_SHORT).show()
+
+                    }else{
+                        Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",
+                                Toast.LENGTH_SHORT).show()
+                    }
+
+                    //새로고침
+                    finish()
+                    startActivity(Intent(this, this::class.java))
+                }
+
+                alertDialog.setNegativeButton("취소",null)
+
+
+                //카테고리 선택 창
+                var alert:AlertDialog.Builder = AlertDialog.Builder(this)
+                alert.setTitle("카테고리 수정")
+
+                alert.setItems(tabList, DialogInterface.OnClickListener{
+                    dialog, which ->
+                    selected = tabList[which]
+                    alertDialog.show()
+                })
+
+                alert.show()
+
             }
         }
         return super.onOptionsItemSelected(item)
