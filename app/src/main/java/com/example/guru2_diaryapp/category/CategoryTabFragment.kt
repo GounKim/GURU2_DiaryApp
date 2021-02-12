@@ -46,7 +46,7 @@ class CategoryTabFragment : Fragment() {
         }
 
         recyclerView.adapter = categoryRecyclerViewAdapter
-        recyclerView.layoutManager = GridLayoutManager(view.context, 2)
+        recyclerView.layoutManager = GridLayoutManager(view.context, 3)
         }
 
     /*

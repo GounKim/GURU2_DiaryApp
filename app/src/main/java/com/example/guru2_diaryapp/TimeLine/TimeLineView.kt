@@ -9,6 +9,8 @@ import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.get
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.DiaryData
@@ -52,6 +54,13 @@ class TimeLineView : AppCompatActivity() {
 
     }
 
+    //선택한 일기 삭제
+    fun DeletePost(id:Int){
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
+        sqldb.close()
+    }
+
 
     //추가로 글 불러오기
     private fun PageDown(BottomPost:Int):ArrayList<DiaryData>{
@@ -89,25 +98,14 @@ class TimeLineView : AppCompatActivity() {
         return imgs
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        menuInflater.inflate(R.menu.context, menu)
-    }
-
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId){
-            R.id.action_copy ->{
+        val pos = recyclerViewAdapter?.pos
+        val item = recyclerViewAdapter?.item[pos]
+        val pos_id = recyclerViewAdapter?.pos_id
+        DeletePost(pos_id)
+        recyclerViewAdapter.notifyDataSetChanged()
+        return true
 
-                return true
-            }
-            R.id.action_delete ->{
-
-                return true
-            }
-
-        }
-        return super.onContextItemSelected(item)
     }
-
 }
 

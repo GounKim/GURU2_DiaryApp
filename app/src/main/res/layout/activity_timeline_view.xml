@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".TimeLine.TimeLineView">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/timeLineRv"
         android:layout_width="match_parent"
