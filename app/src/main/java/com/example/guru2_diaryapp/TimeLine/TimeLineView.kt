@@ -3,6 +3,8 @@ package com.example.guru2_diaryapp.TimeLine
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.ContextMenu
@@ -20,7 +22,8 @@ class TimeLineView : AppCompatActivity() {
     //DB
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
-    lateinit var cursor:Cursor
+    lateinit var postCursor: Cursor
+    lateinit var imgCursor: Cursor
     var TimeLineData = ArrayList<DiaryData>()
 
     //View
@@ -57,21 +60,25 @@ class TimeLineView : AppCompatActivity() {
     private fun PageDown(BottomPost:Int):ArrayList<DiaryData>{
         var mydiaryData = ArrayList<DiaryData>()
         sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
+        postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
-        cursor.moveToPosition(BottomPost)
+        postCursor.moveToPosition(BottomPost)
+        imgCursor = sqldb.rawQuery("SELECT * FROM diary_imgs ORDER BY reporting_date DESC;", null)
+        imgCursor.moveToPosition(BottomPost)
         var num = 0
-        while (cursor.moveToNext() && num < 20) {
-            val id = cursor.getInt(cursor.getColumnIndex("post_id"))
+        while (postCursor.moveToNext() && imgCursor.moveToNext() && num < 20) {
+            val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
             val date =
-                cursor.getInt(cursor.getColumnIndex("reporting_date"))
+                    postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
             val weather =
-                    cursor.getInt(cursor.getColumnIndex("weather"))
+                    postCursor.getInt(postCursor.getColumnIndex("weather"))
             val category =
-                cursor.getString(cursor.getColumnIndex("category_name"))
+                    postCursor.getString(postCursor.getColumnIndex("category_name"))
             val content =
-                cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
+                    postCursor.getString(postCursor.getColumnIndex("content"))
+            val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
+            val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+            mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
             num++
         }
         sqldb.close()
@@ -79,15 +86,15 @@ class TimeLineView : AppCompatActivity() {
     }
 
     //사진 정보를 불러오는 메소드
-    private fun loadImgs():ArrayList<String>{
+    /*private fun loadImgs():ArrayList<String>{
         var imgs = ArrayList<String>()
         sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(cursor.moveToNext()){
-            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
+        postCursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
+        while(postCursor.moveToNext()){
+            imgs.add(postCursor.getString(postCursor.getColumnIndex("img_dir")))
         }
         return imgs
-    }
+    }*/
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)

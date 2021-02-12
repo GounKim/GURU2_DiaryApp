@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -25,7 +26,8 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
         var dateTv = view.findViewById<TextView>(R.id.tlitem_date_tv)
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
         var contentTv = view.findViewById<TextView>(R.id.tlitem_content_tv)
-        var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
+        var img = view.findViewById<ImageView>(R.id.timeline_img)
+        //var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
         //var weatherIorn = view.findViewById<ImageView>(R.id.iv_weather)
 
         //onBindViewHolder에서 호출할 bind 함수
@@ -35,11 +37,11 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             contentTv.text = data.content
 
             if (data.imgs != null){
-                imgVp.setVisibility(View.VISIBLE)
+                img.setVisibility(View.VISIBLE)
 
             } else {
-                imgVp.setVisibility(View.GONE)
-
+                img.setVisibility(View.GONE)
+                img.setImageBitmap(data.imgs)
             }
             itemView.setOnClickListener {
                 itemClick(data, num)

@@ -1,5 +1,6 @@
 package com.example.guru2_diaryapp
 
+import android.graphics.Bitmap
 import android.widget.ImageView
 
 class DiaryData {
@@ -8,11 +9,11 @@ class DiaryData {
     var weather:Int = 0
     var category_name: String = ""
     var content:String = ""
-    var imgs:ArrayList<String>? = null
+    var imgs:Bitmap ?= null
 
     constructor()
 
-    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, imgs:ArrayList<String>?) {
+    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, imgs:Bitmap?) {
         this.id = id
         this.reporting_date = date
         this.weather = weather

@@ -101,8 +101,8 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", -1)
 
-        if(postID != -1) {
-            loadDiary()
+        if(postID != -1) {  // 등록된 글이 있다면
+            loadDiary() // 해당 글 가져오기
         }
 
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
@@ -113,7 +113,6 @@ class DiaryViewEdit : AppCompatActivity() {
                 }
                 R.id.current_time -> { // 현재 시간 추가
                     diary_et.append(getCurrentTime())
-
                 }
                 R.id.image -> { // 이미지 추가
                     selectGallery()
@@ -180,10 +179,11 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content')")
 
         var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
-        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 부분 가져와서 사진 넣기
+        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 가져와서 사진 넣기 (해당 날짜의 글이 여러 글일 경우 대비)
         {
             try {
                 postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+                // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
                 val image = image_preview.drawable
                 val bitmapDrawable = image as BitmapDrawable?
                 val bitmap = bitmapDrawable?.bitmap
@@ -205,23 +205,17 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb = myDBHelper.readableDatabase
         var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
-        if (cursor.moveToFirst()) {
-            /*val date = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            val year = date / 10000
-            val month = (date % 10000) / 100
-            val day = date / 1000000
-            date_tv.text = "${year}.${month}.${day}.(${MainActivity().getDayName(year, month, day)})"*/
-
-            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
+        if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
+            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날시
             descWeather = DiaryData().setWeatherDesc(weather)
             DiaryData().setWeatherIcon(weather, current_weather)
 
-            val category = cursor.getInt(cursor.getColumnIndex("category_id"))
+            val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
             selected_category = DiaryData().loadCategoryName(category)
 
-            diary_et.setText(cursor.getString(cursor.getColumnIndex("content")))
+            diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
         }
-        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null)
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // postID에 해당하는 사진 가져오기
 
         if(cursor.moveToFirst())
         {
@@ -231,7 +225,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
                 image_preview.setImageBitmap(bitmap)
-            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠
+            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠 -> 테이블 변경 후 수정하기
         }
         sqllitedb.close()
     }
