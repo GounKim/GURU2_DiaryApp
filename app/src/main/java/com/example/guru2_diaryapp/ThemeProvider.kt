@@ -6,23 +6,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import java.security.InvalidParameterException
 
+// 테마 변경 파일
 class ThemeProvider(private val context: Context) {
-
-    fun getThemeFromPreferences(): Int {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val selectedTheme = sharedPreferences.getString(
-            context.getString(R.string.theme_preferences_key),""
-           // context.getString(R.string.system_theme_preference_value)
-        )
-
-        return selectedTheme?.let {
-            getTheme(it)
-        } ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    }
 
     fun getThemeDescriptionForPreference(preferenceValue: String?): String =
         when (preferenceValue) {
             context.getString(R.string.dark_theme_preference_value) -> context.getString(R.string.dark_theme_description)
+            "쿠키" -> "쿠키"
             //context.getString(R.string.light_theme_preference_value) -> context.getString(R.string.light_theme_description)
             else -> context.getString(R.string.cookie_theme_description)
         }
