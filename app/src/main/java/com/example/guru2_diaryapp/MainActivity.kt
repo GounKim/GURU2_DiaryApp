@@ -119,8 +119,8 @@ class MainActivity : AppCompatActivity(),
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
-            var cursor: Cursor
-            cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+            var cursor: Cursor? = null
+            cursor = sqldb.rawQuery("SELECT category_name, post_id FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                     "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);

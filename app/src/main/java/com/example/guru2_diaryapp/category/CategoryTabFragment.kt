@@ -3,6 +3,7 @@ package com.example.guru2_diaryapp.category
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -80,7 +81,8 @@ class CategoryTabFragment : Fragment() {
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
 
-            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            val imgArray = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            val img = BitmapFactory.decodeByteArray(imgArray, 0, imgArray!!.size)
             //null 값일 경우 오류가 난다면 예외처리 작업할 것
 
             myDiaryData.add(

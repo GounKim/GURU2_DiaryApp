@@ -175,28 +175,28 @@ class DiaryViewEdit : AppCompatActivity() {
         selected_category = categories[category_spinner.selectedItemPosition]
         var category_id : Int = DiaryData().saveCategoryID(selected_category)
         var content = diary_et.text.toString()
+        val image = image_preview.drawable
+        var byteArray : ByteArray ?= null
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content',null)")
+        try {
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
 
-        var cursor : Cursor = sqllitedb.rawQuery("SELECT post_id FROM diary_posts WHERE reporting_date = $newDate;", null)
-        if(cursor.moveToLast()) // 해당 날짜의 가장 마지막 글 가져와서 사진 넣기 (해당 날짜의 글이 여러 글일 경우 대비)
-        {
-            try {
-                postID = cursor.getInt(cursor.getColumnIndex("post_id"))
-                // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
-                val image = image_preview.drawable
-                val bitmapDrawable = image as BitmapDrawable?
-                val bitmap = bitmapDrawable?.bitmap
-                val stream = ByteArrayOutputStream()
-                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                val byteArray = stream.toByteArray()
-                var insQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
-                var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
-                stmt.bindBlob(1, byteArray)
-                stmt.execute()
-            } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-
-            }
+        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content',null)")
+        } else { // bindblob은 null 값을 파라미터로 받을 수 없음
+            var insQuery : String = "INSERT INTO diary_posts (post_id, reporting_date, weather, category_id, content, img_file) " +
+                    "VALUES (null, $reporting_date, $weather, '$content', $category_id, ?)"
+            var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
+            stmt.bindBlob(1, byteArray)
+            stmt.execute()
         }
     }
 
@@ -206,32 +206,25 @@ class DiaryViewEdit : AppCompatActivity() {
         var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
 
         if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
-            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날시
-            descWeather = DiaryData().setWeatherDesc(weather)
-            DiaryData().setWeatherIcon(weather, current_weather)
+            try {
+                val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
+                descWeather = DiaryData().setWeatherDesc(weather)
+                DiaryData().setWeatherIcon(weather, current_weather)
 
-            val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
-            selected_category = DiaryData().loadCategoryName(category)
+                val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
+                selected_category = DiaryData().loadCategoryName(category)
 
-            diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
-        }
-        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // postID에 해당하는 사진 가져오기
+                diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
 
-        try {
-            if(cursor.moveToFirst())
-            {
-                do {
-                    imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-                    val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
-                    image_preview.setImageBitmap(bitmap)
-                } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠 -> 테이블 변경 후 수정하기
+                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+
+                image_preview.setImageBitmap(bitmap)
+            } catch (rte : RuntimeException) {
+                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
-        } catch (rte : RuntimeException) {
-            Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
-
         sqllitedb.close()
     }
 
@@ -244,26 +237,29 @@ class DiaryViewEdit : AppCompatActivity() {
         selected_category = categories[category_spinner.selectedItemPosition]
         var category_id : Int = DiaryData().saveCategoryID(selected_category)
         var content = diary_et.text.toString()
-
-        sqllitedb.execSQL("UPDATE diary_posts SET reporting_date = $reporting_date, weather = $weather, category_id = $category_id, content = '$content' WHERE post_id = $postID")
+        val image = image_preview.drawable
+        var byteArray : ByteArray ?= null
 
         try {
-            // 사진은 기존 사진 삭제 후 저장
-            // 한 일기에 여러개의 사진이 저장되어있을 경우, 모두 지우고 다시 저장하는게 나을 것 같아서 이렇게 했는데
-            // 더 좋은 방법이 있으면 알려주세요
-            sqllitedb.execSQL("DELETE FROM diary_imgs WHERE post_id = $postID;")
-            val image = image_preview.drawable
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
             val stream = ByteArrayOutputStream()
             bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            val byteArray = stream.toByteArray()
-            var udtQuery : String = "insert into diary_imgs (post_id, img_file) values ($postID, ?)"
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
+
+        if(byteArray == null) { // 저장하려는 사진이 없을 경우
+            sqllitedb.execSQL("UPDATE diary_posts SET reporting_date = $reporting_date, weather = $weather, " +
+                    "category_id = $category_id, content = '$content', img_file = null WHERE post_id = $postID")
+        } else { // 저장하려는 사진이 있는 경우
+            var udtQuery : String = "UPDATE diary_posts SET reporting_date = $reporting_date, weather = $weather, " +
+                    "category_id = $category_id, content = '$content', img_file = ? WHERE post_id = $postID"
             var stmt : SQLiteStatement = sqllitedb.compileStatement(udtQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
-        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-
         }
     }
 

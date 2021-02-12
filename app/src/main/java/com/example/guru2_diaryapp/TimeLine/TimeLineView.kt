@@ -70,6 +70,8 @@ class TimeLineView : AppCompatActivity() {
         postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         postCursor.moveToPosition(BottomPost)
+        /*imgCursor = sqldb.rawQuery("SELECT * FROM diary_imgs ORDER BY reporting_date DESC;", null)
+        imgCursor.moveToPosition(BottomPost)*/
         var num = 0
         while (postCursor.moveToNext()) {
             val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
