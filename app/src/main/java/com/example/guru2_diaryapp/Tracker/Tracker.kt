@@ -134,9 +134,6 @@ class Tracker : AppCompatActivity(),
 
                     if (str_habit == "mood") {
                         when (checkLevel) {
-                            0 -> {
-                                calendarView.addDecorator(MoodSick(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
                             1 -> {
                                 calendarView.addDecorator(MoodBadDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
                             }
@@ -145,6 +142,12 @@ class Tracker : AppCompatActivity(),
                             }
                             3 -> {
                                 calendarView.addDecorator(MoodGoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            }
+                            4 -> {
+                                calendarView.addDecorator(MoodSickDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            }
+                            5 -> {
+                                calendarView.addDecorator(MoodSurpriseDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
                             }
                         }
                     }
