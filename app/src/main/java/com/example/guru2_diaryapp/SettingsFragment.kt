@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
-import com.example.guru2_diaryapp.SettingsNotificationManager
 
 @SuppressLint("ResourceType")
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -15,9 +14,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var date: ListPreference
     lateinit var font: ListPreference
     var prefListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
-    private val notificationsManager by lazy {
-        SettingsNotificationManager(requireContext())
-    }
+
     private val themeProvider by lazy { ThemeProvider(requireContext()) }
     private val themePreference by lazy {
         findPreference<ListPreference>(getString(R.string.theme_preferences_key))
