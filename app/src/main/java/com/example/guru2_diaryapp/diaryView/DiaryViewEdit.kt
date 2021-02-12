@@ -190,10 +190,10 @@ class DiaryViewEdit : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather','$category_id','$content',null)")
+            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather',0,'$content',null)")
         } else { // bindblob은 null 값을 파라미터로 받을 수 없음
             var insQuery : String = "INSERT INTO diary_posts (post_id, reporting_date, weather, category_id, content, img_file) " +
-                    "VALUES (null, $reporting_date, $weather, '$content', $category_id, ?)"
+                    "VALUES (null, $reporting_date, $weather, 0,'$content', ?)" // 다이어리 추가 삭제 기능이 완성될때까지 카테고리 id 잠시 0으로 해둘게요
             var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
