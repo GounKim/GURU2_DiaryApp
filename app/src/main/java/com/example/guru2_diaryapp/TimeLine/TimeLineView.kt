@@ -11,6 +11,8 @@ import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.get
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.DiaryData
@@ -53,6 +55,13 @@ class TimeLineView : AppCompatActivity() {
 
         }
 
+    }
+
+    //선택한 일기 삭제
+    fun DeletePost(id:Int){
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
+        sqldb.close()
     }
 
 
@@ -104,19 +113,17 @@ class TimeLineView : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId){
-            R.id.action_copy ->{
+        val pos = recyclerViewAdapter?.pos
+        val item = recyclerViewAdapter?.item[pos]
+        val pos_id = recyclerViewAdapter?.pos_id
+        DeletePost(pos_id)
 
-                return true
-            }
-            R.id.action_delete ->{
+        var intent:Intent = getIntent()
+        finish()
+        startActivity(intent)
 
-                return true
-            }
+        return true
 
-        }
-        return super.onContextItemSelected(item)
     }
-
 }
 

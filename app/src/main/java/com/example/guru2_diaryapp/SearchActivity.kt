@@ -86,21 +86,13 @@ class SearchActivity : AppCompatActivity() {
                     cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
+
+            val img:ByteArray = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            mydiaryData.add (DiaryData( id, date, weather, category, content, img))
             num++
         }
         sqldb.close()
         return mydiaryData
     }
 
-    //사진 정보를 불러오는 메소드
-    private fun loadImgs():ArrayList<String>{
-        var imgs = ArrayList<String>()
-        sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(cursor.moveToNext()){
-            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
-        }
-        return imgs
-    }
 }

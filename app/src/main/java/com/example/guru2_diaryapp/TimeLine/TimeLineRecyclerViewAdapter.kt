@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -20,8 +21,22 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
                                   var itemClick:(DiaryData, Int)->Unit):
         Adapter<TimeLineRecyclerViewAdapter.ItemViewHolder>() {
 
+    var pos:Int = -1
+    var pos_id:Int = 0
+
     //뷰홀더 클래스 내부 클래스로 선언
     inner class ItemViewHolder(view: View, itemClick: (DiaryData, Int) -> Unit) : RecyclerView.ViewHolder(view) {
+
+        init{
+            view.setOnLongClickListener {
+              pos = layoutPosition
+                pos_id = data[pos].id
+                return@setOnLongClickListener false
+            }
+            view.setOnCreateContextMenuListener{ menu, v, menuinfo->
+                menu.add("삭제")
+            }
+        }
 
         var dateTv = view.findViewById<TextView>(R.id.tlitem_date_tv)
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
@@ -61,6 +76,5 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
         override fun getItemCount(): Int {
             return data.size
         }
-
 }
 
