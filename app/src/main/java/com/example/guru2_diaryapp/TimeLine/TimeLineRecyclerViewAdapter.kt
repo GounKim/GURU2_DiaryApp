@@ -46,7 +46,7 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             categoryTv.text = data.category_name
             contentTv.text = data.content
 
-            if (data.imgs != null){
+            if (data.img != null){
                 imgVp.setVisibility(View.VISIBLE)
 
             } else {
