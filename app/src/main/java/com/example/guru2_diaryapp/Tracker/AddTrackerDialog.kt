@@ -36,9 +36,9 @@ class AddTrackerDialog: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var builder = AlertDialog.Builder(activity)
-        var inflater = requireActivity().layoutInflater
+
+        builder.setView(view);var inflater = requireActivity().layoutInflater
         var view = inflater.inflate(R.layout.add_tracker, null)
-        builder.setView(view);
 
         editTitle = view.findViewById(R.id.editHabbitTitle)
         spinLevel = view.findViewById(R.id.spinHabbitLevel)

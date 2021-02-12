@@ -86,9 +86,6 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTra
 
                 }
                 trackerData.add(TrackerData(str_habit, dateList, levelList))
-                //calView.add(id++)
-                id++
-                if (id == 2) break
             }
         }
         else { addShow() }
