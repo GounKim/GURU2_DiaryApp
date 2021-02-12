@@ -31,4 +31,14 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="theme_preferences_key">theme_preferences_key</string>
+
+    <string name="cookie_theme_preference_value">쿠키</string>
+    <string name="dark_theme_preference_value">다크</string>
+
+
+    <string name="cookie_theme_description">쿠키</string>
+    <string name="dark_theme_description">다크</string>
+
 </resources>
