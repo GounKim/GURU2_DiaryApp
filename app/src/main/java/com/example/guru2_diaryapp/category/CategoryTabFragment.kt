@@ -86,7 +86,7 @@ class CategoryTabFragment : Fragment() {
             myDiaryData.add(
                     DiaryData(
                             id, date, 0,
-                            "${category.second}", content, img
+                            "${category.second}", content, null
                     )
             )
             num++

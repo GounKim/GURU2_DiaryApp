@@ -70,10 +70,8 @@ class TimeLineView : AppCompatActivity() {
         postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         postCursor.moveToPosition(BottomPost)
-        imgCursor = sqldb.rawQuery("SELECT * FROM diary_imgs ORDER BY reporting_date DESC;", null)
-        imgCursor.moveToPosition(BottomPost)
         var num = 0
-        while (postCursor.moveToNext() && imgCursor.moveToNext() && num < 20) {
+        while (postCursor.moveToNext()) {
             val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
             val date =
                     postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
@@ -85,9 +83,9 @@ class TimeLineView : AppCompatActivity() {
                     postCursor.getString(postCursor.getColumnIndex("content"))
             // blob을 가져와서 decode하면 bitmap 형태가 돼서 이렇게 바꿔봤어요.
             // 아니다 싶으면 적용 안하셔도 됩니다
-            val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
-            val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-            mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
+            //val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
+            //val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
         sqldb.close()
@@ -96,9 +94,8 @@ class TimeLineView : AppCompatActivity() {
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val pos = recyclerViewAdapter?.pos
-        val item = recyclerViewAdapter?.item[pos]
-        val pos_id = recyclerViewAdapter?.pos_id
-
+        val pos_id = recyclerViewAdapter.pos_id
+        DeletePost(pos_id)
         var intent:Intent = getIntent()
         finish()
         startActivity(intent)

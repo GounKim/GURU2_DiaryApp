@@ -87,8 +87,8 @@ class SearchActivity : AppCompatActivity() {
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
 
-            val img:ByteArray = cursor.getBlob(cursor.getColumnIndex("img_file"))
-            mydiaryData.add (DiaryData( id, date, weather, category, content, img))
+            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
             num++
         }
         sqldb.close()

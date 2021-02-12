@@ -50,12 +50,12 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             categoryTv.text = data.category_name
             contentTv.text = data.content
 
-            if (data.img != null){
+            if (data.imgs != null){
                 img.setVisibility(View.VISIBLE)
 
             } else {
                 img.setVisibility(View.GONE)
-                img.setImageBitmap(data.img)
+                img.setImageBitmap(data.imgs)
             }
             itemView.setOnClickListener {
                 itemClick(data, num)
