@@ -8,11 +8,11 @@ class DiaryData {
     var weather:Int = 0
     var category_name: String = ""
     var content:String = ""
-    var img:String? = null
+    var img:ByteArray? = null
 
     constructor()
 
-    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, img:String?) {
+    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, img:ByteArray?) {
         this.id = id
         this.reporting_date = date
         this.weather = weather

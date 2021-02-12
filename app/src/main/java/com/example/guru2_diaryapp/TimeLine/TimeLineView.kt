@@ -81,7 +81,7 @@ class TimeLineView : AppCompatActivity() {
             val content =
                 cursor.getString(cursor.getColumnIndex("content"))
 
-            val img = cursor.getString(cursor.getColumnIndex("img_file"))
+            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
 
             mydiaryData.add (DiaryData( id, date, weather, category, content, img))
             num++
