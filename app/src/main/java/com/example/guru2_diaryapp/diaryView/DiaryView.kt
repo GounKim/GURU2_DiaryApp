@@ -116,40 +116,34 @@ class DiaryView : AppCompatActivity() {
 
     fun loadDiary() { // DB에서 데이터 가져오기
         sqllitedb = myDBHelper.readableDatabase
-        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
+
+        var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+                "ON diary_posts.category_id = diary_categorys.category_id WHERE post_id =  $postID", null)
 
         if(cursor.moveToFirst()) {
-            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
-            DiaryData().setWeatherIcon(weather, current_weather)
+            try {
+                val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
+                DiaryData().setWeatherIcon(weather, current_weather)
 
-            val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
-            current_category.text = DiaryData().loadCategoryName(category)
+                current_category.text = cursor.getString(cursor.getColumnIndex("category_name"))
 
-            diary_tv.text = cursor.getString(cursor.getColumnIndex("content")) // 일기 내용
-        }
-        cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // 이미지 가져오기
+                diary_tv.text = cursor.getString(cursor.getColumnIndex("content")) // 일기 내용
 
-        try {
-            if(cursor.moveToFirst()) {
-                val imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
                 diary_image.setImageBitmap(bitmap)
+            } catch (rte : RuntimeException) {
+                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
-        } catch (rte : RuntimeException) // 저장된 사진 용량이 2M가 넘을 경우
-        {
-            Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
-
         sqllitedb.close()
     }
 
     fun deleteDiary() { // 다이어리 삭제
         sqllitedb = myDBHelper.writableDatabase
         sqllitedb.execSQL("DELETE FROM diary_posts WHERE post_id = $postID;")
-        // 해당 글에 해당하는 사진들을 모두 지우기
-        sqllitedb.execSQL("DELETE FROM diary_imgs WHERE post_id = $postID;")
     }
 }
 

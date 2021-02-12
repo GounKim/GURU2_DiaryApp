@@ -41,8 +41,6 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
         var contentTv = view.findViewById<TextView>(R.id.tlitem_content_tv)
         var img = view.findViewById<ImageView>(R.id.timeline_img)
-        //var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
-        //var weatherIorn = view.findViewById<ImageView>(R.id.iv_weather)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: DiaryData, num: Int) {
@@ -50,12 +48,12 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             categoryTv.text = data.category_name
             contentTv.text = data.content
 
-            if (data.imgs != null){
+            if (data.imgs != null){ // 등록된 이미지가 있다면
                 img.setVisibility(View.VISIBLE)
-
-            } else {
-                img.setVisibility(View.GONE)
                 img.setImageBitmap(data.imgs)
+
+            } else { // 등록된 이미지가 없다면
+                img.setVisibility(View.GONE)
             }
             itemView.setOnClickListener {
                 itemClick(data, num)

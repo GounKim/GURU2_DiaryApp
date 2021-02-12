@@ -23,21 +23,26 @@ class TimeLineView : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var postCursor: Cursor
-    lateinit var imgCursor: Cursor
     var TimeLineData = ArrayList<DiaryData>()
 
     //View
     lateinit var timeline_rv: RecyclerView
     lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
+    lateinit var toolbar:androidx.appcompat.widget.Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timeline_view)
 
+        //툴바 장착
+        toolbar = findViewById(R.id.toolbar2)
+        setSupportActionBar(toolbar)
+
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.timeLineRv)
 
-            TimeLineData.addAll(PageDown(0))
+            TimeLineData.addAll(PageDown())
             recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
                 data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
                 var intent = Intent(this, DiaryView::class.java)
@@ -64,31 +69,47 @@ class TimeLineView : AppCompatActivity() {
 
 
     //추가로 글 불러오기
-    private fun PageDown(BottomPost:Int):ArrayList<DiaryData>{
+    private fun PageDown():ArrayList<DiaryData>{
         var mydiaryData = ArrayList<DiaryData>()
         sqldb = myDBHelper.readableDatabase
         postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
-        postCursor.moveToPosition(BottomPost)
-        var num = 0
-        while (postCursor.moveToNext()) {
-            val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
-            val date =
-                    postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
-            val weather =
-                    postCursor.getInt(postCursor.getColumnIndex("weather"))
-            val category =
-                    postCursor.getString(postCursor.getColumnIndex("category_name"))
-            val content =
-                    postCursor.getString(postCursor.getColumnIndex("content"))
-            // blob을 가져와서 decode하면 bitmap 형태가 돼서 이렇게 바꿔봤어요.
-            // 아니다 싶으면 적용 안하셔도 됩니다
-            //val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
-            //val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
-            num++
+
+        if (postCursor.moveToFirst()) { // 저장된 글이 있다면
+            var id : Int = 0
+            var date : Int = 0
+            var weather : Int = 0
+            var category : String = ""
+            var content : String = ""
+            var bitmap : Bitmap? = null
+
+            do {
+                try {
+                    id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
+                    date =
+                            postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
+                    weather =
+                            postCursor.getInt(postCursor.getColumnIndex("weather"))
+                    category =
+                            postCursor.getString(postCursor.getColumnIndex("category_name"))
+                    content =
+                            postCursor.getString(postCursor.getColumnIndex("content"))
+                    val image : ByteArray? = postCursor.getBlob(postCursor.getColumnIndex("img_file")) ?: null
+                    bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                }
+                catch (rte: RuntimeException) { // null 값이 있을 경우 exception
+                    bitmap = null
+                }
+                if (bitmap != null ) { // 등록한 이미지가 있다면
+                    mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
+                } else { // 등록한 이미지가 없다면
+                    mydiaryData.add (DiaryData( id, date, weather, category, content, null))
+                }
+            } while (postCursor.moveToNext())
+            sqldb.close()
+        } else { // 저장된 글이 없다면
+            Toast.makeText(this, "저장된 일기가 없습니다.", Toast.LENGTH_SHORT).show()
         }
-        sqldb.close()
         return mydiaryData
     }
 
@@ -101,7 +122,6 @@ class TimeLineView : AppCompatActivity() {
         startActivity(intent)
 
         return true
-
     }
 }
 
