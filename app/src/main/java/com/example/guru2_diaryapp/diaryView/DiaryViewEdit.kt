@@ -217,16 +217,21 @@ class DiaryViewEdit : AppCompatActivity() {
         }
         cursor = sqllitedb.rawQuery("SELECT * FROM diary_imgs WHERE post_id =  $postID;", null) // postID에 해당하는 사진 가져오기
 
-        if(cursor.moveToFirst())
-        {
-            do {
-                imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
-                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+        try {
+            if(cursor.moveToFirst())
+            {
+                do {
+                    imgID = cursor.getInt(cursor.getColumnIndex("img_id"))
+                    val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
-                image_preview.setImageBitmap(bitmap)
-            } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠 -> 테이블 변경 후 수정하기
+                    image_preview.setImageBitmap(bitmap)
+                } while(cursor.moveToNext()) // 사진 여러장 넣기 위해 while문 만들어둠 -> 테이블 변경 후 수정하기
+            }
+        } catch (rte : RuntimeException) {
+            Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
+
         sqllitedb.close()
     }
 
@@ -388,7 +393,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 override fun onProviderEnabled(provider: String) {}
                 override fun onProviderDisabled(provider: String) {}
             }
-            locationManager.requestLocationUpdates(
+            locationManager.requestLocationUpdates( // 위치 업데이트 관련
                 LocationManager.GPS_PROVIDER,
                 10000,
                 1f,
@@ -413,6 +418,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
             override fun onFailure(call: retrofit2.Call<JsonObject>, t: Throwable) {
                 Log.d("weather", "Failure : ${t.message.toString()}")
+                Toast.makeText(this@DiaryViewEdit, "날씨를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: retrofit2.Call<JsonObject>, response: Response<JsonObject>) {
@@ -467,7 +473,7 @@ class DiaryViewEdit : AppCompatActivity() {
     // 현재 시간
     private fun getCurrentTime() : String {
         val now = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now)
+        val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now) // 시:분 형태
 
         return dateFormat
     }

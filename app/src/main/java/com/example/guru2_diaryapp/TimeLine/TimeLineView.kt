@@ -76,6 +76,8 @@ class TimeLineView : AppCompatActivity() {
                     postCursor.getString(postCursor.getColumnIndex("category_name"))
             val content =
                     postCursor.getString(postCursor.getColumnIndex("content"))
+            // blob을 가져와서 decode하면 bitmap 형태가 돼서 이렇게 바꿔봤어요.
+            // 아니다 싶으면 적용 안하셔도 됩니다
             val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
             val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
             mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
