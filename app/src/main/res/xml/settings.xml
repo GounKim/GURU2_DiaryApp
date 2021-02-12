@@ -12,7 +12,7 @@
     <PreferenceCategory android:title="테마">
         <ListPreference
             android:title="테마"
-            android:defaultValue="@string/cookie_theme_preference_value"
+            android:defaultValue="string/theme_preferences_key"
             android:key="@string/theme_preferences_key"
             android:entries="@array/array_themes"
             android:entryValues="@array/array_themes">

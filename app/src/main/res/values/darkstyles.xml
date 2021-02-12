@@ -8,6 +8,7 @@
         <item name="backgroundColor">#303030</item>
         <item name="cardBackgroundColor">#424242</item>
         <item name="android:textColor">#FFFFFF</item>
+
         <item name="android:toolbarStyle">@color/main_color</item>
         <item name="buttonTint">#CCCCCC</item>
         <!--item name="navibackground">@color/darkblack</item>

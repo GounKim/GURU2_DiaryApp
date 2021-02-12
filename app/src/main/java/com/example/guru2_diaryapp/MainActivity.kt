@@ -18,11 +18,8 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.guru2_diaryapp.CalendarView.OnDayDeco
-import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
-import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.CalendarView.*
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
-import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
 import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -36,7 +33,7 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
-            CheckTrakerDialog.OnCompleteListener, AddTrackerDialog.OnCompleteListener{
+            CheckTrakerDialog.OnCompleteListener, SetMoodDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -174,53 +171,38 @@ class MainActivity : AppCompatActivity(),
             }
 
             // 트래커 영역
-            cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '${newDate}';", null)
+            cursor = sqldb.rawQuery("SELECT * FROM habit_lists;", null)
 
             mainTrackerLayout.removeAllViews()
-
             while (cursor.moveToNext()) {
                 var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
 
-                var btnHabbit: Button = Button(this)
-                btnHabbit.text = habit
-                var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
-                lp.setMargins(0,0,0,10)
-                btnHabbit.layoutParams = lp
+                if (habit != "mood") {
+                    var btnHabbit: Button = Button(this)
+                    btnHabbit.text = habit
+                    var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100)
+                    lp.setMargins(0, 0, 0, 10)
+                    btnHabbit.layoutParams = lp
 
-                changeButton(btnHabbit, habit, newDate)
-                mainTrackerLayout.addView(btnHabbit)
-                btnHabbit.setOnClickListener {
-                    show(btnHabbit, habit, newDate)
+                    changeButton(btnHabbit, habit, newDate)
+                    mainTrackerLayout.addView(btnHabbit)
+                    btnHabbit.setOnClickListener {
+                        show(btnHabbit, habit, newDate)
+                    }
                 }
             }
 
-            imgViewAdd.setOnClickListener {
-                addShow()
-            }
 
-            /*
-            mood_weather_lists 테이블을 합쳤습니다. 맞게 수정해둘게요! 무드 부분도 주석처리 했습니다.
-            cursor = sqldb.rawQuery("SELECT mood "
-                                            + "FROM mood_weather_lists "
-                                            + "WHERE reporting_date = '"+ newDate + "';", null)
-
-
+            // mood 추가
+            cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
 
             if (cursor.moveToFirst()) {
-                var mood = cursor.getInt(0)
-                if (mood == 0) {
-                    moodImage.setImageResource(R.drawable.ic_mood_good)
-                }
-                else if (mood == 1) {
-                    moodImage.setImageResource(R.drawable.ic_mood_bad)
-                }
-                else {
-                    moodImage.setImageResource(R.drawable.ic_baseline_add_reaction_24)
-                }
+                var moodCheck = cursor.getInt(0)
+                setMoodImage(moodCheck)
             }
-
-
-             */
+            moodImage.setOnClickListener {
+                setMoodShow(newDate)
+            }
 
             cursor.close()
             sqldb.close()
@@ -317,10 +299,13 @@ class MainActivity : AppCompatActivity(),
 
     override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
-        Toast.makeText(this, "$newDate , $habit , $habitLevel", Toast.LENGTH_SHORT).show()
-        sqldb.execSQL("UPDATE habit_check_lists SET check_result = $habitLevel WHERE reporting_date = '$newDate'AND habit = '$habit';")
-
+        val cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate';",null)
+        if (!cursor.moveToFirst()) {
+            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, '$habit', $habitLevel);")
+        }
         changeButton(button, habit, newDate)
+        cursor.close()
     }
 
     fun changeButton(button: Button, habit: String, newDate: Int) {
@@ -332,9 +317,9 @@ class MainActivity : AppCompatActivity(),
 
             if (str_habit == habit) {
                 when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
-                    0 -> button.setBackgroundResource(R.drawable.button_bad)
-                    1 -> button.setBackgroundResource(R.drawable.button_soso)
-                    2 -> button.setBackgroundResource(R.drawable.button_good)
+                    1 -> button.setBackgroundResource(R.drawable.button_bad)
+                    2 -> button.setBackgroundResource(R.drawable.button_soso)
+                    3 -> button.setBackgroundResource(R.drawable.button_good)
                 }
                 cursor.moveToLast()
             }
@@ -343,13 +328,30 @@ class MainActivity : AppCompatActivity(),
         cursor.close()
     }
 
-    // 트래커 추가
-    private fun addShow() {
-        val newFragment = AddTrackerDialog()
+    // mood 설정
+    private fun setMoodShow(newDate: Int) {
+        val newFragment = SetMoodDialog(newDate)
         newFragment.show(supportFragmentManager,"dialog")
     }
-    override fun onInputedData(habitTitle: String) {
+    override fun onInputedData(mood: Int, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
-        sqldb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
+        val cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE habit = 'mood' AND reporting_date = '$newDate';",null)
+
+        if (!cursor.moveToFirst()) {
+            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, 'mood', $mood);")
+        }
+        cursor.close()
+    }
+
+    fun setMoodImage(mood: Int) {
+        when (mood) {
+            0 -> moodImage.setImageResource(R.drawable.ic__mood_add)
+            1 -> moodImage.setImageResource(R.drawable.ic_mood_bad_main)
+            2 -> moodImage.setImageResource(R.drawable.ic_mood_soso_main)
+            3 -> moodImage.setImageResource(R.drawable.ic_mood_good_main)
+            4 -> moodImage.setImageResource(R.drawable.ic_mood_sick_main)
+            5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise_main)
+        }
     }
 }

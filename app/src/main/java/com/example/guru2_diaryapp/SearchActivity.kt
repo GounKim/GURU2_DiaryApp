@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -20,14 +19,15 @@ class SearchActivity : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor: Cursor
+
+    //타임라인
     var TimeLineData = ArrayList<DiaryData>()
+
+    //검색 키워드
     lateinit var searchKW:String
 
-    //검색 옵션
-    lateinit var search: SpannableStringBuilder
-
     //View
-    lateinit var search_et:EditText
+    lateinit var search_v:EditText
     lateinit var timeline_rv: RecyclerView
     lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
@@ -37,11 +37,11 @@ class SearchActivity : AppCompatActivity() {
 
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.search_rv)
-        search_et = findViewById(R.id.edtSearch)
+        search_v = findViewById(R.id.search_v)
 
-        search_et.setOnEditorActionListener { _, actionId, _ ->
+        search_v.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                searchKW = search_et.text.toString()
+                searchKW = search_v.text.toString()
                 TimeLineData = PageDown(0)
                 true
             }else{

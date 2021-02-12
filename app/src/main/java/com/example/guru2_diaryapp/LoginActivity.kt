@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 
+
+// 구글 로그인 구현
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var btngoogleSignIn: com.google.android.gms.common.SignInButton

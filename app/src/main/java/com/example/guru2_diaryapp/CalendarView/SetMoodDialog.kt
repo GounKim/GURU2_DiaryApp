@@ -9,13 +9,11 @@ import android.util.Log
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 
-class CheckTrakerDialog(btn: Button, hb: String, nd: Int): DialogFragment() {
-    var button: Button = btn
-    var habit: String = hb
+class SetMoodDialog (nd: Int): DialogFragment() {
     var newDate: Int = nd
 
     interface OnCompleteListener{
-        fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int)
+        fun onInputedData(mood: Int, newDate: Int)
     }
 
     lateinit var mCallback: OnCompleteListener
@@ -33,11 +31,11 @@ class CheckTrakerDialog(btn: Button, hb: String, nd: Int): DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var builder = AlertDialog.Builder(activity)
-        builder.setTitle("목표를 달성하셨나요?")
+        builder.setTitle("오늘의 기분은?")
 
-        var levelArray = arrayOf("NotToday", "Bad", "SoSo", "Good")
+        var levelArray = arrayOf("Bad", "SoSo", "Good", "Sick", "Surprise")
         builder.setItems(levelArray, DialogInterface.OnClickListener { dialog, which ->
-            mCallback.onInputedData(which, button, habit, newDate)
+            mCallback.onInputedData(which + 1, newDate)
             dismiss()
         })
 

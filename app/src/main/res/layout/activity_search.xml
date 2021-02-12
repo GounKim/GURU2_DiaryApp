@@ -9,16 +9,16 @@
     >
 
     <EditText
-        android:id="@+id/edtSearch"
+        android:id="@+id/search_v"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="4dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
         android:background="@drawable/search_border"
-        android:drawableRight="@drawable/ic_baseline_search_24"
+        android:drawableEnd="@drawable/ic_baseline_search_24"
+        android:ems="10"
         android:hint="검색 단어"
-        android:imeOptions="actionSearch" />
+        android:imeOptions="actionSearch"
+        android:inputType="textShortMessage" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_rv"
