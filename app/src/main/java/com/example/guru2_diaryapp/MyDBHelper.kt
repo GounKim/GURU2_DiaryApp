@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
 class MyDBHelper(
-        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,1) {
+        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,2) {
     lateinit var sql:String
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -42,17 +42,12 @@ class MyDBHelper(
         //다이어리 글 저장 테이블
         sql = "CREATE TABLE diary_posts (post_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         sql += "reporting_date INTEGER NOT NULL, weather INTEGER, "
-        sql += "category_id INTEGER DEFAULT 0 NOT NULL, content TEXT, "
+        sql += "category_id INTEGER DEFAULT 0 NOT NULL, content TEXT, img_file BLOB,"
         sql += "CONSTRAINT category_fk FOREIGN KEY (category_id) "
         sql += "REFERENCES diary_categorys (category_id) ON DELETE SET DEFAULT);"
         db?.execSQL(sql)
         Log.d("DB","실행"+sql)
 
-        //이미지 경로 저장 테이블
-        db?.execSQL("CREATE TABLE diary_imgs(img_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "post_id INTEGER,img_file BLOB NOT NULL," +
-                "CONSTRAINT post_id_fk FOREIGN KEY (post_id) REFERENCES diary_posts (post_id)" +
-                "ON DELETE CASCADE);")
     }
 
     fun resetTable(db:SQLiteDatabase,table:String): Boolean {
@@ -61,7 +56,6 @@ class MyDBHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE diary_imgs;")
         db?.execSQL("DROP TABLE diary_posts;")
         db?.execSQL("DROP TABLE diary_categorys;")
         db?.execSQL("DROP TABLE habit_check_lists;")

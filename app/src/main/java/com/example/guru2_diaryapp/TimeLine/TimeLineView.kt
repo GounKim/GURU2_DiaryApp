@@ -9,6 +9,8 @@ import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.get
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.DiaryData
@@ -52,6 +54,13 @@ class TimeLineView : AppCompatActivity() {
 
     }
 
+    //선택한 일기 삭제
+    fun DeletePost(id:Int){
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
+        sqldb.close()
+    }
+
 
     //추가로 글 불러오기
     private fun PageDown(BottomPost:Int):ArrayList<DiaryData>{
@@ -61,7 +70,7 @@ class TimeLineView : AppCompatActivity() {
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         cursor.moveToPosition(BottomPost)
         var num = 0
-        while (cursor.moveToNext() && num < 20) {
+        while (cursor.moveToNext() && num < 50) {
             val id = cursor.getInt(cursor.getColumnIndex("post_id"))
             val date =
                 cursor.getInt(cursor.getColumnIndex("reporting_date"))
@@ -71,43 +80,28 @@ class TimeLineView : AppCompatActivity() {
                 cursor.getString(cursor.getColumnIndex("category_name"))
             val content =
                 cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
+
+            val img = cursor.getString(cursor.getColumnIndex("img_file"))
+
+            mydiaryData.add (DiaryData( id, date, weather, category, content, img))
             num++
         }
         sqldb.close()
         return mydiaryData
     }
 
-    //사진 정보를 불러오는 메소드
-    private fun loadImgs():ArrayList<String>{
-        var imgs = ArrayList<String>()
-        sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(cursor.moveToNext()){
-            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
-        }
-        return imgs
-    }
-
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        menuInflater.inflate(R.menu.context, menu)
-    }
-
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        when(item?.itemId){
-            R.id.action_copy ->{
+        val pos = recyclerViewAdapter?.pos
+        val item = recyclerViewAdapter?.item[pos]
+        val pos_id = recyclerViewAdapter?.pos_id
+        DeletePost(pos_id)
 
-                return true
-            }
-            R.id.action_delete ->{
+        var intent:Intent = getIntent()
+        finish()
+        startActivity(intent)
 
-                return true
-            }
+        return true
 
-        }
-        return super.onContextItemSelected(item)
     }
-
 }
 

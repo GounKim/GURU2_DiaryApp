@@ -8,17 +8,17 @@ class DiaryData {
     var weather:Int = 0
     var category_name: String = ""
     var content:String = ""
-    var imgs:ArrayList<String>? = null
+    var img:String? = null
 
     constructor()
 
-    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, imgs:ArrayList<String>?) {
+    constructor(id: Int, date: Int, weather: Int, category_name: String, content: String?, img:String?) {
         this.id = id
         this.reporting_date = date
         this.weather = weather
         this.category_name = category_name
         this.content = content.toString()
-        this.imgs = imgs
+        this.img = img
     }
 
     // 공유 드라이브에 올려둔 날씨 파일 참고
