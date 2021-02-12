@@ -23,7 +23,6 @@ class TimeLineView : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var postCursor: Cursor
-    lateinit var imgCursor: Cursor
     var TimeLineData = ArrayList<DiaryData>()
 
     //View
@@ -70,25 +69,25 @@ class TimeLineView : AppCompatActivity() {
         postCursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id ORDER BY reporting_date DESC;",null)
         postCursor.moveToPosition(BottomPost)
-        /*imgCursor = sqldb.rawQuery("SELECT * FROM diary_imgs ORDER BY reporting_date DESC;", null)
-        imgCursor.moveToPosition(BottomPost)*/
         var num = 0
         while (postCursor.moveToNext()) {
-            val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
-            val date =
-                    postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
-            val weather =
-                    postCursor.getInt(postCursor.getColumnIndex("weather"))
-            val category =
-                    postCursor.getString(postCursor.getColumnIndex("category_name"))
-            val content =
-                    postCursor.getString(postCursor.getColumnIndex("content"))
-            // blob을 가져와서 decode하면 bitmap 형태가 돼서 이렇게 바꿔봤어요.
-            // 아니다 싶으면 적용 안하셔도 됩니다
-            //val image : ByteArray? = imgCursor.getBlob(imgCursor.getColumnIndex("img_file")) ?: null
-            //val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
-            num++
+            try {
+                val id = postCursor.getInt(postCursor.getColumnIndex("post_id"))
+                val date =
+                        postCursor.getInt(postCursor.getColumnIndex("reporting_date"))
+                val weather =
+                        postCursor.getInt(postCursor.getColumnIndex("weather"))
+                val category =
+                        postCursor.getString(postCursor.getColumnIndex("category_name"))
+                val content =
+                        postCursor.getString(postCursor.getColumnIndex("content"))
+                val image : ByteArray? = postCursor.getBlob(postCursor.getColumnIndex("img_file")) ?: null
+                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
+                num++
+            } catch (rte : RuntimeException) {
+                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
         sqldb.close()
         return mydiaryData

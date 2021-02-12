@@ -203,7 +203,8 @@ class DiaryViewEdit : AppCompatActivity() {
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        var cursor : Cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID;", null)
+        var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
+                "ON diary_posts.category_id = diary_categorys.category_id WHERE post_id =  $postID", null)
 
         if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
             try {
@@ -211,8 +212,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 descWeather = DiaryData().setWeatherDesc(weather)
                 DiaryData().setWeatherIcon(weather, current_weather)
 
-                val category = cursor.getInt(cursor.getColumnIndex("category_id")) // 카테고리
-                selected_category = DiaryData().loadCategoryName(category)
+                selected_category = cursor.getString(cursor.getColumnIndex("category_name"))
 
                 diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
 
