@@ -81,9 +81,10 @@ class TimeLineView : AppCompatActivity() {
             val content =
                 cursor.getString(cursor.getColumnIndex("content"))
 
-            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            //val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
 
-            mydiaryData.add (DiaryData( id, date, weather, category, content, img))
+
+            mydiaryData.add(DiaryData(id, date, weather, category, content, null))
             num++
         }
         sqldb.close()
@@ -94,7 +95,6 @@ class TimeLineView : AppCompatActivity() {
         val pos = recyclerViewAdapter?.pos
         val item = recyclerViewAdapter?.item[pos]
         val pos_id = recyclerViewAdapter?.pos_id
-        DeletePost(pos_id)
 
         var intent:Intent = getIntent()
         finish()

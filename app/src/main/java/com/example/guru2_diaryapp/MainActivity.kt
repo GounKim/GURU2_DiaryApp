@@ -21,8 +21,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
-import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
+import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
 import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -125,20 +125,51 @@ class MainActivity : AppCompatActivity(),
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
-            while (cursor.moveToNext()) {
+            // 그전에 만들어진 category view들 없애기
+            categoryLayout.removeAllViews()
+            val categories = ArrayList<TextView>()
+            val postIds = ArrayList<Int>()
+            var i : Int = 0
 
-                if(cursor != null){
+            if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
+                i = 0
+                do{
+                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
+                    postID = cursor.getInt(cursor.getColumnIndex("post_id"))
+                    postIds.add(postID)
+
                     categoryLayout.visibility = View.VISIBLE
-                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
+                    moodImage.visibility = View.GONE
+
                     val category = TextView(this)
                     category.text = categoryText
                     categoryLayout.addView(category,0)
-                    moodImage.visibility = View.GONE
-                }
+                    categories.add(category)
+                    i++
+                } while(cursor.moveToNext())
+            } else { // 작성된 글이 없을떄
+                categoryLayout.visibility == View.VISIBLE
+                moodImage.visibility = View.VISIBLE
+                val text = TextView(this)
+                text.text = "저장된 일기가 없습니다."
+                text.gravity = 1 // 글을 중앙에 배치
+                categoryLayout.addView(text)
 
-                else{
-                    categoryLayout.visibility == View.GONE
-                    moodImage.visibility = View.VISIBLE
+                categoryLayout.setOnClickListener {
+                    val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
+                    intent.putExtra("newDate", newDate)
+                    startActivity(intent)
+                }
+            }
+
+            for (x in 0..i-1) {
+                categories[x].setOnClickListener() {
+                    val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
+                    intent.putExtra("newDate", newDate)
+                    intent.putExtra("postID", postIds[x])
+                    startActivity(intent)
                 }
             }
 
@@ -196,15 +227,6 @@ class MainActivity : AppCompatActivity(),
 
             bottomSheetDialog.show()
         }
-
-        categoryLayout.setOnClickListener() {
-
-            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-            intent.putExtra("select_date", selectDate)
-            intent.putExtra("newDate", newDate)
-            startActivity(intent)
-        }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
