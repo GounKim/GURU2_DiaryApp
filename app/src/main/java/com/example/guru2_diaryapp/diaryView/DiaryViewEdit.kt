@@ -16,7 +16,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -43,11 +42,12 @@ import java.util.*
 
 
 class DiaryViewEdit : AppCompatActivity() {
-
+    // 권한 관련 변수
     private val REQUEST_READ_EXTERNAL_STORAGE = 1000
     private val REQUEST_CODE = 0
     private val REQUEST_WEATHER_CODE = 1001
     private val REQUEST_GPS_CODE = 1002
+    // 날씨 관련 변수
     private var lat : String = ""
     private var lon : String = ""
     private var apiID : String = "4dd8b7eb922a5d7e8da094cb922921f2"
@@ -108,27 +108,19 @@ class DiaryViewEdit : AppCompatActivity() {
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when(item?.itemId) {
-                R.id.mood -> { // 삭제 예정
-
-                }
                 R.id.weather -> { // 현재 날씨 추가
                     weatherPermission()
                 }
-                R.id.current_time -> {
+                R.id.current_time -> { // 현재 시간 추가
                     diary_et.append(getCurrentTime())
 
                 }
-                R.id.sticker -> {
-
-                }
-                R.id.image -> {
+                R.id.image -> { // 이미지 추가
                     selectGallery()
                 }
             }
             return@OnNavigationItemSelectedListener true
         })
-
-
     }
 
     // 상단에 메뉴
@@ -146,11 +138,11 @@ class DiaryViewEdit : AppCompatActivity() {
                 startActivity(intent)
             }
             R.id.action_save -> {
-                if (postID == -1)
+                if (postID == -1) // 이전에 작성된 글이 없다면
                 {
-                    saveDiary()
-                } else {
-                    updateDiary()
+                    saveDiary() // 저장
+                } else { // 작성된 글이 있다면
+                    updateDiary() // 업데이트
                 }
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
@@ -162,7 +154,7 @@ class DiaryViewEdit : AppCompatActivity() {
     }
 
     // 뒤로가기 동작
-    override fun onBackPressed() {
+    override fun onBackPressed() { // 일기 작성이 취소됩니다.
         var dig = AlertDialog.Builder(this)
         dig.setTitle("작성 취소")
         dig.setMessage("일기 작성을 취소하시겠습니까?")

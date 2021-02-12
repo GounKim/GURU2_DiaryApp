@@ -121,9 +121,10 @@ class MainActivity : AppCompatActivity(),
 
             // 그전에 만들어진 category view들 없애기
             categoryLayout.removeAllViews()
-            val categories = ArrayList<TextView>()
-            val postIds = ArrayList<Int>()
-            var i : Int = 0
+
+            val categories = ArrayList<TextView>() // 카테고리들이 담길 배열
+            val postIds = ArrayList<Int>() // postID들이 담길 배열
+            var i : Int = 0 // 카테고리 개수 세는 용도
 
             if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
                 i = 0
@@ -151,16 +152,16 @@ class MainActivity : AppCompatActivity(),
 
                 categoryLayout.setOnClickListener {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
+                    intent.putExtra("select_date", selectDate)
                     intent.putExtra("newDate", newDate)
                     startActivity(intent)
                 }
             }
 
-            for (x in 0..i-1) {
+            for (x in 0..i-1) { // 여러개의 카테고리가 생긴 경우, 각각 클릭 리스너 넣어주기
                 categories[x].setOnClickListener() {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
+                    intent.putExtra("select_date", selectDate)
                     intent.putExtra("newDate", newDate)
                     intent.putExtra("postID", postIds[x])
                     startActivity(intent)
