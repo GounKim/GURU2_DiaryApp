@@ -2,17 +2,14 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -20,20 +17,19 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.OnDayDeco
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
-import com.example.guru2_diaryapp.TimeLine.TimeLineView
+import com.example.guru2_diaryapp.CalendarView.CheckTrakerDialog
+import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
-            CheckTrakerDialog.OnCompleteListener{
+            CheckTrakerDialog.OnCompleteListener, AddTrackerDialog.OnCompleteListener{
 
     // 화면
     lateinit var calendarView: MaterialCalendarView
@@ -48,6 +44,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
+    lateinit var imgViewAdd: ImageView
 
     // DB
     lateinit var myDBHelper: MyDBHelper
@@ -56,7 +53,6 @@ class MainActivity : AppCompatActivity(),
     // 일기로 전달될 날짜
     lateinit var selectDate : String
     var newDate : Int = 0
-    var postID : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +82,7 @@ class MainActivity : AppCompatActivity(),
         categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
+        imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
 
 
 
@@ -105,6 +102,7 @@ class MainActivity : AppCompatActivity(),
 
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
+
             var year = date.year
             var month = date.month + 1
             var day = date.day
@@ -119,51 +117,20 @@ class MainActivity : AppCompatActivity(),
 
              //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
-            // 그전에 만들어진 category view들 없애기
-            categoryLayout.removeAllViews()
-            val categories = ArrayList<TextView>()
-            val postIds = ArrayList<Int>()
-            var i : Int = 0
+            while (cursor.moveToNext()) {
 
-            if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
-                i = 0
-                do{
-                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
-                    postID = cursor.getInt(cursor.getColumnIndex("post_id"))
-                    postIds.add(postID)
-
+                if(cursor != null){
                     categoryLayout.visibility = View.VISIBLE
-                    moodImage.visibility = View.GONE
-
+                    var categoryText = cursor.getString(cursor.getColumnIndex("category_name")).toString()
                     val category = TextView(this)
                     category.text = categoryText
                     categoryLayout.addView(category,0)
-                    categories.add(category)
-                    i++
-                } while(cursor.moveToNext())
-            } else { // 작성된 글이 없을떄
-                categoryLayout.visibility == View.VISIBLE
-                moodImage.visibility = View.VISIBLE
-                val text = TextView(this)
-                text.text = "저장된 일기가 없습니다."
-                text.gravity = 1 // 글을 중앙에 배치
-                categoryLayout.addView(text)
-
-                categoryLayout.setOnClickListener {
-                    val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
-                    startActivity(intent)
+                    moodImage.visibility = View.GONE
                 }
-            }
 
-            for (x in 0..i-1) {
-                categories[x].setOnClickListener() {
-                    val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
-                    intent.putExtra("postID", postIds[x])
-                    startActivity(intent)
+                else{
+                    categoryLayout.visibility == View.GONE
+                    moodImage.visibility = View.VISIBLE
                 }
             }
 
@@ -180,18 +147,16 @@ class MainActivity : AppCompatActivity(),
                 var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100)
                 lp.setMargins(0,0,0,10)
                 btnHabbit.layoutParams = lp
-/*
-                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
-                    0 -> btnHabbit.setBackgroundResource(R.drawable.button_bad)
-                    1 -> btnHabbit.setBackgroundResource(R.drawable.button_soso)
-                    2 -> btnHabbit.setBackgroundResource(R.drawable.button_good)
-                }
-*/
+
                 changeButton(btnHabbit, habit, newDate)
                 mainTrackerLayout.addView(btnHabbit)
                 btnHabbit.setOnClickListener {
                     show(btnHabbit, habit, newDate)
                 }
+            }
+
+            imgViewAdd.setOnClickListener {
+                addShow()
             }
 
             /*
@@ -223,6 +188,15 @@ class MainActivity : AppCompatActivity(),
 
             bottomSheetDialog.show()
         }
+
+        categoryLayout.setOnClickListener() {
+
+            val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
+            intent.putExtra("select_date", selectDate)
+            intent.putExtra("newDate", newDate)
+            startActivity(intent)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -255,11 +229,11 @@ class MainActivity : AppCompatActivity(),
                 startActivity(intent)
             }
             R.id.nav_search -> {
-                val intent = Intent(this, SearchActivity::class.java)
+                val intent = Intent(this, SelectActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
+                val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
                 startActivity(intent)
             }
         }
@@ -337,5 +311,15 @@ class MainActivity : AppCompatActivity(),
         }
 
         cursor.close()
+    }
+
+    // 트래커 추가
+    private fun addShow() {
+        val newFragment = AddTrackerDialog()
+        newFragment.show(supportFragmentManager,"dialog")
+    }
+    override fun onInputedData(habitTitle: String) {
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
     }
 }

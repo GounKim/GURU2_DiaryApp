@@ -1,47 +1,44 @@
 package com.example.guru2_diaryapp.Tracker
 
 
+import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
-import android.view.Gravity.CENTER
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
-import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
-import com.example.guru2_diaryapp.CalendarView.SundDayDeco
-import com.example.guru2_diaryapp.MoodDeco
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
-import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import java.util.*
 import kotlin.collections.ArrayList
 
-class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
+class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener, DelTrackerDialog.OnCompleteListener {
 
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqlitedb: SQLiteDatabase
     lateinit var toolbar: Toolbar
 
-    lateinit var trackerCal: MaterialCalendarView
-    lateinit var tvHabit: TextView
+    lateinit var trackerRecyclerView: RecyclerView
 
-    lateinit var trackerLayout: GridLayout
     lateinit var ivPreMonth: ImageView
     lateinit var ivNextMonth: ImageView
     lateinit var tvYearMonth: TextView
 
     var thisYear: Int = CalendarDay.today().year
     var thisMonth: Int = CalendarDay.today().month + 1
-    var calView = ArrayList<MaterialCalendarView>(30)
+    var calView = ArrayList<Int>(30)
+
+    var trackerData = ArrayList<TrackerData>(31)
+    var dateList = ArrayList<Int>(31)
+    var levelList = ArrayList<Int>(31)
+
+    private lateinit var tAdapter : TrackerRecyclerViewAapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,109 +51,46 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
-        trackerCal = findViewById(R.id.trackerCal)
-        tvHabit = findViewById(R.id.tvHabbit)
-
-        trackerLayout = findViewById(R.id.trackerLayout)
         ivPreMonth = findViewById(R.id.imgViewPreMonth)
         ivNextMonth = findViewById(R.id.imgViewNextMonth)
         tvYearMonth = findViewById(R.id.tvYearMonth)
 
-        trackerCal.state().edit()
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-        trackerCal.topbarVisible = false
-        //trackerCal.setCurrentDate(Date(System.currentTimeMillis()))
-        //trackerCal.setDateSelected(Date(System.currentTimeMillis()),true)
-        trackerCal.addDecorator(SundDayDeco())
-        trackerCal.addDecorator(SaturdayDeco())
-        //trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(2021,3,20)))
+        trackerRecyclerView = findViewById(R.id.trackerRecyclerView)
 
-        trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
+        // Tracker 리사이클러뷰 (GridLayout사용)
+        tAdapter = TrackerRecyclerViewAapter(this, trackerData)
+        trackerRecyclerView.adapter = tAdapter
+        trackerRecyclerView.setHasFixedSize(true)
+
+
+        val gridLayoutManager = GridLayoutManager(applicationContext, 2)
+        trackerRecyclerView.layoutManager = gridLayoutManager
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
         nCursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists", null)
 
+        var id: Int = 1000
         if (nCursor.moveToFirst()) {
             while (nCursor.moveToNext()) {
+                dateList.clear()
+                levelList.clear()
                 var str_habit = nCursor.getString(nCursor.getColumnIndex("habit")).toString()
-
-                if (str_habit != "mood") {
-                    var linearLayout: LinearLayout = LinearLayout(this)
-                    var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-                    layoutlp.setMargins(10,10,10,10)
-                    layoutlp.gravity = CENTER
-                    linearLayout.layoutParams = layoutlp
-                    linearLayout.orientation = LinearLayout.VERTICAL
-                    var textView: TextView = TextView(this)
-                    textView.text = str_habit
-                    textView.textSize = 17f
-                    textView.gravity = CENTER
-
-                    var calendarView: MaterialCalendarView = MaterialCalendarView(this)
-                    calendarView.state().edit()
-                            .setFirstDayOfWeek(Calendar.MONDAY)
-                            .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                            .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                            .setCalendarDisplayMode(CalendarMode.MONTHS)
-                            .commit()
-                    var callp = LinearLayout.LayoutParams(485, 485)
-                    callp.setMargins(20,30,0,0)
-                    calendarView.layoutParams = callp
-                    calendarView.topbarVisible = false
-                    calendarView.addDecorator(SundDayDeco())
-                    calendarView.addDecorator(SaturdayDeco())
-                    calView.add(calendarView)
-
-                    linearLayout.addView(textView)
-                    linearLayout.addView(calendarView)
-                    trackerLayout.addView(linearLayout)
-                    if (calView.size % 2 == 0) trackerLayout.rowCount++
-                }
-                else { tvHabit.text = str_habit }
-
                 cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists WHERE habit = '${str_habit}';",null)
-
-                // 첫 커서는 mood
-
                 while (cCursor.moveToNext()) {
                     var date = cCursor.getString(cCursor.getColumnIndex("reporting_date")).toInt()
                     var checkLevel = cCursor.getString(cCursor.getColumnIndex("check_result")).toInt()
 
-                    var year = date / 10000
-                    var month = (date % 10000) / 100
-                    var day = (date % 10000) % 100
+                    dateList.add(date)
+                    levelList.add(checkLevel)
 
-                    if (str_habit == "mood") {
-                        trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(year, month, day), checkLevel))
-                    }
-                    else {
-                        val calendar = Calendar.getInstance()
-                        calendar.set(year, month - 1, day)
-
-                        when (checkLevel) {
-                            0 -> {
-                                trackerCal.selectionColor = Color.parseColor("#ff5555")
-                                trackerCal.setDateSelected(calendar, true);
-                            }
-                            1 -> {
-                                trackerCal.selectionColor = Color.parseColor("#fca70a")
-                                trackerCal.setDateSelected(calendar, true);
-                            }
-                            2 -> {
-                                trackerCal.selectionColor = Color.parseColor("#ace5f0")
-                                trackerCal.setDateSelected(calendar, true);
-                            }
-                        }
-                    }
                 }
+                trackerData.add(TrackerData(str_habit, dateList, levelList))
+                calView.add(id++)
             }
         }
-        //else { show() }
+        else { addShow() }
+
 
         /* Month 이동 */
         // 모든 캘린더뷰 아이디 받아오기
@@ -177,9 +111,9 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
                 calMonth = 12
             }
             writeCalDate(calYear, calMonth)
-            trackerCal.goToPrevious()
             for (i in calView) {
-                i.goToPrevious()
+                val calendarView = findViewById<MaterialCalendarView>(i)
+                calendarView.goToPrevious()
             }
         }
 
@@ -195,9 +129,9 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
             }
             writeCalDate(calYear, calMonth)
             for (i in calView) {
-                i.goToNext()
+                val calendarView = findViewById<MaterialCalendarView>(i)
+                calendarView.goToNext()
             }
-            trackerCal.goToNext()
         }
 
     }
@@ -210,51 +144,42 @@ class Tracker : AppCompatActivity(), AddTrackerDialog.OnCompleteListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.add_menu -> {
-                show()
+                addShow()
             }
             R.id.del_menu -> {
-
+                delShow()
             }
         }
-
         return super.onOptionsItemSelected(item)
     }
 
-    private fun show() {
+
+    private fun addShow() {
         val newFragment = AddTrackerDialog()
         newFragment.show(supportFragmentManager,"dialog")
     }
 
+    private fun delShow() {
+        val newFragment = DelTrackerDialog()
+        newFragment.show(supportFragmentManager,"dialog")
+    }
+
+    // 추가
     override fun onInputedData(habitTitle: String) {
-        var linearLayout: LinearLayout = LinearLayout(this)
-        var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-        layoutlp.setMargins(10,50,10,10)
-        layoutlp.gravity = CENTER
-        linearLayout.layoutParams = layoutlp
-        linearLayout.orientation = LinearLayout.VERTICAL
-        var textView: TextView = TextView(this)
-        textView.text = habitTitle
-        textView.textSize = 17f
-        textView.gravity = CENTER
+        sqlitedb = myDBHelper.writableDatabase
+        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
 
-        var calendarView: MaterialCalendarView = MaterialCalendarView(this)
-        calendarView.state().edit()
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-        var callp = LinearLayout.LayoutParams(485, 485)
-        callp.setMargins(0,40,0,0)
-        calendarView.layoutParams = callp
-        calendarView.topbarVisible = false
-        calendarView.addDecorator(SundDayDeco())
-        calendarView.addDecorator(SaturdayDeco())
-        calView.add(calendarView)
+        //var intent = Intent(this, Tracker::class.java)
+       //startActivity(intent)
+    }
 
-        linearLayout.addView(textView)
-        linearLayout.addView(calendarView)
-        trackerLayout.addView(linearLayout)
+    // 삭제
+    override fun onInputedData(habit: String, num: Int) {
+        sqlitedb = myDBHelper.writableDatabase
+        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit'")
+
+        var intent = Intent(this, Tracker::class.java)
+        startActivity(intent)
     }
 
     fun writeCalDate(year: Int, month: Int) {
