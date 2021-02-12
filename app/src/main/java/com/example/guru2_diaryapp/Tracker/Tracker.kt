@@ -55,7 +55,7 @@ class Tracker : AppCompatActivity(),
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
-//        trackerCal = findViewById(R.id.trackerCal)
+        trackerCal = findViewById(R.id.trackerCal)
 //        tvHabit = findViewById(R.id.tvHabbit)
 
         trackerLayout = findViewById(R.id.trackerLayout)

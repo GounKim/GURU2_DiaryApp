@@ -11,20 +11,21 @@
     <!--habbot Title-->
     <TextView
         android:id="@+id/tvHabbit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="5dp"
         android:text="habbit"
+        android:textAlignment="center"
         android:textSize="20sp" />
 
     <!-- 달력View -->
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/trackerCal"
-        android:layout_width="190dp"
+        android:layout_width="match_parent"
         android:layout_height="205dp"
         app:mcv_selectionColor="#0098c2"
-        app:mcv_showOtherDates="defaults"/>
+        app:mcv_showOtherDates="defaults" />
 
 
 </LinearLayout>
