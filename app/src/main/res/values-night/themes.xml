@@ -6,7 +6,7 @@
         <item name="colorPrimary">#FCFCFC</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/white</item>
-        <item name="backgroundColor">#FCFCFC</item>
+        <item name="backgroundColor">#424242</item>
         <item name="cardbackground">#FFFFFF</item>
         <item name="android:textColor">@color/black</item>
         <!--item name="android:tint">#FFFFFF</item-->
