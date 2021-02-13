@@ -65,7 +65,7 @@ class Tracker : AppCompatActivity(),
 
         var cCursor: Cursor    // habit_check_lists 용
         var nCursor: Cursor    // habit_lists 용
-        nCursor = sqlitedb.rawQuery("SELECT habit, habit_id FROM habit_lists;", null)
+        nCursor = sqlitedb.rawQuery("SELECT habit_id, habit FROM habit_lists ORDER BY habit_id;", null)
 
         while (nCursor.moveToNext()) {
             var calendarView: MaterialCalendarView = MaterialCalendarView(this)
