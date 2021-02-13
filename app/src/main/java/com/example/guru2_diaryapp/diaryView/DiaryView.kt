@@ -28,7 +28,6 @@ class DiaryView : AppCompatActivity() {
     lateinit var date_tv : TextView
     lateinit var current_category : TextView
     lateinit var current_weather : ImageView
-    lateinit var action_diaryEdit:LinearLayout
 
     lateinit var myDBHelper:MyDBHelper
     lateinit var sqllitedb : SQLiteDatabase
@@ -51,7 +50,6 @@ class DiaryView : AppCompatActivity() {
         date_tv = findViewById(R.id.date_tv)
         current_category = findViewById(R.id.current_category)
         current_weather = findViewById(R.id.current_weather)
-        action_diaryEdit = findViewById(R.id.action_diaryEdit)
 
 
         //날짜 세팅, 아이디 초기 세팅, 기존 글이 있다면 불러온다.
@@ -68,7 +66,7 @@ class DiaryView : AppCompatActivity() {
 
 
         //작성한 글이 없다면 아이디 값이 -1로 넘어간다.
-        action_diaryEdit.setOnClickListener {
+        diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
             intent.putExtra("postID",postID)
             intent.putExtra("newDate", newDate)
