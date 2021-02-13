@@ -87,8 +87,7 @@ class MainActivity : AppCompatActivity(),
         categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
-        imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
-
+        //imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
 
 
         // 달력 생성

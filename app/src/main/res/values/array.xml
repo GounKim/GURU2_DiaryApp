@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_themes">
-        <item>다크</item>
         <item>쿠키</item>
+        <item>다크</item>
     </string-array>
     <string-array name="array_dates">
         <item>2020/01/01</item>
