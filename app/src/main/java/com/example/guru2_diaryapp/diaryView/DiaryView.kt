@@ -130,15 +130,21 @@ class DiaryView : AppCompatActivity() {
                 //날씨 아이콘 세팅
                 val weather = cursor.getInt(cursor.getColumnIndex("weather"))
                 DiaryData().setWeatherIcon(weather, current_weather)
-
+            try {
                 date_tv.text = cursor.getInt(cursor.getColumnIndex("reporting_date")).toString()
                 current_category.text = cursor.getString(cursor.getColumnIndex("category_name"))
                 diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
 
-            try {
+
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
                 diary_image.setImageBitmap(bitmap)
+                if(image != null) {
+                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                    diary_image.setImageBitmap(bitmap)
+                } else {
+                    Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
+                }
             } catch (rte : RuntimeException) {
                 Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }

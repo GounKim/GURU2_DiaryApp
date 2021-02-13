@@ -136,10 +136,11 @@ class MainActivity : AppCompatActivity(),
                     postIds.add(postID)
 
                     categoryLayout.visibility = View.VISIBLE
-                    moodImage.visibility = View.GONE
+                    //moodImage.visibility = View.GONE
 
                     val category = TextView(this)
                     category.text = categoryText
+                    category.gravity = 1
                     categoryLayout.addView(category,0)
                     categories.add(category)
                     i++

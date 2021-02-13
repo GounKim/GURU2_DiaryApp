@@ -215,9 +215,12 @@ class DiaryViewEdit : AppCompatActivity() {
                 diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
 
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-
-                image_preview.setImageBitmap(bitmap)
+                if(image != null) {
+                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                    image_preview.setImageBitmap(bitmap)
+                } else {
+                    Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
+                }
             } catch (rte : RuntimeException) {
                 Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
