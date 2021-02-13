@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity(),
     lateinit var categoryLayout: LinearLayout
     lateinit var moodImage: ImageView
     lateinit var mainTrackerLayout: LinearLayout    // 트래커
-    lateinit var imgViewAdd: ImageView
 
     // DB
     lateinit var myDBHelper: MyDBHelper
@@ -88,8 +87,6 @@ class MainActivity : AppCompatActivity(),
         categoryLayout = bottomSheetDialog.findViewById(R.id.categoryName)!!
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
-        imgViewAdd = bottomSheetDialog.findViewById<ImageView>(R.id.imgViewAdd)!!
-
 
 
         // 달력 생성
