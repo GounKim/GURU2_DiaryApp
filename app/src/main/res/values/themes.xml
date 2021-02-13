@@ -22,6 +22,7 @@
 
     <!-- intro theme. -->
     <style name="IntroTheme" parent="Theme.MaterialComponents.NoActionBar">
+
         <item name="android:windowBackground">@drawable/intro_background</item>
         <item name="android:windowFullscreen">true</item>
         <item name="windowNoTitle">true</item>
