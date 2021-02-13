@@ -55,29 +55,10 @@ class Tracker : AppCompatActivity(),
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
-//        trackerCal = findViewById(R.id.trackerCal)
-//        tvHabit = findViewById(R.id.tvHabbit)
-
         trackerLayout = findViewById(R.id.trackerLayout)
         ivPreMonth = findViewById(R.id.imgViewPreMonth)
         ivNextMonth = findViewById(R.id.imgViewNextMonth)
         tvYearMonth = findViewById(R.id.tvYearMonth)
-/*
-        trackerCal.state().edit()
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-        trackerCal.topbarVisible = false
-        //trackerCal.setCurrentDate(Date(System.currentTimeMillis()))
-        //trackerCal.setDateSelected(Date(System.currentTimeMillis()),true)
-        trackerCal.addDecorator(SundDayDeco())
-        trackerCal.addDecorator(SaturdayDeco())
-        //trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(2021,3,20)))
-
-        trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
- */
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
@@ -87,40 +68,42 @@ class Tracker : AppCompatActivity(),
             while (nCursor.moveToNext()) {
                 var calendarView: MaterialCalendarView = MaterialCalendarView(this)
                 var str_habit = nCursor.getString(nCursor.getColumnIndex("habit")).toString()
-                //if (str_habit != "mood") {
-                    var linearLayout: LinearLayout = LinearLayout(this)
-                    var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-                    layoutlp.setMargins(10,10,10,10)
-                    layoutlp.gravity = CENTER
-                    linearLayout.layoutParams = layoutlp
-                    linearLayout.orientation = LinearLayout.VERTICAL
-                    var textView: TextView = TextView(this)
-                    textView.text = str_habit
-                    textView.textSize = 17f
-                    textView.gravity = CENTER
 
-                    calendarView.state().edit()
-                            .setFirstDayOfWeek(Calendar.MONDAY)
-                            .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                            .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                            .setCalendarDisplayMode(CalendarMode.MONTHS)
-                            .commit()
-                    var callp = LinearLayout.LayoutParams(485, 485)
-                    callp.setMargins(20,30,0,0)
-                    calendarView.layoutParams = callp
-                    calendarView.topbarVisible = false
-                    calendarView.addDecorator(SundDayDeco())
-                    calendarView.addDecorator(SaturdayDeco())
+                // 영역 생성
+                var linearLayout: LinearLayout = LinearLayout(this)
+                var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
+                layoutlp.setMargins(10,10,10,10)
+                layoutlp.gravity = CENTER
+                linearLayout.layoutParams = layoutlp
+                linearLayout.orientation = LinearLayout.VERTICAL
+
+                // habit이름 textView
+                var textView: TextView = TextView(this)
+                textView.text = str_habit
+                textView.textSize = 17f
+                textView.gravity = CENTER
+
+                // 달력 생성
+                calendarView.state().edit()
+                        .setFirstDayOfWeek(Calendar.MONDAY)
+                        .setMaximumDate(CalendarDay.from(2000, 0, 1))
+                        .setMaximumDate(CalendarDay.from(2100, 11, 31))
+                        .setCalendarDisplayMode(CalendarMode.MONTHS)
+                        .commit()
+                var callp = LinearLayout.LayoutParams(485, 485)
+                callp.setMargins(20,30,0,0)
+                calendarView.layoutParams = callp
+                calendarView.topbarVisible = false
+                calendarView.addDecorator(SundDayDeco())
+                calendarView.addDecorator(SaturdayDeco())
                 calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
                 calendarView.isPagingEnabled = false
-                    calView.add(calendarView)
+                calView.add(calendarView)
 
-                    linearLayout.addView(textView)
-                    linearLayout.addView(calendarView)
-                    trackerLayout.addView(linearLayout)
-                    if (calView.size % 2 == 0) trackerLayout.rowCount++
-                //}
-                //else { tvHabit.text = str_habit }
+                linearLayout.addView(textView)
+                linearLayout.addView(calendarView)
+                trackerLayout.addView(linearLayout)
+                if (calView.size % 2 == 0) trackerLayout.rowCount++     // Gridlayout의 열 증가
 
                 cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists WHERE habit = '${str_habit}';",null)
 
@@ -128,30 +111,21 @@ class Tracker : AppCompatActivity(),
                     var date = cCursor.getString(cCursor.getColumnIndex("reporting_date")).toInt()
                     var checkLevel = cCursor.getString(cCursor.getColumnIndex("check_result")).toInt()
 
+                    // db의 reporting_date를 년/달/일로 변경
                     var year = date / 10000
                     var month = (date % 10000) / 100
                     var day = (date % 10000) % 100
 
-                    if (str_habit == "mood") {
+                    if (str_habit == "mood") {  // 달력에 mood 찍기
                         when (checkLevel) {
-                            1 -> {
-                                calendarView.addDecorator(MoodBadDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
-                            2 -> {
-                                calendarView.addDecorator(MoodSosoDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
-                            3 -> {
-                                calendarView.addDecorator(MoodGoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
-                            4 -> {
-                                calendarView.addDecorator(MoodSickDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
-                            5 -> {
-                                calendarView.addDecorator(MoodSurpriseDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            }
+                            1 -> calendarView.addDecorator(MoodBadDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            2 -> calendarView.addDecorator(MoodSosoDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            3 -> calendarView.addDecorator(MoodGoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            4 -> calendarView.addDecorator(MoodSickDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            5 -> calendarView.addDecorator(MoodSurpriseDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
                         }
                     }
-                    else {
+                    else {  // 달력에 check_result에 따른 색깔 찍기
                         val calendar = Calendar.getInstance()
                         calendar.set(year, month - 1, day)
 
@@ -180,12 +154,9 @@ class Tracker : AppCompatActivity(),
         // 모든 캘린더뷰 아이디 받아오기
         var calYear = thisYear
         var calMonth = thisMonth
-        if (calMonth.toString().length < 2) {
-            tvYearMonth.text = "$calYear.0$calMonth"
-        }
-        else {
-            tvYearMonth.text = "$calYear.$calMonth"
-        }
+        // 택스트의 달 바꾸기
+        writeCalDate(calYear, calMonth)
+        // 이전달 이동
         ivPreMonth.setOnClickListener {
             if (calMonth > 1) {
                 calMonth--
@@ -200,7 +171,7 @@ class Tracker : AppCompatActivity(),
                 i.goToPrevious()
             }
         }
-
+        // 다음달 이동
         ivNextMonth.setOnClickListener {
             if (calMonth < 12) {
                 calMonth++
@@ -223,6 +194,7 @@ class Tracker : AppCompatActivity(),
         sqlitedb.close()
     }
 
+    // add,delete 옵션메뉴 설정
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.tracker_menu, menu)
         return true
@@ -230,10 +202,10 @@ class Tracker : AppCompatActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
-            R.id.add_menu -> {
+            R.id.add_menu -> {  // 트래커 더하기
                 addShow()
             }
-            R.id.del_menu -> {
+            R.id.del_menu -> {  // 트래커 삭제하기
                 delShow()
             }
         }
@@ -297,6 +269,7 @@ class Tracker : AppCompatActivity(),
         trackerLayout.removeView(calView[last])
     }
 
+    // 택스트의 달 바꾸기
     fun writeCalDate(year: Int, month: Int) {
         if (month.toString().length < 2) {
             tvYearMonth.text = "$year.0$month"
