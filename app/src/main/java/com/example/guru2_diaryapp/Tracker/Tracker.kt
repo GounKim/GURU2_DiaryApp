@@ -1,6 +1,9 @@
 package com.example.guru2_diaryapp.Tracker
 
 
+import android.app.ListActivity
+import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
@@ -9,12 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.NetworkOnMainThreadException
 import android.util.Log
-import android.view.Gravity
+import android.view.*
 import android.view.Gravity.CENTER
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View.GONE
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
@@ -23,6 +23,7 @@ import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
+import com.google.android.gms.common.internal.constants.ListAppsActivityContract
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
@@ -44,6 +45,7 @@ class Tracker : AppCompatActivity(),
 
     var thisYear: Int = CalendarDay.today().year
     var thisMonth: Int = CalendarDay.today().month + 1
+    var linLayList = ArrayList<LinearLayout>(30)
     var calView = ArrayList<MaterialCalendarView>(30)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +80,8 @@ class Tracker : AppCompatActivity(),
             layoutlp.gravity = CENTER
             linearLayout.layoutParams = layoutlp
             linearLayout.orientation = LinearLayout.VERTICAL
+            linearLayout.id = habitID
+            linLayList.add(linearLayout)
 
             // habit이름 textView
             var textView: TextView = TextView(this)
@@ -100,7 +104,6 @@ class Tracker : AppCompatActivity(),
             calendarView.addDecorator(SaturdayDeco())
             calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
             calendarView.isPagingEnabled = false
-            calendarView.id = habitID
             calView.add(calendarView)
 
             linearLayout.addView(textView)
@@ -127,7 +130,6 @@ class Tracker : AppCompatActivity(),
             }
             cCursor.close()
         }
-
 
         /* Month 이동 */
         // 모든 캘린더뷰 아이디 받아오기
@@ -199,42 +201,8 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-
-        try {
-            sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
-
-        var linearLayout: LinearLayout = LinearLayout(this)
-        var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-        layoutlp.setMargins(10,10,10,10)
-        layoutlp.gravity = CENTER
-        linearLayout.layoutParams = layoutlp
-        linearLayout.orientation = LinearLayout.VERTICAL
-        var textView: TextView = TextView(this)
-        textView.text = habitTitle
-        textView.textSize = 17f
-        textView.gravity = CENTER
-
-        var calendarView: MaterialCalendarView = MaterialCalendarView(this)
-        calendarView.state().edit()
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-        var callp = LinearLayout.LayoutParams(485, 485)
-        callp.setMargins(0,40,0,0)
-        calendarView.layoutParams = callp
-        calendarView.topbarVisible = false
-        calendarView.addDecorator(SundDayDeco())
-        calendarView.addDecorator(SaturdayDeco())
-        calView.add(calendarView)
-
-        linearLayout.addView(textView)
-        linearLayout.addView(calendarView)
-        trackerLayout.addView(linearLayout)
-        }catch (e: SQLiteConstraintException){
-            Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT).show()
-        }
+        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
+        refresh()
     }
 
     // 삭제 창 띄우기
@@ -246,23 +214,9 @@ class Tracker : AppCompatActivity(),
     // 삭제
     override fun onInputedData(habit: String, num: Int) {
         sqlitedb = myDBHelper.writableDatabase
+        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit';")
 
-        var cursor: Cursor
-        cursor = sqlitedb.rawQuery("SELECT habit_id FROM habit_lists WHERE habit = '${habit}';",null)
-        cursor.moveToNext()
-        var habitID = cursor.getString(cursor.getColumnIndex("habit_id")).toInt()
-
-
-        Toast.makeText(this, "${calView[0].id}", Toast.LENGTH_SHORT).show()
-/*
-        for (i in calView) {
-            if (i.id == habitID) {
-                i.visibility = GONE
-                trackerLayout.removeView(i)
-            }
-        }
-
-        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit'")*/
+        refresh()
     }
 
     // 택스트의 달 바꾸기
@@ -273,6 +227,12 @@ class Tracker : AppCompatActivity(),
         else {
             tvYearMonth.text = "$year.$month"
         }
+    }
+
+    fun refresh() {
+        var intent: Intent = intent
+        finish()
+        startActivity(intent)
     }
 
 }
