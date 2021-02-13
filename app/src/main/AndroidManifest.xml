@@ -54,13 +54,7 @@
         <activity
             android:name=".diaryView.DiaryViewEdit"
             android:parentActivityName=".diaryView.DiaryView" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>
