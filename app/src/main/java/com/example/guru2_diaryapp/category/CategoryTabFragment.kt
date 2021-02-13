@@ -41,7 +41,7 @@ class CategoryTabFragment : Fragment() {
         categoryRecyclerViewAdapter = CategoryRecyclerViewAdapter(dataSet,view.context,recyclerView){
             id, num -> Toast.makeText(view.context,"인덱스:${num} data: ${id}", Toast.LENGTH_SHORT).show()
             var intent = Intent(view.context, DiaryView::class.java)
-            intent.putExtra("postID",id)
+            intent.putExtra("post_id",id)
             startActivity(intent)
         }
 

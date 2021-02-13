@@ -44,9 +44,9 @@ class TimeLineView : AppCompatActivity() {
 
             TimeLineData.addAll(PageDown())
             recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
-                data, num ->  Toast.makeText(this,"ID: ${data.id}",Toast.LENGTH_SHORT).show()
+                data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}",Toast.LENGTH_SHORT).show()
                 var intent = Intent(this, DiaryView::class.java)
-                intent.putExtra("postID", data.id)
+                intent.putExtra("post_id",data.reporting_date)
                 startActivity(intent)
             }
             timeline_rv.adapter = recyclerViewAdapter
@@ -66,6 +66,7 @@ class TimeLineView : AppCompatActivity() {
         sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
         sqldb.close()
     }
+
 
     //추가로 글 불러오기
     private fun PageDown():ArrayList<DiaryData>{
@@ -113,12 +114,13 @@ class TimeLineView : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
+        val pos = recyclerViewAdapter?.pos
         val pos_id = recyclerViewAdapter.pos_id
         DeletePost(pos_id)
-
-        //삭제 후 새로고침
+        var intent:Intent = getIntent()
         finish()
-        startActivity(Intent(this, this::class.java))
+        startActivity(intent)
+
         return true
     }
 }
