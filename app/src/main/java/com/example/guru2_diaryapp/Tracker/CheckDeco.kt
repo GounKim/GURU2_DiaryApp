@@ -8,8 +8,11 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import java.util.*
 
-class MoodGoodDeco(context: Context, date: CalendarDay, mood: Int) : DayViewDecorator {
-    val drawable: Drawable = context?.getDrawable(R.drawable.ic_mood_surprise)!!
+class CheckDeco (context: Context, date: CalendarDay, check: Int) : DayViewDecorator {
+    val drawableBad: Drawable = context?.getDrawable(R.drawable.ic_baseline_circle_bad)!!
+    val drawableSoso: Drawable = context?.getDrawable(R.drawable.ic_baseline_circle_soso)!!
+    val drawableGood: Drawable = context?.getDrawable(R.drawable.ic_baseline_circle_good)!!
+    var mycheck = check
     var myDay = date
 
     override fun shouldDecorate(day: CalendarDay?): Boolean {
@@ -17,7 +20,12 @@ class MoodGoodDeco(context: Context, date: CalendarDay, mood: Int) : DayViewDeco
     }
 
     override fun decorate(view: DayViewFacade?) {
-        view?.setBackgroundDrawable(drawable)
+        when(mycheck) {
+            0 -> view?.setBackgroundDrawable(drawableBad)
+            1 -> view?.setBackgroundDrawable(drawableSoso)
+            2 -> view?.setBackgroundDrawable(drawableGood)
+        }
+
         //view?.setDaysDisabled(true)
     }
 
