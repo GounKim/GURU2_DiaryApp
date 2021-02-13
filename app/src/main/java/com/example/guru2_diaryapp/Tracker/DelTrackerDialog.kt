@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
@@ -18,7 +19,9 @@ import java.sql.Types.NULL
 
 class DelTrackerDialog : DialogFragment() {
 
-    lateinit var editText: EditText
+    lateinit var editTitle: EditText
+    lateinit var btnAdd: Button
+    lateinit var btnCancle: Button
 
     interface OnCompleteListener{
         fun onInputedData(habit: String, num: Int = 1)
@@ -39,26 +42,37 @@ class DelTrackerDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         var builder = AlertDialog.Builder(activity)
+        var inflater = requireActivity().layoutInflater
+        var view = inflater.inflate(R.layout.del_tracker, null)
 
-        builder.setTitle("삭제하기")
-        builder.setMessage("삭제할 habit을 입력하세요.")
+        builder.setTitle("삭제할 habit을 입력하세요.")
+        builder.setView(view)
 
-        var habit:EditText = EditText(activity)
-        builder.setView(habit)
+        editTitle = view.findViewById(R.id.editHabbitTitle)
+        btnAdd = view.findViewById(R.id.btnAdd)
+        btnCancle = view.findViewById(R.id.btnCancle)
 
-        builder.setPositiveButton("삭제", DialogInterface.OnClickListener { dialog, which ->
+        btnAdd.setOnClickListener {
             try {
-            var str_habit = habit.text.toString()
-            dismiss()
-            mCallback.onInputedData(str_habit)
+                var str_habit = editTitle.text.toString()
+
+                if (str_habit == "mood") {
+                    dismiss()
+                    Toast.makeText(context, "mood는 삭제가 불가능합니다.",Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    dismiss()
+                    mCallback.onInputedData(str_habit)
+                }
             }
             catch (e: RuntimeException) {
                 dismiss()
             }
-        })
-        builder.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
+        }
 
-        })
+        btnCancle.setOnClickListener {
+            dismiss()
+        }
 
         return builder.create()
     }

@@ -13,8 +13,6 @@ import java.lang.RuntimeException
 class AddTrackerDialog: DialogFragment() {
 
     lateinit var editTitle: EditText
-    lateinit var spinLevel: Spinner
-    lateinit var swiUseMood: Switch
     lateinit var btnAdd: Button
     lateinit var btnCancle: Button
 
@@ -43,8 +41,6 @@ class AddTrackerDialog: DialogFragment() {
         builder.setView(view)
 
         editTitle = view.findViewById(R.id.editHabbitTitle)
-        spinLevel = view.findViewById(R.id.spinHabbitLevel)
-        swiUseMood = view.findViewById(R.id.swiUseMood)
         btnAdd = view.findViewById(R.id.btnAdd)
         btnCancle = view.findViewById(R.id.btnCancle)
 
@@ -58,6 +54,9 @@ class AddTrackerDialog: DialogFragment() {
             catch (e: RuntimeException) {
                 dismiss()
             }
+        }
+        btnCancle.setOnClickListener {
+            dismiss()
         }
 
         return builder.create()

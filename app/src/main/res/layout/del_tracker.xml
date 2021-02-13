@@ -21,12 +21,6 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <TextView
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="성취 목표"
-                android:textSize="18sp" />
-
             <EditText
                 android:id="@+id/editHabbitTitle"
                 android:layout_width="wrap_content"
@@ -50,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_margin="20dp"
-                android:text="추가" />
+                android:text="삭제" />
 
             <Button
                 android:id="@+id/btnCancle"

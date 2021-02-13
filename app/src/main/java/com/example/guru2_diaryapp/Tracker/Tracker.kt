@@ -213,9 +213,17 @@ class Tracker : AppCompatActivity(),
     // 삭제
     override fun onInputedData(habit: String, num: Int) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit';")
+        var cursor: Cursor
+        cursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists WHERE habit = '$habit';", null)
 
-        refresh()
+        if (cursor.moveToFirst()) {
+            sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit';")
+
+            refresh()
+        }
+        else {
+            Toast.makeText(this, "없는 habit입니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // 택스트의 달 바꾸기
