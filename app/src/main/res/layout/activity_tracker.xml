@@ -31,8 +31,9 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="TRACKER"
+        android:textColor="?attr/colorAccent"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/brown_5"
+
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +51,8 @@
             android:id="@+id/imgViewPreMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_left_24" />
+            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_left_24"
+            app:tint="?attr/colorAccent" />
 
         <TextView
             android:id="@+id/tvYearMonth"
@@ -61,13 +63,14 @@
             android:gravity="center"
             android:text="TRACKER"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/brown_5"
+            android:textColor="?attr/colorAccent"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/imgViewNextMonth"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            app:tint="?attr/colorAccent"
             app:srcCompat="@drawable/ic_baseline_keyboard_arrow_right_24" />
 
     </LinearLayout>

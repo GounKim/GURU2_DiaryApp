@@ -148,15 +148,8 @@ class DiaryView : AppCompatActivity() {
                 image = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
                 diary_image.setImageBitmap(bitmap)
-
-                if(image != null) {
-                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-                    diary_image.setImageBitmap(bitmap)
-                } else {
-                    Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
-                }
-            } catch (rte : RuntimeException) {
-                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            } catch (knpe : KotlinNullPointerException) {
+                Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         cursor.close()
