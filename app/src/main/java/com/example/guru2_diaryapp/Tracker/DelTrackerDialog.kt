@@ -13,6 +13,7 @@ import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
+import java.lang.RuntimeException
 import java.sql.Types.NULL
 
 class DelTrackerDialog : DialogFragment() {
@@ -46,9 +47,14 @@ class DelTrackerDialog : DialogFragment() {
         builder.setView(habit)
 
         builder.setPositiveButton("삭제", DialogInterface.OnClickListener { dialog, which ->
+            try {
             var str_habit = habit.text.toString()
             dismiss()
             mCallback.onInputedData(str_habit)
+            }
+            catch (e: RuntimeException) {
+                dismiss()
+            }
         })
         builder.setNegativeButton("취소", DialogInterface.OnClickListener { dialog, which ->
 
