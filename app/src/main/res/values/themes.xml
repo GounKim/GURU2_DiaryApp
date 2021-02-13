@@ -22,7 +22,10 @@
 
     <!-- intro theme. -->
     <style name="IntroTheme" parent="Theme.MaterialComponents.NoActionBar">
+
         <item name="android:windowBackground">@drawable/intro_background</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="windowNoTitle">true</item>
     </style>
     <style name="Theme.App.Small" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="mainTextSize">@dimen/main_text_size_0</item> </style>
