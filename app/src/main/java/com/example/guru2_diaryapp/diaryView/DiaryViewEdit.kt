@@ -3,6 +3,7 @@ package com.example.guru2_diaryapp.diaryView
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -92,9 +93,10 @@ class DiaryViewEdit : AppCompatActivity() {
         // 카테고리 정보를 DB에서 불러온다.
         myDBHelper = MyDBHelper(this)
         categories = getCategoryName()
+        val categorys_List = Array<String>(categories.size,{i->categories[i].second})
 
         // 카테고리 선택창 생성
-        var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
+        var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categorys_List)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         category_spinner.adapter = adapter
 
@@ -189,6 +191,11 @@ class DiaryViewEdit : AppCompatActivity() {
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
             val stream = ByteArrayOutputStream()
+            if(bitmap != null) {
+                var resize = Bitmap.createScaledBitmap(bitmap, 300, 200, false)
+                resize.compress(Bitmap.CompressFormat.PNG, 40, stream)
+            }
+
             bitmap?.compress(Bitmap.CompressFormat.PNG, 40, stream)
             byteArray = stream.toByteArray()
         //} catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
@@ -243,6 +250,7 @@ class DiaryViewEdit : AppCompatActivity() {
         var reporting_date : Int = newDate
         var weather : Int = DiaryData().saveWeatherID(descWeather)
         var category_id : Int = categories[category_spinner.selectedItemPosition].first
+        Log.d("테스트","$category_id")
         var content = diary_et.text.toString()
         val image = image_preview.drawable
         var byteArray : ByteArray ?= null
@@ -496,4 +504,18 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb.close()
         return myCategory
     }
+//
+//    private fun categorySelect(){
+//        var categorys = getCategoryName()
+//        var alert: AlertDialog.Builder = AlertDialog.Builder(this)
+//        val categorys_List = Array<String>(categorys.size,{i->categorys[i].second})
+//        var selected:String? = null
+//        alert.setSingleChoiceItems(categorys_List,0, DialogInterface.OnClickListener{
+//            dialog, which ->
+//            selected = categorys_List[which]
+//        })
+//
+//        alert.create()
+//
+//    }
 }
