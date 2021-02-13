@@ -3,7 +3,6 @@ package com.example.guru2_diaryapp
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 class MyDBHelper(
         context: Context) : SQLiteOpenHelper(context,"cookieDB",null,1) {

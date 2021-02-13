@@ -86,7 +86,7 @@ class DiaryView : AppCompatActivity() {
 
     }
 
-    // 상단에 메뉴
+    // 상단 메뉴
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_top_diary_view, menu)
         return true
