@@ -33,9 +33,6 @@ class Tracker : AppCompatActivity(),
     lateinit var sqlitedb: SQLiteDatabase
     lateinit var toolbar: Toolbar
 
-    lateinit var trackerCal: MaterialCalendarView
-    lateinit var tvHabit: TextView
-
     lateinit var trackerLayout: GridLayout
     lateinit var ivPreMonth: ImageView
     lateinit var ivNextMonth: ImageView
@@ -56,29 +53,10 @@ class Tracker : AppCompatActivity(),
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
-        trackerCal = findViewById(R.id.trackerCal)
-//        tvHabit = findViewById(R.id.tvHabbit)
-
         trackerLayout = findViewById(R.id.trackerLayout)
         ivPreMonth = findViewById(R.id.imgViewPreMonth)
         ivNextMonth = findViewById(R.id.imgViewNextMonth)
         tvYearMonth = findViewById(R.id.tvYearMonth)
-/*
-        trackerCal.state().edit()
-                .setFirstDayOfWeek(Calendar.MONDAY)
-                .setMaximumDate(CalendarDay.from(2000, 0, 1))
-                .setMaximumDate(CalendarDay.from(2100, 11, 31))
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
-                .commit()
-        trackerCal.topbarVisible = false
-        //trackerCal.setCurrentDate(Date(System.currentTimeMillis()))
-        //trackerCal.setDateSelected(Date(System.currentTimeMillis()),true)
-        trackerCal.addDecorator(SundDayDeco())
-        trackerCal.addDecorator(SaturdayDeco())
-        //trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(2021,3,20)))
-
-        trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
- */
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
@@ -186,7 +164,6 @@ class Tracker : AppCompatActivity(),
                 calMonth = 12
             }
             writeCalDate(calYear, calMonth)
-            trackerCal.goToPrevious()
             for (i in calView) {
                 i.goToPrevious()
             }
@@ -206,7 +183,6 @@ class Tracker : AppCompatActivity(),
             for (i in calView) {
                 i.goToNext()
             }
-            trackerCal.goToNext()
         }
 
         nCursor.close()
