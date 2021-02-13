@@ -18,12 +18,18 @@ import android.view.View.GONE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
+import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
+import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
+import com.example.guru2_diaryapp.SettingsActivity
+import com.example.guru2_diaryapp.TimeLine.SearchActivity
 import com.google.android.gms.common.internal.constants.ListAppsActivityContract
+import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
@@ -32,17 +38,23 @@ import kotlin.collections.ArrayList
 
 class Tracker : AppCompatActivity(),
         AddTrackerDialog.OnCompleteListener,
-        DelTrackerDialog.OnCompleteListener {
+        DelTrackerDialog.OnCompleteListener, NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqlitedb: SQLiteDatabase
+
+    // 메뉴
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navigationView: NavigationView
     lateinit var toolbar: Toolbar
 
+    // 화면
     lateinit var trackerLayout: GridLayout
     lateinit var ivPreMonth: ImageView
     lateinit var ivNextMonth: ImageView
     lateinit var tvYearMonth: TextView
 
+    // 달력
     var thisYear: Int = CalendarDay.today().year
     var thisMonth: Int = CalendarDay.today().month + 1
     var linLayList = ArrayList<LinearLayout>(30)
@@ -58,6 +70,13 @@ class Tracker : AppCompatActivity(),
 
         // toolbar 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_book_24)
+
+        // 네비게이션 드로어 설정
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.naviView)
+
+        navigationView.setNavigationItemSelectedListener(this)
 
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
@@ -190,8 +209,36 @@ class Tracker : AppCompatActivity(),
             R.id.del_menu -> {  // 트래커 삭제하기
                 delShow()
             }
+            android.R.id.home -> {   // 드로어 메뉴 선택시
+                drawerLayout.openDrawer(GravityCompat.START)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    // 드로어 메뉴의 메뉴 선택시
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item?.itemId) {
+            R.id.nav_category -> {  // 카태고리
+                val intent = Intent(this, com.example.guru2_diaryapp.category.CategoryActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_tracker -> {   // 트래커
+                val intent = Intent(this, Tracker::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_search -> {    // 검색
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_settings -> {  // 설정
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        drawerLayout.closeDrawers()
+        return true
     }
 
     // 추가 창 띄우기
