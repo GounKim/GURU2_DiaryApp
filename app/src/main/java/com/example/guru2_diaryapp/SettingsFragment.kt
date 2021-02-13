@@ -20,9 +20,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val themePreference by lazy {
         findPreference<ListPreference>(getString(R.string.theme_preferences_key))
     }
-    private val notificationPreference by lazy {
-        //     findPreference<SwitchPreferenceCompat>(getString(R.string.notification_preferences_key))
-    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
