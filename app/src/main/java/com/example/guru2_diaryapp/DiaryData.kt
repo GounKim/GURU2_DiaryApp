@@ -108,30 +108,4 @@ class DiaryData {
             return 12
         }
     }
-
-    // db에서 카테고리 불러올때 사용
-    fun loadCategoryName(category_id: Int) : String {
-        if(category_id == 1) {
-            return "일상"
-        } else if (category_id == 2) {
-            return "여행"
-        } else if (category_id == 3) {
-            return "교환일기"
-        } else {
-            return "알 수 없음"
-        }
-    }
-
-    // db에 카테고리 저장할 때 사용
-    fun saveCategoryID(category : String) : Int {
-        if(category == "일상") {
-            return 1
-        } else if (category == "여행") {
-            return 2
-        } else if (category == "교환일기") {
-            return 3
-        } else {
-            return 0
-        }
-    }
 }
