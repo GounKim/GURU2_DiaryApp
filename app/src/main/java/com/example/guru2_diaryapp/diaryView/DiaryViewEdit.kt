@@ -71,8 +71,8 @@ class DiaryViewEdit : AppCompatActivity() {
     var descWeather : String = ""
     var imgID :Int = -1
 
-    // 일기 작성시 선택할 카테고리 배열 불러오기
-    val categories = arrayOf("일기", "여행", "교환일기")
+    // 일기 작성시 선택할 카테고리 배열
+    var categories = ArrayList<Pair<Int,String>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,18 +88,20 @@ class DiaryViewEdit : AppCompatActivity() {
         category_spinner = findViewById(R.id.category_spinner)
         current_weather = findViewById(R.id.current_weather)
 
+        myDBHelper = MyDBHelper(this)
+
         // 카테고리 선택 관련
+        categories = getCategoryName()
         var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         // 미리 정의된 레이아웃 사용
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         category_spinner.adapter = adapter
 
-        myDBHelper = MyDBHelper(this)
-
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
-        date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", -1)
+        date_tv.text = newDate.toString()
 
         if(postID > 0 ) {  // 등록된 글이 있다면
             loadDiary() // 해당 글 가져오기
@@ -189,10 +191,9 @@ class DiaryViewEdit : AppCompatActivity() {
         }
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather',0,'$content',null)")
+            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather',$category_id,'$content',null);")
         } else { // bindblob은 null 값을 파라미터로 받을 수 없음
-            var insQuery : String = "INSERT INTO diary_posts (post_id, reporting_date, weather, category_id, content, img_file) " +
-                    "VALUES (null, $reporting_date, $weather, 0,'$content', ?)" // 다이어리 추가 삭제 기능이 완성될때까지 카테고리 id 잠시 0으로 해둘게요
+            var insQuery : String = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
             var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -202,17 +203,20 @@ class DiaryViewEdit : AppCompatActivity() {
     // 일기 내용 불러오기
     private fun loadDiary() {
         sqllitedb = myDBHelper.readableDatabase
-        var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
-                "ON diary_posts.category_id = diary_categorys.category_id WHERE post_id =  $postID", null)
+        var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID", null)
 
         if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
-            try {
-                val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
-                descWeather = DiaryData().setWeatherDesc(weather)
-                DiaryData().setWeatherIcon(weather, current_weather)
 
-                category_id = cursor.getInt(cursor.getColumnIndex("category_id"))
-                diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
+            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
+            descWeather = DiaryData().setWeatherDesc(weather)
+            DiaryData().setWeatherIcon(weather, current_weather)
+
+            category_id = cursor.getInt(cursor.getColumnIndex("category_id"))
+            diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
+            newDate = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            date_tv.text = newDate.toString()
+
+            try {
 
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 if(image != null) {
@@ -225,6 +229,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+        cursor.close()
         sqllitedb.close()
     }
 
@@ -234,7 +239,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
         var reporting_date : Int = newDate
         var weather : Int = DiaryData().saveWeatherID(descWeather)
-        var category_id : Int = 0 //categories[category_spinner.selectedItemPosition]
+        var category_id : Int = categories[category_spinner.selectedItemPosition].first
         var content = diary_et.text.toString()
         val image = image_preview.drawable
         var byteArray : ByteArray ?= null
@@ -260,6 +265,7 @@ class DiaryViewEdit : AppCompatActivity() {
             stmt.bindBlob(1, byteArray)
             stmt.execute()
         }
+
     }
 
     // 갤러리
@@ -471,5 +477,21 @@ class DiaryViewEdit : AppCompatActivity() {
         val dateFormat = SimpleDateFormat("HH:mm", Locale.KOREA).format(now) // 시:분 형태
 
         return dateFormat
+    }
+
+    //카테고리 정보 불러오기
+    private fun getCategoryName():ArrayList<Pair<Int,String>>{
+        sqllitedb = myDBHelper.readableDatabase
+        var myCategory = ArrayList<Pair<Int,String>>()
+        var cursor:Cursor
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_categorys;",null)
+        while(cursor.moveToNext()) {
+            var id = cursor.getInt(cursor.getColumnIndex("category_id"))
+            var tab = cursor.getString(cursor.getColumnIndex("category_name"))
+            myCategory.add(Pair(id, tab))
+        }
+        cursor.close()
+        sqllitedb.close()
+        return myCategory
     }
 }
