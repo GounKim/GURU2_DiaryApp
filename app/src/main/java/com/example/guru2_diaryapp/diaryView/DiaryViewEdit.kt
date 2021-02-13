@@ -67,11 +67,11 @@ class DiaryViewEdit : AppCompatActivity() {
     var currenturi:Uri?=null
     var postID : Int = 0
     var newDate : Int = 0
-    var selected_category : String = ""
+    var category_id : Int = 0
     var descWeather : String = ""
     var imgID :Int = -1
 
-    // 일기 작성시 선택할 카테고리 배열
+    // 일기 작성시 선택할 카테고리 배열 불러오기
     val categories = arrayOf("일기", "여행", "교환일기")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +101,7 @@ class DiaryViewEdit : AppCompatActivity() {
         date_tv.text = intent.getStringExtra("select_date")
         newDate = intent.getIntExtra("newDate", -1)
 
-        if(postID != -1) {  // 등록된 글이 있다면
+        if(postID > 0 ) {  // 등록된 글이 있다면
             loadDiary() // 해당 글 가져오기
         }
 
@@ -172,8 +172,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
         var reporting_date : Int = newDate
         var weather : Int = DiaryData().saveWeatherID(descWeather)
-        selected_category = categories[category_spinner.selectedItemPosition]
-        var category_id : Int = DiaryData().saveCategoryID(selected_category)
+        var category_id : Int = 0
         var content = diary_et.text.toString()
         val image = image_preview.drawable
         var byteArray : ByteArray ?= null
@@ -212,10 +211,8 @@ class DiaryViewEdit : AppCompatActivity() {
                 descWeather = DiaryData().setWeatherDesc(weather)
                 DiaryData().setWeatherIcon(weather, current_weather)
 
-                selected_category = cursor.getString(cursor.getColumnIndex("category_name"))
-
+                category_id = cursor.getInt(cursor.getColumnIndex("category_id"))
                 diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
-
 
                 val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 if(image != null) {
@@ -237,8 +234,7 @@ class DiaryViewEdit : AppCompatActivity() {
 
         var reporting_date : Int = newDate
         var weather : Int = DiaryData().saveWeatherID(descWeather)
-        selected_category = categories[category_spinner.selectedItemPosition]
-        var category_id : Int = DiaryData().saveCategoryID(selected_category)
+        var category_id : Int = 0 //categories[category_spinner.selectedItemPosition]
         var content = diary_et.text.toString()
         val image = image_preview.drawable
         var byteArray : ByteArray ?= null

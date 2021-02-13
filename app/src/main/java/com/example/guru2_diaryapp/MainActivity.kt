@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         myDBHelper = MyDBHelper(this)
+
         calendarView = findViewById(R.id.calendarView)
 
         //툴바를 액션바로 설정
@@ -145,7 +146,7 @@ class MainActivity : AppCompatActivity(),
                     categories.add(category)
                     i++
                 } while(cursor.moveToNext())
-            } else { // 작성된 글이 없을떄
+            } else { // 작성된 글이 없을때
                 categoryLayout.visibility == View.VISIBLE
                 moodImage.visibility = View.VISIBLE
                 val text = TextView(this)
@@ -155,8 +156,7 @@ class MainActivity : AppCompatActivity(),
 
                 categoryLayout.setOnClickListener {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
+                    intent.putExtra("newDate", newDate) // 날짜 넘겨주기
                     startActivity(intent)
                 }
             }
@@ -164,8 +164,6 @@ class MainActivity : AppCompatActivity(),
             for (x in 0..i-1) {
                 categories[x].setOnClickListener() {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
                     intent.putExtra("postID", postIds[x])
                     startActivity(intent)
                 }
@@ -354,5 +352,18 @@ class MainActivity : AppCompatActivity(),
             4 -> moodImage.setImageResource(R.drawable.ic_mood_sick_main)
             5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise_main)
         }
+    }
+
+    fun nullIdPostDelete() {
+        //아이디값이 null인 데이터가 있다면 삭제(오류로 생성된 레코드)
+        sqldb = myDBHelper.writableDatabase
+        var cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT post_id FROM diary_posts WHERE post_id IS NULL;", null)
+
+        if (cursor.count >= 1) {
+            sqldb.execSQL("DELETE FROM diary_posts WHERE post_id IS NULL;")
+            Log.d("db", "오류 검사를 마쳤습니다.")
+        }
+        sqldb.close()
     }
 }
