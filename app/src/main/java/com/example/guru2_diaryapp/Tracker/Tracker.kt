@@ -56,6 +56,9 @@ class Tracker : AppCompatActivity(),
         toolbar = findViewById(R.id.Maintoolbar)
         setSupportActionBar(toolbar)
 
+        // toolbar 왼쪽에 버튼 추가
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
