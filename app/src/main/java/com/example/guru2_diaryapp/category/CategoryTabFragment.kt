@@ -64,7 +64,6 @@ class CategoryTabFragment : Fragment() {
                     cursor.getInt(cursor.getColumnIndex("reporting_date"))
             var content =
                     cursor.getString(cursor.getColumnIndex("content"))
-            content = content.substring(0,7)
 
             val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
             //null 값일 경우 오류가 난다면 예외처리 작업할 것
