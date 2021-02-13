@@ -30,6 +30,7 @@ class SearchActivity : AppCompatActivity() {
 
     //검색 키워드
     lateinit var searchKW:String
+    var flag:Boolean = false
 
     //View
     lateinit var search_v:EditText
@@ -49,12 +50,18 @@ class SearchActivity : AppCompatActivity() {
                 searchKW = search_v.text.toString()
                 TimeLineData.addAll(PageDown())
 
+                //첫 검색이 아닐시 초기화
+                if(flag) {
+                    recyclerViewAdapter.notifyDataSetChanged()
+                }
                 recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
                     data, num ->
                     var intent = Intent(this, DiaryView::class.java)
                     intent.putExtra("postID",data.reporting_date)
                     startActivity(intent)
                 }
+
+                flag = true
                 timeline_rv.adapter = recyclerViewAdapter
                 timeline_rv.layoutManager = LinearLayoutManager(this)
                 true
