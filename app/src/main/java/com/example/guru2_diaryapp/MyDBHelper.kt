@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class MyDBHelper(
-        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,1) {
+        context: Context) : SQLiteOpenHelper(context,"cookieDB",null,3) {
     lateinit var sql:String
 
     override fun onCreate(db: SQLiteDatabase?) {
