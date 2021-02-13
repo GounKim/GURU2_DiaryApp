@@ -192,13 +192,19 @@ class MainActivity : AppCompatActivity(),
             }
 
 
-            // mood 추가
-            cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
+            // mood 설정
+            cursor = sqldb.rawQuery("SELECT habit, check_result FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
 
-            if (cursor.moveToFirst()) {
-                var moodCheck = cursor.getInt(0)
-                setMoodImage(moodCheck)
+            if(cursor.moveToFirst()){
+                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                if (habit == "mood") {
+                    var moodCheck = cursor.getInt(cursor.getColumnIndex("check_result"))
+                    setMoodImage(moodCheck)
+                }
+            } else {
+                moodImage.setImageResource(R.drawable.ic__mood_add)
             }
+
             moodImage.setOnClickListener {
                 setMoodShow(newDate)
             }
