@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity(),
                     categories.add(category)
                     i++
                 } while(cursor.moveToNext())
-            } else { // 작성된 글이 없을떄
+            } else { // 작성된 글이 없을때
                 categoryLayout.visibility == View.VISIBLE
                 moodImage.visibility = View.VISIBLE
                 val text = TextView(this)
@@ -155,8 +155,7 @@ class MainActivity : AppCompatActivity(),
 
                 categoryLayout.setOnClickListener {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
+                    intent.putExtra("newDate", newDate) // 날짜 넘겨주기
                     startActivity(intent)
                 }
             }
@@ -164,8 +163,6 @@ class MainActivity : AppCompatActivity(),
             for (x in 0..i-1) {
                 categories[x].setOnClickListener() {
                     val intent = Intent(this, com.example.guru2_diaryapp.diaryView.DiaryView::class.java)
-                    intent.putExtra("select_date", selectDate) // 날짜 넘겨주기
-                    intent.putExtra("newDate", newDate)
                     intent.putExtra("postID", postIds[x])
                     startActivity(intent)
                 }
