@@ -120,32 +120,10 @@ class Tracker : AppCompatActivity(),
                     var day = (date % 10000) % 100
 
                     if (str_habit == "mood") {  // 달력에 mood 찍기
-                        when (checkLevel) {
-                            1 -> calendarView.addDecorator(MoodBadDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            2 -> calendarView.addDecorator(MoodSosoDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            3 -> calendarView.addDecorator(MoodGoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            4 -> calendarView.addDecorator(MoodSickDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                            5 -> calendarView.addDecorator(MoodSurpriseDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
-                        }
+                        calendarView.addDecorator(CheckMoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
                     }
                     else {  // 달력에 check_result에 따른 색깔 찍기
-                        val calendar = Calendar.getInstance()
-                        calendar.set(year, month - 1, day)
-
-                        when (checkLevel) {
-                            0 -> {
-                                calendarView.selectionColor = Color.parseColor("#ff5555")
-                                calendarView.setDateSelected(calendar, true);
-                            }
-                            1 -> {
-                                calendarView.selectionColor = Color.parseColor("#fca70a")
-                                calendarView.setDateSelected(calendar, true);
-                            }
-                            2 -> {
-                                calendarView.selectionColor = Color.parseColor("#ace5f0")
-                                calendarView.setDateSelected(calendar, true);
-                            }
-                        }
+                        calendarView.addDecorator(CheckDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
                     }
                 }
                 cCursor.close()
