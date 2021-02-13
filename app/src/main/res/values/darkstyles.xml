@@ -8,11 +8,16 @@
         <item name="backgroundColor">#303030</item>
         <item name="cardBackgroundColor">#424242</item>
         <item name="android:textColor">#FFFFFF</item>
+
         <item name="android:toolbarStyle">@color/main_color</item>
         <item name="buttonTint">#CCCCCC</item>
         <!--item name="navibackground">@color/darkblack</item>
         <item name="navitint">#FFFFFF</item>
         <item name="android:textColorPrimary">#FFFFFF</item-->
         <item name="colorControlNormal">#FFFFFF</item>
+        <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
+        <item name="android:buttonStyle">@style/customButtonFontStyle</item>
+        <item name="android:editTextStyle">@style/customEditTextFontStyle</item>
+        <item name="itemTextAppearance">@style/nav_categoryFontStyle</item> <!--메뉴 폰트-->
     </style>
 </resources>

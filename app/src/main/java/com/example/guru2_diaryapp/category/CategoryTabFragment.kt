@@ -46,7 +46,7 @@ class CategoryTabFragment : Fragment() {
         }
 
         recyclerView.adapter = categoryRecyclerViewAdapter
-        recyclerView.layoutManager = GridLayoutManager(view.context, 2)
+        recyclerView.layoutManager = GridLayoutManager(view.context, 3)
         }
 
     /*
@@ -66,22 +66,11 @@ class CategoryTabFragment : Fragment() {
         //임시 테이블을 생성해 글별로 대표 이미지를 한장씩 선별한 뒤 JOIN
         sqldb = dbHelper.writableDatabase
 
-        try {
-            sqldb.execSQL(
-                    "CREATE TEMPORARY TABLE TMP AS SELECT img_id, post_id, img_dir FROM (SELECT img_id, post_id, img_dir, ROW_NUMBER() OVER (PARTITION BY post_id ORDER BY img_id DESC) as RowIdx FROM diary_imgs) AS img_id WHERE RowIdx = 1;",
-                    null)
+        cursor = sqldb.rawQuery(
+                "SELECT * FROM diary_posts WHERE category_id = ${category.first} ORDER BY reporting_date DESC;",
+                null)
 
-            cursor = sqldb.rawQuery(
-                    "SELECT diary_posts.post_id, diary_posts.reporting_date, diary_posts.content, TMP.img_dir FROM diary_posts LEFT OUTER JOIN TMP ON diary_posts.post_id = TMP.post_id ORDER BY reporting_date DESC;",
-                    null)
 
-        } catch (e:java.lang.IllegalArgumentException) {
-
-            cursor = sqldb.rawQuery(
-                    "SELECT * FROM diary_posts WHERE category_id = ${category.first} ORDER BY reporting_date DESC;",
-                    null
-            )
-        }
 
         var num = 0
         while (cursor.moveToNext() && num < 20) {
@@ -91,8 +80,9 @@ class CategoryTabFragment : Fragment() {
             val content =
                     cursor.getString(cursor.getColumnIndex("content"))
 
-            //val img = cursor.getString(cursor.getColumnIndex("diary_dir"))
-            //val imgArray = arrayListOf(img)
+            val img = cursor.getBlob(cursor.getColumnIndex("img_file"))
+            //null 값일 경우 오류가 난다면 예외처리 작업할 것
+
             myDiaryData.add(
                     DiaryData(
                             id, date, 0,

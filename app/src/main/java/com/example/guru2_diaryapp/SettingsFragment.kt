@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
-import com.example.guru2_diaryapp.SettingsNotificationManager
 
+// 환경설정 기능 구현 파일
 @SuppressLint("ResourceType")
 class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var prefs: SharedPreferences
@@ -15,21 +15,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var date: ListPreference
     lateinit var font: ListPreference
     var prefListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
-    private val notificationsManager by lazy {
-        SettingsNotificationManager(requireContext())
-    }
+
     private val themeProvider by lazy { ThemeProvider(requireContext()) }
     private val themePreference by lazy {
         findPreference<ListPreference>(getString(R.string.theme_preferences_key))
-    }
-    private val notificationPreference by lazy {
-        //     findPreference<SwitchPreferenceCompat>(getString(R.string.notification_preferences_key))
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
         setThemePreference()
-        setNotificationPreference()
     }
     private fun setThemePreference() {
         themePreference?.onPreferenceChangeListener =
@@ -46,27 +40,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
     }
 
-    private fun setNotificationPreference() {
-        /* notificationPreference?.onPreferenceChangeListener =
-        Preference.OnPreferenceChangeListener { _, newValue ->
-            val selectedValue = newValue as Boolean
-            if (selectedValue) {
-                notificationsManager.showNotificationsTurnedOn(
-                    title = "Notifications enabled",
-                    text = "You have enabled the notifications"
-                )
-            } else {
-                notificationsManager.showNotificationsTurnedOff(
-                    title = "Notifications disabled",
-                    text = "You have disabled the notifications"
-                )
-            }
-            true
-        }
-    notificationPreference?.summaryProvider = Preference.SummaryProvider<SwitchPreferenceCompat> { preference ->
-        SettingsNotificationManager(requireContext()).getNotiticationsStatusDescription(preference.isChecked)
-    }*/
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.settings)

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER
 import android.view.Menu
@@ -55,10 +56,29 @@ class Tracker : AppCompatActivity(),
         myDBHelper = MyDBHelper(this)
         sqlitedb = myDBHelper.readableDatabase
 
+        trackerCal = findViewById(R.id.trackerCal)
+//        tvHabit = findViewById(R.id.tvHabbit)
+
         trackerLayout = findViewById(R.id.trackerLayout)
         ivPreMonth = findViewById(R.id.imgViewPreMonth)
         ivNextMonth = findViewById(R.id.imgViewNextMonth)
         tvYearMonth = findViewById(R.id.tvYearMonth)
+/*
+        trackerCal.state().edit()
+                .setFirstDayOfWeek(Calendar.MONDAY)
+                .setMaximumDate(CalendarDay.from(2000, 0, 1))
+                .setMaximumDate(CalendarDay.from(2100, 11, 31))
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit()
+        trackerCal.topbarVisible = false
+        //trackerCal.setCurrentDate(Date(System.currentTimeMillis()))
+        //trackerCal.setDateSelected(Date(System.currentTimeMillis()),true)
+        trackerCal.addDecorator(SundDayDeco())
+        trackerCal.addDecorator(SaturdayDeco())
+        //trackerCal.addDecorator(MoodDeco(this, CalendarDay.from(2021,3,20)))
+
+        trackerCal.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
+ */
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
@@ -215,6 +235,7 @@ class Tracker : AppCompatActivity(),
     // 추가 창 띄우기
     private fun addShow() {
         val newFragment = AddTrackerDialog()
+        Log.d("add","추가창 테스트")
         newFragment.show(supportFragmentManager,"dialog")
     }
 

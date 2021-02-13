@@ -14,7 +14,8 @@ class RetrofitClient {
         }
     }
 
-    fun buildRetrofit() : RetrofitService {
+    // 날씨 정보
+   fun buildRetrofit() : RetrofitService {
         val retrofit : Retrofit? = Retrofit.Builder()
             .baseUrl("http://api.openweathermap.org/data/2.5/")
                 // http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}

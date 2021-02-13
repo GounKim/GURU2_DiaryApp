@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -19,14 +20,27 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
                                   var itemClick:(DiaryData, Int)->Unit):
         Adapter<TimeLineRecyclerViewAdapter.ItemViewHolder>() {
 
+    var pos:Int = -1
+    var pos_id:Int = 0
+
     //뷰홀더 클래스 내부 클래스로 선언
     inner class ItemViewHolder(view: View, itemClick: (DiaryData, Int) -> Unit) : RecyclerView.ViewHolder(view) {
+
+        init{
+            view.setOnLongClickListener {
+              pos = layoutPosition
+                pos_id = data[pos].id
+                return@setOnLongClickListener false
+            }
+            view.setOnCreateContextMenuListener{ menu, v, menuinfo->
+                menu.add("삭제")
+            }
+        }
 
         var dateTv = view.findViewById<TextView>(R.id.tlitem_date_tv)
         var categoryTv = view.findViewById<TextView>(R.id.tlitem_catecgory_tv)
         var contentTv = view.findViewById<TextView>(R.id.tlitem_content_tv)
-        var imgVp = view.findViewById<ViewPager2>(R.id.tlitem_pic_vp)
-        //var weatherIorn = view.findViewById<ImageView>(R.id.iv_weather)
+        var img = view.findViewById<ImageView>(R.id.timeline_img)
 
         //onBindViewHolder에서 호출할 bind 함수
         fun bind(data: DiaryData, num: Int) {
@@ -34,12 +48,12 @@ class TimeLineRecyclerViewAdapter(var data:ArrayList<DiaryData>, val context: Co
             categoryTv.text = data.category_name
             contentTv.text = data.content
 
-            if (data.imgs != null){
-                imgVp.setVisibility(View.VISIBLE)
+            if (data.imgs != null){ // 등록된 이미지가 있다면
+                img.setVisibility(View.VISIBLE)
+                img.setImageBitmap(data.imgs)
 
-            } else {
-                imgVp.setVisibility(View.GONE)
-
+            } else { // 등록된 이미지가 없다면
+                img.setVisibility(View.GONE)
             }
             itemView.setOnClickListener {
                 itemClick(data, num)

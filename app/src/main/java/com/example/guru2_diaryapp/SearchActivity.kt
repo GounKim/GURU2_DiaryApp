@@ -3,9 +3,12 @@ package com.example.guru2_diaryapp
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableStringBuilder
+import android.util.Log
+import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
@@ -20,14 +23,15 @@ class SearchActivity : AppCompatActivity() {
     lateinit var myDBHelper: MyDBHelper
     lateinit var sqldb: SQLiteDatabase
     lateinit var cursor: Cursor
+
+    //타임라인
     var TimeLineData = ArrayList<DiaryData>()
+
+    //검색 키워드
     lateinit var searchKW:String
 
-    //검색 옵션
-    lateinit var search: SpannableStringBuilder
-
     //View
-    lateinit var search_et:EditText
+    lateinit var search_v:EditText
     lateinit var timeline_rv: RecyclerView
     lateinit var recyclerViewAdapter: TimeLineRecyclerViewAdapter
 
@@ -37,12 +41,12 @@ class SearchActivity : AppCompatActivity() {
 
         myDBHelper = MyDBHelper(this)
         timeline_rv = findViewById(R.id.search_rv)
-        search_et = findViewById(R.id.edtSearch)
+        search_v = findViewById(R.id.search_v)
 
-        search_et.setOnEditorActionListener { _, actionId, _ ->
+        search_v.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                searchKW = search_et.text.toString()
-                TimeLineData = PageDown(0)
+                searchKW = search_v.text.toString()
+                TimeLineData = PageDown()
                 true
             }else{
                 false
@@ -67,40 +71,73 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
+    //선택한 일기 삭제
+    fun DeletePost(id:Int){
+        sqldb = myDBHelper.writableDatabase
+        sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
+        sqldb.close()
+    }
+
     //추가로 글 불러오기
-    private fun PageDown(LastIndex:Int):ArrayList<DiaryData>{
+    private fun PageDown():ArrayList<DiaryData>{
         var mydiaryData = ArrayList<DiaryData>()
         sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
-                " ON diary_posts.category_id = diary_categorys.category_id WHERE LIKE '%${searchKW}%' " +
-                "ORDER BY reporting_date DESC;",null)
-        cursor.moveToPosition(LastIndex)
-        var num = 0
-        while (cursor.moveToNext() && num < 20) {
-            val id = cursor.getInt(cursor.getColumnIndex("post_id"))
-            val date =
-                    cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            val weather =
-                    cursor.getInt(cursor.getColumnIndex("weather"))
-            val category =
-                    cursor.getString(cursor.getColumnIndex("category_name"))
-            val content =
-                    cursor.getString(cursor.getColumnIndex("content"))
-            mydiaryData.add (DiaryData( id, date, weather, category, content, null))
-            num++
+
+        var sql = "SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
+                " ON diary_posts.category_id = diary_categorys.category_id WHERE diary_posts.content LIKE '%${searchKW}%' " +
+                "ORDER BY reporting_date DESC;"
+        cursor = sqldb.rawQuery(sql,null)
+        Log.d("db","${cursor.count}")
+
+        if (cursor.moveToNext()) { // 저장된 글이 있다면
+            var id : Int = 0
+            var date : Int = 0
+            var weather : Int = 0
+            var category : String = ""
+            var content : String = ""
+            var bitmap : Bitmap? = null
+
+            do {
+                try {
+                    id = cursor.getInt(cursor.getColumnIndex("post_id"))
+                    date =
+                            cursor.getInt(cursor.getColumnIndex("reporting_date"))
+                    weather =
+                            cursor.getInt(cursor.getColumnIndex("weather"))
+                    category =
+                            cursor.getString(cursor.getColumnIndex("category_name"))
+                    content =
+                            cursor.getString(cursor.getColumnIndex("content"))
+                    val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                    bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                }
+                catch (rte: RuntimeException) { // null 값이 있을 경우 exception
+                    bitmap = null
+                }
+                if (bitmap != null ) { // 등록한 이미지가 있다면
+                    mydiaryData.add (DiaryData( id, date, weather, category, content, bitmap))
+                } else { // 등록한 이미지가 없다면
+                    mydiaryData.add (DiaryData( id, date, weather, category, content, null))
+                }
+            } while (cursor.moveToNext())
+            sqldb.close()
+        } else { // 저장된 글이 없다면
+            Toast.makeText(this, "저장된 일기가 없습니다.", Toast.LENGTH_SHORT).show()
         }
-        sqldb.close()
         return mydiaryData
     }
 
-    //사진 정보를 불러오는 메소드
-    private fun loadImgs():ArrayList<String>{
-        var imgs = ArrayList<String>()
-        sqldb = myDBHelper.readableDatabase
-        cursor = sqldb.rawQuery("SELECT * FROM diary_imgs;",null)
-        while(cursor.moveToNext()){
-            imgs.add(cursor.getString(cursor.getColumnIndex("img_dir")))
-        }
-        return imgs
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val pos = recyclerViewAdapter?.pos
+        val pos_id = recyclerViewAdapter.pos_id
+        DeletePost(pos_id)
+        var intent:Intent = getIntent()
+        finish()
+        startActivity(intent)
+
+        return true
     }
+
 }
+
+
