@@ -2,32 +2,26 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.*
+import com.example.guru2_diaryapp.TimeLine.SearchActivity
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
-import com.example.guru2_diaryapp.Tracker.AddTrackerDialog
 import com.example.guru2_diaryapp.Tracker.Tracker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import org.w3c.dom.Text
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -368,18 +362,5 @@ class MainActivity : AppCompatActivity(),
             4 -> moodImage.setImageResource(R.drawable.ic_mood_sick_main)
             5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise_main)
         }
-    }
-
-    fun nullIdPostDelete() {
-        //아이디값이 null인 데이터가 있다면 삭제(오류로 생성된 레코드)
-        sqldb = myDBHelper.writableDatabase
-        var cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT post_id FROM diary_posts WHERE post_id IS NULL;", null)
-
-        if (cursor.count >= 1) {
-            sqldb.execSQL("DELETE FROM diary_posts WHERE post_id IS NULL;")
-            Log.d("db", "오류 검사를 마쳤습니다.")
-        }
-        sqldb.close()
     }
 }
