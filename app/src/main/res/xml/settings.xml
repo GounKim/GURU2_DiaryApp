@@ -1,69 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duplicateParentState="false">
+
     <PreferenceCategory android:title="계정">
         <!-- 기능 구현시 수정이 필요할 것으로 예상,
         Intent를 사용할 것으로 예상 -->
         <PreferenceScreen
-            android:title="로그인/로그아웃"
-            android:key="loginOption">
-            <intent android:action="android.intent.action.LoginActivity"/>
+            android:key="loginOption"
+            android:title="로그인/로그아웃">
+            <intent android:action="android.intent.action.LoginActivity" />
         </PreferenceScreen>
     </PreferenceCategory>
-    <PreferenceCategory android:title="테마">
+    <PreferenceCategory
+        android:rotationY="0"
+        android:title="테마">
         <ListPreference
-            android:title="테마"
             android:defaultValue="string/theme_preferences_key"
-            android:key="@string/theme_preferences_key"
             android:entries="@array/array_themes"
-            android:entryValues="@array/array_themes">
-        </ListPreference>
+            android:entryValues="@array/array_themes"
+            android:key="@string/theme_preferences_key"
+            android:scrollbarSize="2000dp"
+            android:title="테마"></ListPreference>
         <ListPreference
-            android:key="date_list"
             android:entries="@array/array_dates"
             android:entryValues="@array/array_dates"
+            android:key="date_list"
             android:title="날짜 표시 형식" />
         <ListPreference
-            android:key="fonts_list"
             android:entries="@array/array_fonts"
             android:entryValues="@array/array_fonts"
+            android:key="fonts_list"
             android:title="글꼴" />
         <ListPreference
-            android:key="fSize_list"
             android:entries="@array/array_text_size"
             android:entryValues="@array/array_text_size"
+            android:key="fSize_list"
             android:title="글씨 크기" />
     </PreferenceCategory>
     <PreferenceCategory android:title="권한">
         <SwitchPreference
-            android:key="gps"
             android:defaultValue="true"
+            android:key="gps"
             android:title="위치 정보 이용 동의" />
         <SwitchPreference
-            android:key="gallery"
             android:defaultValue="true"
+            android:key="gallery"
             android:title="갤러리 접근 동의" />
         <SwitchPreference
-            android:key="camera"
             android:defaultValue="true"
+            android:key="camera"
             android:title="카메라 접근 동의" />
         <SwitchPreference
-            android:key="internet"
             android:defaultValue="true"
+            android:key="internet"
             android:title="인터넷 이용 동의" />
         <SwitchPreference
-            android:key="alarm"
             android:defaultValue="true"
+            android:key="alarm"
             android:title="알림 접근 권한 동의" />
     </PreferenceCategory>
     <PreferenceCategory android:title="저장소">
         <!-- 아래의 기능들을 사용하려면
         Intent 사용 혹은 onClickListener 사용 예상 -->
-        <PreferenceScreen
-            android:title="백업하기" />
-        <PreferenceScreen
-            android:title="불러오기" />
-        <PreferenceScreen
-            android:title="초기화" />
+        <PreferenceScreen android:title="백업하기" />
+        <PreferenceScreen android:title="불러오기" />
+        <PreferenceScreen android:title="초기화" />
     </PreferenceCategory>
     <PreferenceCategory android:title="언어">
         <ListPreference
@@ -73,14 +74,13 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="보안">
         <SwitchPreference
-            android:summary="애플리케이션 잠금을 설정할 수 있습니다."
             android:defaultValue="false"
+            android:summary="애플리케이션 잠금을 설정할 수 있습니다."
             android:title="애플리케이션 잠금" />
     </PreferenceCategory>
     <PreferenceCategory android:title="기타">
-        <PreferenceScreen
-            android:title="도움말" />
-        <PreferenceScreen
-            android:title="라이선스" />
+        <PreferenceScreen android:title="도움말" />
+        <PreferenceScreen android:title="라이선스" />
     </PreferenceCategory>
+
 </PreferenceScreen>
