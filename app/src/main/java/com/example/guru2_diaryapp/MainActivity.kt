@@ -3,13 +3,13 @@ package com.example.guru2_diaryapp;
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -52,6 +52,9 @@ class MainActivity : AppCompatActivity(),
     var newDate : Int = 0
     var postID : Int = 0
 
+    //뒤로가기 앱 종료
+    private var backBtnTime: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -91,7 +94,7 @@ class MainActivity : AppCompatActivity(),
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
         calendarView.setCurrentDate(Date(System.currentTimeMillis()))
-        calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
+        calendarView.setDateSelected(Date(System.currentTimeMillis()), true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco(this))
@@ -132,7 +135,7 @@ class MainActivity : AppCompatActivity(),
                     val category = TextView(this)
                     category.text = categoryText
                     category.gravity = 1
-                    categoryLayout.addView(category,0)
+                    categoryLayout.addView(category, 0)
                     categories.add(category)
                     i++
                 } while(cursor.moveToNext())
@@ -260,12 +263,20 @@ class MainActivity : AppCompatActivity(),
             drawerLayout.closeDrawers()
         }
         else {
-            super.onBackPressed()
+            var curTime = System.currentTimeMillis()
+            var gapTime = curTime - backBtnTime
+
+            if(gapTime in 0..2000){
+                super.onBackPressed()
+            }else{
+                backBtnTime = curTime
+                Toast.makeText(this,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     // 요일 구하기
-    fun getDayName(year : Int, month : Int, day : Int): String {
+    fun getDayName(year: Int, month: Int, day: Int): String {
         val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
         var month_day = Array<Int>(12) {31}
         var total_day = 0
@@ -283,7 +294,7 @@ class MainActivity : AppCompatActivity(),
 
         // 월
         for(i in 1..month-1 step 1) {
-            total_day += month_day[i-1]
+            total_day += month_day[i - 1]
         }
 
         // 일
@@ -297,14 +308,14 @@ class MainActivity : AppCompatActivity(),
     // 트래커 habit 달성도 채크 선택창(dialog) 띄우기
     private fun show(btn: Button, habit: String, newDate: Int) {
         val newFragment = CheckTrakerDialog(btn, habit, newDate)
-        newFragment.show(supportFragmentManager,"dialog")
+        newFragment.show(supportFragmentManager, "dialog")
     }
 
     // 사용자가 클릭한 habit 달성도 db반영
     override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
         val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate' AND habit = '$habit';",null)
+        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate' AND habit = '$habit';", null)
         if (!cursor.moveToFirst()) { // 레코드가 비어있다면
             sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, '$habit', $habitLevel);") // 새로 추가
         } else {
@@ -339,12 +350,12 @@ class MainActivity : AppCompatActivity(),
     // mood 설정
     private fun setMoodShow(newDate: Int) {
         val newFragment = SetMoodDialog(newDate)
-        newFragment.show(supportFragmentManager,"dialog")
+        newFragment.show(supportFragmentManager, "dialog")
     }
     override fun onInputedData(mood: Int, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
         val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE habit = 'mood' AND reporting_date = '$newDate';",null)
+        cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE habit = 'mood' AND reporting_date = '$newDate';", null)
 
         if (!cursor.moveToFirst()) {
             sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, 'mood', $mood);")

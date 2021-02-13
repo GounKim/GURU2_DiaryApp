@@ -1,29 +1,24 @@
 package com.example.guru2_diaryapp.Tracker
 
 
+import android.content.Intent
 import android.app.ListActivity
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.NetworkOnMainThreadException
 import android.util.Log
 import android.view.*
 import android.view.Gravity.CENTER
-import android.view.View.GONE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isInvisible
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
-import com.google.android.gms.common.internal.constants.ListAppsActivityContract
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView

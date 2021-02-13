@@ -41,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
         btnLoginSkip.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         //btn_googleSignIn.setOnClickListener (this) // 구글 로그인 버튼
