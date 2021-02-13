@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.guru2_diaryapp.DiaryData
-import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 
 class CategoryRecyclerViewAdapter(var dataSet : ArrayList<DiaryData>, var context:Context,

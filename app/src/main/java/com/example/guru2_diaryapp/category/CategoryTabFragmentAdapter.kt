@@ -1,6 +1,5 @@
 package com.example.guru2_diaryapp.category
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -25,9 +24,6 @@ class CategoryTabFragmentAdapter(myDBHelper: MyDBHelper,fragment: CategoryActivi
         return fragment
     }
 
-    fun setData(position: Int){
-
-    }
 }
 private const val ARG_CATEGORY = "Category"
 

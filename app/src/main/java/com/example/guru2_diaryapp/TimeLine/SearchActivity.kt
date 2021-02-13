@@ -1,4 +1,4 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.TimeLine
 
 import android.content.Intent
 import android.database.Cursor
@@ -7,14 +7,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.guru2_diaryapp.TimeLine.TimeLineRecyclerViewAdapter
+import com.example.guru2_diaryapp.DiaryData
+import com.example.guru2_diaryapp.MyDBHelper
+import com.example.guru2_diaryapp.R
 import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class SearchActivity : AppCompatActivity() {
@@ -49,7 +50,7 @@ class SearchActivity : AppCompatActivity() {
                 TimeLineData.addAll(PageDown())
 
                 recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
-                    data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}", Toast.LENGTH_SHORT).show()
+                    data, num ->
                     var intent = Intent(this, DiaryView::class.java)
                     intent.putExtra("postID",data.reporting_date)
                     startActivity(intent)
@@ -80,7 +81,6 @@ class SearchActivity : AppCompatActivity() {
                 " ON diary_posts.category_id = diary_categorys.category_id WHERE diary_posts.content LIKE '%${searchKW}%' " +
                 "ORDER BY reporting_date DESC;"
         cursor = sqldb.rawQuery(sql,null)
-        Log.d("테스트",sql)
 
         if (cursor.moveToNext()) { // 저장된 글이 있다면
             var id : Int = 0
@@ -121,7 +121,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        val pos = recyclerViewAdapter?.pos
         val pos_id = recyclerViewAdapter.pos_id
         DeletePost(pos_id)
         var intent:Intent = getIntent()

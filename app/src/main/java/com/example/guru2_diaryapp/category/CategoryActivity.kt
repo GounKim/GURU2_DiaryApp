@@ -3,16 +3,15 @@ package com.example.guru2_diaryapp.category
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.ListAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.DialogTitle
 import androidx.appcompat.widget.Toolbar
 import androidx.viewpager2.widget.ViewPager2
 import com.example.guru2_diaryapp.DiaryData
@@ -111,10 +110,19 @@ class CategoryActivity : AppCompatActivity() {
 
                     if(name != null) {
                         sqldb = myDBHelper.writableDatabase
-                        sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
-                        sqldb.close()
-                        Toast.makeText(applicationContext, "$name 카테고리가 생성되었습니다.",
-                                Toast.LENGTH_SHORT).show()
+
+                        try {
+                            sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
+                            Toast.makeText(applicationContext, "$name 가 생성되었습니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }catch (e:SQLiteConstraintException){
+                            Toast.makeText(applicationContext, "카테고리명이 중복됩니다.",
+                                    Toast.LENGTH_SHORT).show()
+                        } finally {
+                            sqldb.close()
+                        }
+
                     }else{
                         Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",
                                 Toast.LENGTH_SHORT).show()
@@ -184,6 +192,7 @@ class CategoryActivity : AppCompatActivity() {
                 //수정할 카테고리 이름을 입력받을 창
                 var alertDialog:AlertDialog.Builder = AlertDialog.Builder(this)
                 var newName_edt:EditText = EditText(this)
+                alertDialog.setTitle("수정할 카테고리명을 입력하세요.")
                 alertDialog.setView(newName_edt)
 
                 //선택 후 입력창 팝업
@@ -191,13 +200,22 @@ class CategoryActivity : AppCompatActivity() {
                     var newName = newName_edt.text.toString()
 
                     if (newName != null){
-                        sqldb = myDBHelper.writableDatabase
-                        sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
-                                    "WHERE category_name = '$selected';")
-                        sqldb.close()
 
-                        Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
-                                Toast.LENGTH_SHORT).show()
+                        sqldb = myDBHelper.writableDatabase
+
+                        try {
+                            sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
+                                    "WHERE category_name = '$selected';")
+                            Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }catch (e: SQLiteConstraintException){
+                            Toast.makeText(applicationContext, "카테고리명이 중복됩니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }finally {
+                            sqldb.close()
+                        }
 
                     }else{
                         Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",

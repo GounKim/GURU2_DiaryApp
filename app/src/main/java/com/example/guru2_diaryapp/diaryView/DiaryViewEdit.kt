@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -188,7 +189,7 @@ class DiaryViewEdit : AppCompatActivity() {
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
             val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 40, stream)
             byteArray = stream.toByteArray()
         //} catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
          //   Log.d("image null", "이미지 저장 안함")
@@ -251,7 +252,7 @@ class DiaryViewEdit : AppCompatActivity() {
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
             val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 0, stream)
             byteArray = stream.toByteArray()
         } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
             Log.d("image null", "이미지 저장 안함")

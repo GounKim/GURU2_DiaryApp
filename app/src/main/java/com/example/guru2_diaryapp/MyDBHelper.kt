@@ -3,7 +3,6 @@ package com.example.guru2_diaryapp
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 class MyDBHelper(
         context: Context) : SQLiteOpenHelper(context,"cookieDB",null,1) {
@@ -28,7 +27,7 @@ class MyDBHelper(
         db?.execSQL(sql)
 
         //카테고리 리스트 테이블
-        sql = "CREATE TABLE diary_categorys (category_id INTEGER PRIMARY KEY AUTOINCREMENT, category_name TEXT);"
+        sql = "CREATE TABLE diary_categorys (category_id INTEGER PRIMARY KEY AUTOINCREMENT, category_name TEXT UNIQUE);"
         db?.execSQL(sql)
 
         //기본 카테고리 자동 생성
