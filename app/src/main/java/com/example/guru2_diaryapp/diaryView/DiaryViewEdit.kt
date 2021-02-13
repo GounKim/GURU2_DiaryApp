@@ -179,8 +179,26 @@ class DiaryViewEdit : AppCompatActivity() {
         var weather : Int = DiaryData().saveWeatherID(descWeather)
         var category_id : Int = 0
         var content = diary_et.text.toString()
+        val image = image_preview.drawable
+        var byteArray : ByteArray ?= null
+
+        try {
+            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+            val bitmapDrawable = image as BitmapDrawable?
+            val bitmap = bitmapDrawable?.bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            byteArray = stream.toByteArray()
+        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            Log.d("image null", "이미지 저장 안함")
+        }
 
         var sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
+
+        if(byteArray == null){
+            sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
+        }
+
         sqllitedb.execSQL(sql)
         Log.d("db",sql)
         sqllitedb.close()
