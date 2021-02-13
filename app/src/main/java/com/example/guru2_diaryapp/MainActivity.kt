@@ -346,21 +346,25 @@ class MainActivity : AppCompatActivity(),
         val cursor: Cursor
         cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE habit = 'mood' AND reporting_date = '$newDate';",null)
 
-        if (!cursor.moveToFirst()) {
+        if (!cursor.moveToFirst()) {    // 해당 날짜에 해당하는 mood가 존재x
             sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, 'mood', $mood);")
         }
+        else {  // 해당 날짜에 해당하는 mood가 존재
+            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $mood WHERE reporting_date = $newDate;")
+        }
         cursor.close()
+        bottomSheetDialog.dismiss()
     }
 
     // moodImage를 mood값에 맞게 설정
     fun setMoodImage(mood: Int) {
         when (mood) {
-            0 -> moodImage.setImageResource(R.drawable.ic__mood_add)
-            1 -> moodImage.setImageResource(R.drawable.ic_mood_bad_main)
-            2 -> moodImage.setImageResource(R.drawable.ic_mood_soso_main)
-            3 -> moodImage.setImageResource(R.drawable.ic_mood_good_main)
-            4 -> moodImage.setImageResource(R.drawable.ic_mood_sick_main)
-            5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise_main)
+            1 -> moodImage.setImageResource(R.drawable.ic_mood_bad)
+            2 -> moodImage.setImageResource(R.drawable.ic_mood_soso)
+            3 -> moodImage.setImageResource(R.drawable.ic_mood_good)
+            4 -> moodImage.setImageResource(R.drawable.ic_mood_sick)
+            5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise)
+            else -> moodImage.setImageResource(R.drawable.ic__mood_add)
         }
     }
 }

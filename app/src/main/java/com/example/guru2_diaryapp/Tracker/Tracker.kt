@@ -224,10 +224,6 @@ class Tracker : AppCompatActivity(),
                 val intent = Intent(this, com.example.guru2_diaryapp.category.CategoryActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_tracker -> {   // 트래커
-                val intent = Intent(this, Tracker::class.java)
-                startActivity(intent)
-            }
             R.id.nav_search -> {    // 검색
                 val intent = Intent(this, SearchActivity::class.java)
                 startActivity(intent)
