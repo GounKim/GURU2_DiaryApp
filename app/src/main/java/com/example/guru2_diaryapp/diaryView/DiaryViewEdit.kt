@@ -270,37 +270,6 @@ class DiaryViewEdit : AppCompatActivity() {
         }
     }
 
-    //이미지 축소
-//    private fun getResizeRicture(imagePath:String):Bitmap{
-//        var option = BitmapFactory.Options()
-//        option.inJustDecodeBounds = true
-//        BitmapFactory.decodeFile(imagePath,option)
-//        var resize = 1000
-//        var width = option.outWidth
-//        var height = option.outHeight
-//        var sampleSize = 1
-//        while(true){
-//            if(width/2 < resize || height/2 <resize)
-//                break
-//            width /= 2
-//            height /= 2
-//            sampleSize *=2
-//        }
-//        option.inSampleSize = sampleSize
-//        option.inJustDecodeBounds = false
-//
-//        var resizeBitmap = BitmapFactory.decodeFile(imagePath)
-//
-//        var exit = ExifInterface(imagePath)
-//        var exifDegree= 0
-//        exit?.let{
-//            var exifOrientation = it.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-//            exifDegree = exifOrientationToDegrees(exifOrientation)
-//
-//        }
-//        return Bitmap.createBitmap(resizeBitmap,exifDegree)
-//    }
-
     // 갤러리
     private fun selectGallery() {
         // 앨범 접근 권한

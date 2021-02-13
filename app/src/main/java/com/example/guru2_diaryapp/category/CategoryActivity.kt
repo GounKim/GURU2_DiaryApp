@@ -3,6 +3,7 @@ package com.example.guru2_diaryapp.category
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -109,10 +110,19 @@ class CategoryActivity : AppCompatActivity() {
 
                     if(name != null) {
                         sqldb = myDBHelper.writableDatabase
-                        sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
-                        sqldb.close()
-                        Toast.makeText(applicationContext, "$name 가 생성되었습니다.",
-                                Toast.LENGTH_SHORT).show()
+
+                        try {
+                            sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
+                            Toast.makeText(applicationContext, "$name 가 생성되었습니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }catch (e:SQLiteConstraintException){
+                            Toast.makeText(applicationContext, "카테고리명이 중복됩니다.",
+                                    Toast.LENGTH_SHORT).show()
+                        } finally {
+                            sqldb.close()
+                        }
+
                     }else{
                         Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",
                                 Toast.LENGTH_SHORT).show()
@@ -190,13 +200,22 @@ class CategoryActivity : AppCompatActivity() {
                     var newName = newName_edt.text.toString()
 
                     if (newName != null){
-                        sqldb = myDBHelper.writableDatabase
-                        sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
-                                    "WHERE category_name = '$selected';")
-                        sqldb.close()
 
-                        Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
-                                Toast.LENGTH_SHORT).show()
+                        sqldb = myDBHelper.writableDatabase
+
+                        try {
+                            sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
+                                    "WHERE category_name = '$selected';")
+                            Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }catch (e: SQLiteConstraintException){
+                            Toast.makeText(applicationContext, "카테고리명이 중복됩니다.",
+                                    Toast.LENGTH_SHORT).show()
+
+                        }finally {
+                            sqldb.close()
+                        }
 
                     }else{
                         Toast.makeText(applicationContext, "카테고리명은 비워둘 수 없습니다.",
