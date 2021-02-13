@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
 
         myDBHelper = MyDBHelper(this)
+
         calendarView = findViewById(R.id.calendarView)
 
         //툴바를 액션바로 설정
@@ -353,5 +354,18 @@ class MainActivity : AppCompatActivity(),
             4 -> moodImage.setImageResource(R.drawable.ic_mood_sick_main)
             5 -> moodImage.setImageResource(R.drawable.ic_mood_surprise_main)
         }
+    }
+
+    fun nullIdPostDelete() {
+        //아이디값이 null인 데이터가 있다면 삭제(오류로 생성된 레코드)
+        sqldb = myDBHelper.writableDatabase
+        var cursor: Cursor
+        cursor = sqldb.rawQuery("SELECT post_id FROM diary_posts WHERE post_id IS NULL;", null)
+
+        if (cursor.count >= 1) {
+            sqldb.execSQL("DELETE FROM diary_posts WHERE post_id IS NULL;")
+            Log.d("db", "오류 검사를 마쳤습니다.")
+        }
+        sqldb.close()
     }
 }
