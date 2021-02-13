@@ -189,10 +189,6 @@ class MainActivity : AppCompatActivity(),
 
                     habitBtns.add(btnHabbit)
                     countBtn++
-
-                    /*btnHabbit.setOnClickListener {  // 버튼 클릭시
-                        show(btnHabbit, habit, newDate) // 달성치 사용자입력받기
-                    }*/
                 }
             }
             for (x in 0..countBtn-1) {

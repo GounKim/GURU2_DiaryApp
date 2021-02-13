@@ -26,8 +26,8 @@ class CheckMoodDeco (context: Context, date: CalendarDay, mood: Int) : DayViewDe
             1 -> view?.setBackgroundDrawable(drawableBad)
             2 -> view?.setBackgroundDrawable(drawableSoso)
             3 -> view?.setBackgroundDrawable(drawableGood)
-            4 -> view?.setBackgroundDrawable(drawableSur)
-            5 -> view?.setBackgroundDrawable(drawableSick)
+            4 -> view?.setBackgroundDrawable(drawableSick)
+            5 -> view?.setBackgroundDrawable(drawableSur)
         }
     }
 

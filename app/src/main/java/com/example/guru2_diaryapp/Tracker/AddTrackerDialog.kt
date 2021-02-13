@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.*
 import androidx.fragment.app.DialogFragment
 import com.example.guru2_diaryapp.R
+import java.lang.RuntimeException
 
 class AddTrackerDialog: DialogFragment() {
 
@@ -48,9 +49,15 @@ class AddTrackerDialog: DialogFragment() {
         btnCancle = view.findViewById(R.id.btnCancle)
 
         btnAdd.setOnClickListener {
-            var title = editTitle.text.toString()
-            dismiss()
-            mCallback.onInputedData(title)
+            try {
+                var title = editTitle.text.toString()
+                dismiss()
+                mCallback.onInputedData(title)
+
+            }
+            catch (e: RuntimeException) {
+                dismiss()
+            }
         }
 
         return builder.create()
