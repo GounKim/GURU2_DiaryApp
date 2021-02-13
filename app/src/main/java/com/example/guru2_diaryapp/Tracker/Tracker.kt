@@ -2,6 +2,7 @@ package com.example.guru2_diaryapp.Tracker
 
 
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -198,8 +199,9 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
 
+        try {
+            sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
 
         var linearLayout: LinearLayout = LinearLayout(this)
         var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
@@ -230,6 +232,9 @@ class Tracker : AppCompatActivity(),
         linearLayout.addView(textView)
         linearLayout.addView(calendarView)
         trackerLayout.addView(linearLayout)
+        }catch (e: SQLiteConstraintException){
+            Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT)
+        }
     }
 
     // 삭제 창 띄우기
