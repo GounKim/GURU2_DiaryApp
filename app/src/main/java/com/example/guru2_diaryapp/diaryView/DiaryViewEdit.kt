@@ -88,21 +88,20 @@ class DiaryViewEdit : AppCompatActivity() {
         category_spinner = findViewById(R.id.category_spinner)
         current_weather = findViewById(R.id.current_weather)
 
+        // 카테고리 정보를 DB에서 불러온다.
         myDBHelper = MyDBHelper(this)
-
-        // 카테고리 선택 관련
         categories = getCategoryName()
-        var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
-        // 미리 정의된 레이아웃 사용
 
+        // 카테고리 선택창 생성
+        var adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         category_spinner.adapter = adapter
 
-        // DiaryView에서 postId 값 가져오기
+        // DiaryView에서 postId, 날짜 값 가져오기
         postID = intent.getIntExtra("postID", 0)
         newDate = intent.getIntExtra("newDate", -1)
 
-        //글 가져오기
+        //기존 글을 수정하는 거라면 정보 로드
         if(postID > 0 ) {
             loadDiary()
         }
@@ -140,6 +139,7 @@ class DiaryViewEdit : AppCompatActivity() {
             R.id.action_main -> {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
+                finish()
             }
             R.id.action_save -> {
                 if (postID <= 0) // 이전에 작성된 글이 없다면
@@ -151,6 +151,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
+                finish()
             }
         }
 
@@ -170,11 +171,11 @@ class DiaryViewEdit : AppCompatActivity() {
 
     }
 
-    // 첫 작성 후 저장과 수정 후 저장에 따른 구분이 필요
-    // 일기 내용 저장 => 일기 작성한 데이터를 함수 호출할 때 파라미터로 주면 함수 안쪽에서 저장 처리
+    //작성한 내용 저장
     private fun saveDiary(){
         sqllitedb = myDBHelper.writableDatabase
 
+        var sql:String
         var reporting_date : Int = newDate
         var weather : Int = DiaryData().saveWeatherID(descWeather)
         var category_id : Int = 0
@@ -189,36 +190,34 @@ class DiaryViewEdit : AppCompatActivity() {
             val stream = ByteArrayOutputStream()
             bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
             byteArray = stream.toByteArray()
-        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
+            sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
+
+        } catch (cce: ClassCastException) {
+            // 사진을 따로 저장안할 경우
             Log.d("image null", "이미지 저장 안함")
-        }
-
-        var sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
-
-        if(byteArray == null){
             sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
         }
 
         sqllitedb.execSQL(sql)
-        Log.d("db",sql)
         sqllitedb.close()
     }
 
     // 일기 내용 불러오기
     private fun loadDiary() {
+        var cursor:Cursor
+        var weather:Int
+
         sqllitedb = myDBHelper.readableDatabase
-        var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID", null)
+        cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts WHERE post_id =  $postID", null)
 
-        if (cursor.moveToFirst()) { // 레코드가 비어있다면 false 반환
-
-            val weather = cursor.getInt(cursor.getColumnIndex("weather")) // 날씨
+        //아이디가 db에 존재하는지 체크
+        if (cursor.moveToFirst()) {
+            val weather = cursor.getInt(cursor.getColumnIndex("weather"))
             descWeather = DiaryData().setWeatherDesc(weather)
             DiaryData().setWeatherIcon(weather, current_weather)
 
             category_id = cursor.getInt(cursor.getColumnIndex("category_id"))
             diary_et.setText(cursor.getString(cursor.getColumnIndex("content"))) // 내용
-            newDate = cursor.getInt(cursor.getColumnIndex("reporting_date"))
-            date_tv.text = newDate.toString()
 
             try {
 
