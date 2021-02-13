@@ -42,7 +42,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        addPreferencesFromResource(R.xml.settings)
+
 
         prefs = getDefaultSharedPreferences(activity)
         //editor = prefs.edit()
