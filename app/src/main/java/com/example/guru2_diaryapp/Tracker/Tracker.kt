@@ -6,15 +6,18 @@ import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.NetworkOnMainThreadException
 import android.util.Log
 import android.view.Gravity
 import android.view.Gravity.CENTER
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isInvisible
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
 import com.example.guru2_diaryapp.MyDBHelper
@@ -60,12 +63,13 @@ class Tracker : AppCompatActivity(),
 
         var cCursor : Cursor    // habit_check_lists 용
         var nCursor : Cursor    // habit_lists 용
-        nCursor = sqlitedb.rawQuery("SELECT habit FROM habit_lists", null)
+        nCursor = sqlitedb.rawQuery("SELECT habit, habit_id FROM habit_lists;", null)
 
         if (nCursor.moveToFirst()) {
             while (nCursor.moveToNext()) {
                 var calendarView: MaterialCalendarView = MaterialCalendarView(this)
                 var str_habit = nCursor.getString(nCursor.getColumnIndex("habit")).toString()
+                var habitID = nCursor.getString(nCursor.getColumnIndex("habit_id")).toInt()
 
                 // 영역 생성
                 var linearLayout: LinearLayout = LinearLayout(this)
@@ -96,6 +100,7 @@ class Tracker : AppCompatActivity(),
                 calendarView.addDecorator(SaturdayDeco())
                 calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_NONE
                 calendarView.isPagingEnabled = false
+                calendarView.id = habitID
                 calView.add(calendarView)
 
                 linearLayout.addView(textView)
@@ -218,11 +223,12 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', NULL)")
+        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
+
 
         var linearLayout: LinearLayout = LinearLayout(this)
         var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-        layoutlp.setMargins(10,50,10,10)
+        layoutlp.setMargins(10,10,10,10)
         layoutlp.gravity = CENTER
         linearLayout.layoutParams = layoutlp
         linearLayout.orientation = LinearLayout.VERTICAL
@@ -260,10 +266,23 @@ class Tracker : AppCompatActivity(),
     // 삭제
     override fun onInputedData(habit: String, num: Int) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit'")
 
-        var last = calView.size - 1
-        trackerLayout.removeView(calView[last])
+        var cursor: Cursor
+        cursor = sqlitedb.rawQuery("SELECT habit_id FROM habit_lists WHERE habit = '${habit}';",null)
+        cursor.moveToNext()
+        var habitID = cursor.getString(cursor.getColumnIndex("habit_id")).toInt()
+
+
+        Toast.makeText(this, "${calView[0].id}", Toast.LENGTH_SHORT).show()
+/*
+        for (i in calView) {
+            if (i.id == habitID) {
+                i.visibility = GONE
+                trackerLayout.removeView(i)
+            }
+        }
+
+        sqlitedb.execSQL("DELETE FROM habit_lists WHERE habit = '$habit'")*/
     }
 
     // 택스트의 달 바꾸기
