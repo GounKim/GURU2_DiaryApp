@@ -233,7 +233,7 @@ class Tracker : AppCompatActivity(),
         linearLayout.addView(calendarView)
         trackerLayout.addView(linearLayout)
         }catch (e: SQLiteConstraintException){
-            Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT)
+            Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT).show()
         }
     }
 
