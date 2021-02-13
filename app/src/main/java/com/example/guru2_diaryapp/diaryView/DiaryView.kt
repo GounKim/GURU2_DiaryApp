@@ -7,11 +7,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -52,31 +51,37 @@ class DiaryView : AppCompatActivity() {
         current_category = findViewById(R.id.current_category)
         current_weather = findViewById(R.id.current_weather)
 
-        myDBHelper = MyDBHelper(this)
 
-        // 달력에서 새 일기 작성 날짜와 수정할 일기 번호 받아오기
+        //날짜 세팅, 아이디 초기 세팅, 기존 글이 있다면 불러온다.
         newDate = intent.getIntExtra("newDate", 0)
-        if (newDate < 0 ) date_tv.text = newDate.toString()
-        else date_tv.text = LocalDateTime.now().toString()
-
         postID = intent.getIntExtra("postID", -1)
 
-        //작성한 글이 있다면 불러온다.
-        if(postID > 0) loadDiary()
+        if(postID > 0) {
+            myDBHelper = MyDBHelper(this)
+            loadDiary()
+        }
 
+        //최종으로 세팅된 날짜 정보 뷰에 반영
+        date_tv.text = newDate.toString()
+
+
+        //작성한 글이 없다면 아이디 값이 -1로 넘어간다.
         diary_tv.setOnClickListener {
             val intent = Intent(this, DiaryViewEdit::class.java)
+            intent.putExtra("postID",postID)
+            intent.putExtra("newDate", newDate)
+            Log.d("DiaryView","$postID , $newDate")
+            startActivity(intent)
+            finish()
+        }
 
-            //저장된 글이 없을 경우
-            if(postID <= 0){
-                intent.putExtra("newDate", newDate)
-                startActivity(intent)
-
-             //저장된 글이 있을 경우
-            }else if (postID > 0){
-                intent.putExtra("postID",postID)
-                startActivity(intent)
-            }
+        diary_image.setOnClickListener(){
+            val intent = Intent(this, DiaryViewEdit::class.java)
+            intent.putExtra("postID",postID)
+            intent.putExtra("newDate", newDate)
+            Log.d("DiaryView","$postID , $newDate")
+            startActivity(intent)
+            finish()
         }
 
     }
@@ -120,6 +125,9 @@ class DiaryView : AppCompatActivity() {
     }
 
     fun loadDiary() { // DB에서 데이터 가져오기
+        var weather:Int
+        var image:ByteArray?
+        val bitmap : Bitmap?
         sqllitedb = myDBHelper.readableDatabase
 
         var cursor = sqllitedb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
@@ -127,20 +135,19 @@ class DiaryView : AppCompatActivity() {
 
         if(cursor.moveToFirst()) {
 
-                //날씨 아이콘 세팅
-                val weather = cursor.getInt(cursor.getColumnIndex("weather"))
-                DiaryData().setWeatherIcon(weather, current_weather)
-
-                date_tv.text = cursor.getInt(cursor.getColumnIndex("reporting_date")).toString()
-                current_category.text = cursor.getString(cursor.getColumnIndex("category_name"))
-                diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
+            //날씨, 날짜, 본문 세팅
+            weather = cursor.getInt(cursor.getColumnIndex("weather"))
+            DiaryData().setWeatherIcon(weather, current_weather)
+            newDate = cursor.getInt(cursor.getColumnIndex("reporting_date"))
+            current_category.text = cursor.getString(cursor.getColumnIndex("category_name"))
+            diary_tv.text = cursor.getString(cursor.getColumnIndex("content"))
 
             try {
-                val image : ByteArray? = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
-                val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                image = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
+                bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
                 diary_image.setImageBitmap(bitmap)
-            } catch (rte : RuntimeException) {
-                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            } catch (knpe : KotlinNullPointerException) {
+                Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         cursor.close()

@@ -169,8 +169,13 @@ class MainActivity : AppCompatActivity(),
             cursor = sqldb.rawQuery("SELECT * FROM habit_lists;", null)
 
             mainTrackerLayout.removeAllViews()
+
+            var habitBtns = ArrayList<Button>()
+            var countBtn = 0
+            var habit : String = ""
+
             while (cursor.moveToNext()) {
-                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
 
                 if (habit != "mood") {  // 무드아닌 habit 버튼 생성
                     var btnHabbit: Button = Button(this)
@@ -181,9 +186,18 @@ class MainActivity : AppCompatActivity(),
 
                     changeButton(btnHabbit, habit, newDate) // db정보에 맞게
                     mainTrackerLayout.addView(btnHabbit)
-                    btnHabbit.setOnClickListener {  // 버튼 클릭시
+
+                    habitBtns.add(btnHabbit)
+                    countBtn++
+
+                    /*btnHabbit.setOnClickListener {  // 버튼 클릭시
                         show(btnHabbit, habit, newDate) // 달성치 사용자입력받기
-                    }
+                    }*/
+                }
+            }
+            for (x in 0..countBtn-1) {
+                habitBtns[x].setOnClickListener() {
+                    show(habitBtns[x], habit, newDate) // 달성치 사용자입력받기
                 }
             }
 
@@ -300,9 +314,11 @@ class MainActivity : AppCompatActivity(),
     override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
         val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate';",null)
-        if (!cursor.moveToFirst()) {
-            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, '$habit', $habitLevel);")
+        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate' AND habit = '$habit';",null)
+        if (!cursor.moveToFirst()) { // 레코드가 비어있다면
+            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, '$habit', $habitLevel);") // 새로 추가
+        } else {
+            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $habitLevel")
         }
         changeButton(button, habit, newDate)
         cursor.close()
@@ -322,7 +338,8 @@ class MainActivity : AppCompatActivity(),
                     2 -> button.setBackgroundResource(R.drawable.button_soso)
                     3 -> button.setBackgroundResource(R.drawable.button_good)
                 }
-                cursor.moveToLast()
+                //cursor.moveToLast()
+                break
             }
         }
 

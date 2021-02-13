@@ -66,7 +66,7 @@ class Tracker : AppCompatActivity(),
         nCursor = sqlitedb.rawQuery("SELECT habit, habit_id FROM habit_lists;", null)
 
         if (nCursor.moveToFirst()) {
-            while (nCursor.moveToNext()) {
+            do {
                 var calendarView: MaterialCalendarView = MaterialCalendarView(this)
                 var str_habit = nCursor.getString(nCursor.getColumnIndex("habit")).toString()
                 var habitID = nCursor.getString(nCursor.getColumnIndex("habit_id")).toInt()
@@ -74,7 +74,7 @@ class Tracker : AppCompatActivity(),
                 // 영역 생성
                 var linearLayout: LinearLayout = LinearLayout(this)
                 var layoutlp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, WRAP_CONTENT)
-                layoutlp.setMargins(10,10,10,10)
+                layoutlp.setMargins(10, 10, 10, 10)
                 layoutlp.gravity = CENTER
                 linearLayout.layoutParams = layoutlp
                 linearLayout.orientation = LinearLayout.VERTICAL
@@ -93,7 +93,7 @@ class Tracker : AppCompatActivity(),
                         .setCalendarDisplayMode(CalendarMode.MONTHS)
                         .commit()
                 var callp = LinearLayout.LayoutParams(485, 485)
-                callp.setMargins(20,30,0,0)
+                callp.setMargins(20, 30, 0, 0)
                 calendarView.layoutParams = callp
                 calendarView.topbarVisible = false
                 calendarView.addDecorator(SundDayDeco())
@@ -108,7 +108,7 @@ class Tracker : AppCompatActivity(),
                 trackerLayout.addView(linearLayout)
                 if (calView.size % 2 == 0) trackerLayout.rowCount++     // Gridlayout의 열 증가
 
-                cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists WHERE habit = '${str_habit}';",null)
+                cCursor = sqlitedb.rawQuery("SELECT * FROM habit_check_lists WHERE habit = '${str_habit}';", null)
 
                 while (cCursor.moveToNext()) {
                     var date = cCursor.getString(cCursor.getColumnIndex("reporting_date")).toInt()
@@ -120,14 +120,36 @@ class Tracker : AppCompatActivity(),
                     var day = (date % 10000) % 100
 
                     if (str_habit == "mood") {  // 달력에 mood 찍기
-                        calendarView.addDecorator(CheckMoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                        when (checkLevel) {
+                            1 -> calendarView.addDecorator(MoodBadDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            2 -> calendarView.addDecorator(MoodSosoDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            3 -> calendarView.addDecorator(MoodGoodDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            4 -> calendarView.addDecorator(MoodSickDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                            5 -> calendarView.addDecorator(MoodSurpriseDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                        }
                     }
                     else {  // 달력에 check_result에 따른 색깔 찍기
-                        calendarView.addDecorator(CheckDeco(this, CalendarDay.from(year, month - 1, day), checkLevel))
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, month - 1, day)
+
+                        when (checkLevel) {
+                            0 -> {
+                                calendarView.selectionColor = Color.parseColor("#ff5555")
+                                calendarView.setDateSelected(calendar, true);
+                            }
+                            1 -> {
+                                calendarView.selectionColor = Color.parseColor("#fca70a")
+                                calendarView.setDateSelected(calendar, true);
+                            }
+                            2 -> {
+                                calendarView.selectionColor = Color.parseColor("#ace5f0")
+                                calendarView.setDateSelected(calendar, true);
+                            }
+                        }
                     }
                 }
-                cCursor.close()
-            }
+            } while (nCursor.moveToNext())
+            cCursor.close()
         }
         //else { show() }
 

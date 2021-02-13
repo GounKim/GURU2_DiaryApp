@@ -20,9 +20,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_cook"
         android:label="Cookie Diary"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_cook"
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp"
         android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
@@ -44,23 +44,22 @@
         </activity>
 
         <activity android:name=".category.CategoryActivity" />
-        <activity android:name=".Tracker.Tracker" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".TimeLine.TimeLineView" />
-        <activity android:name=".diaryView.DiaryView" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".Tracker.Tracker"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".SearchActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".TimeLine.TimeLineView"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".diaryView.DiaryView"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"/>
 
 
         <activity
             android:name=".diaryView.DiaryViewEdit"
             android:parentActivityName=".diaryView.DiaryView" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>
