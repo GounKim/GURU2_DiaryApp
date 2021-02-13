@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(),
         toolbar = findViewById(R.id.Maintoolbar)
         setSupportActionBar(toolbar)
 
-        // actionbar의 왼쪽에 버튼 추가
+        // toolbar의 왼쪽에 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_book_24)
 
