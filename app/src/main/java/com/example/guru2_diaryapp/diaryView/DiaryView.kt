@@ -56,7 +56,7 @@ class DiaryView : AppCompatActivity() {
 
         // 달력에서 새 일기 작성 날짜와 수정할 일기 번호 받아오기
         newDate = intent.getIntExtra("newDate", 0)
-        if (newDate < 0 ) date_tv.text = newDate.toString()
+        if (newDate > 0 ) date_tv.text = newDate.toString()
         else date_tv.text = LocalDateTime.now().toString()
 
         postID = intent.getIntExtra("postID", -1)
