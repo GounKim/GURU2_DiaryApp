@@ -4,7 +4,9 @@ package com.example.guru2_diaryapp.Tracker
 import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
+import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -201,9 +203,13 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
-        refresh()
-    }
+         try {
+            sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
+            refresh()
+         }catch (e: SQLiteConstraintException){
+             Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT).show()
+         }
+     }
 
     // 삭제 창 띄우기
     private fun delShow() {
