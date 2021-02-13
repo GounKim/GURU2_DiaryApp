@@ -4,9 +4,7 @@ package com.example.guru2_diaryapp.Tracker
 import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
-import android.content.Intent
 import android.database.Cursor
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -68,7 +66,7 @@ class Tracker : AppCompatActivity(),
 
         var cCursor: Cursor    // habit_check_lists 용
         var nCursor: Cursor    // habit_lists 용
-        nCursor = sqlitedb.rawQuery("SELECT habit, habit_id FROM habit_lists;", null)
+        nCursor = sqlitedb.rawQuery("SELECT habit, habit_id FROM habit_lists ORDER BY habit_id;", null)
 
         while (nCursor.moveToNext()) {
             var calendarView: MaterialCalendarView = MaterialCalendarView(this)
