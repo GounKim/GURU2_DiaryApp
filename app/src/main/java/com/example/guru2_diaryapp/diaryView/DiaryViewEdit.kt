@@ -142,7 +142,7 @@ class DiaryViewEdit : AppCompatActivity() {
                 startActivity(intent)
             }
             R.id.action_save -> {
-                if (postID == -1) // 이전에 작성된 글이 없다면
+                if (postID <= 0) // 이전에 작성된 글이 없다면
                 {
                     saveDiary() // 저장
                 } else { // 작성된 글이 있다면
@@ -180,8 +180,10 @@ class DiaryViewEdit : AppCompatActivity() {
         var category_id : Int = 0
         var content = diary_et.text.toString()
 
-        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);")
-
+        var sql = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
+        sqllitedb.execSQL(sql)
+        Log.d("db",sql)
+        sqllitedb.close()
     }
 
     // 일기 내용 불러오기
