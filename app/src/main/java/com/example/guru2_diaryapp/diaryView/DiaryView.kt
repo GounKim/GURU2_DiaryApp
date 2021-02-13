@@ -10,9 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -54,7 +52,6 @@ class DiaryView : AppCompatActivity() {
         current_weather = findViewById(R.id.current_weather)
 
 
-
         //날짜 세팅, 아이디 초기 세팅, 기존 글이 있다면 불러온다.
         newDate = intent.getIntExtra("newDate", 0)
         postID = intent.getIntExtra("postID", -1)
@@ -77,6 +74,16 @@ class DiaryView : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        diary_image.setOnClickListener(){
+            val intent = Intent(this, DiaryViewEdit::class.java)
+            intent.putExtra("postID",postID)
+            intent.putExtra("newDate", newDate)
+            Log.d("DiaryView","$postID , $newDate")
+            startActivity(intent)
+            finish()
+        }
+
     }
 
     // 상단에 메뉴
@@ -139,15 +146,8 @@ class DiaryView : AppCompatActivity() {
                 image = cursor.getBlob(cursor.getColumnIndex("img_file")) ?: null
                 bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
                 diary_image.setImageBitmap(bitmap)
-
-                if(image != null) {
-                    val bitmap : Bitmap? = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-                    diary_image.setImageBitmap(bitmap)
-                } else {
-                    Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
-                }
-            } catch (rte : RuntimeException) {
-                Toast.makeText(this, "사진을 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            } catch (knpe : KotlinNullPointerException) {
+                Toast.makeText(this, "저장된 사진이 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         cursor.close()

@@ -46,30 +46,23 @@ class SearchActivity : AppCompatActivity() {
         search_v.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
                 searchKW = search_v.text.toString()
-                TimeLineData = PageDown()
+                TimeLineData.addAll(PageDown())
+
+                recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
+                    data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}", Toast.LENGTH_SHORT).show()
+                    var intent = Intent(this, DiaryView::class.java)
+                    intent.putExtra("postID",data.reporting_date)
+                    startActivity(intent)
+                }
+                timeline_rv.adapter = recyclerViewAdapter
+                timeline_rv.layoutManager = LinearLayoutManager(this)
                 true
             }else{
                 false
             }
         }
 
-        recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
-            data, num ->  Toast.makeText(this,"인덱스:${num} data: ${data}", Toast.LENGTH_SHORT).show()
-            var intent = Intent(this, DiaryView::class.java)
-            intent.putExtra("post_id",data.reporting_date)
-            startActivity(intent)
-        }
-        timeline_rv.adapter = recyclerViewAdapter
-        timeline_rv.layoutManager = LinearLayoutManager(this)
-
-
-        //스크롤이 최하단에 도달했을 때 글 더 불러오기
-        if(!timeline_rv.canScrollVertically(1)){
-
-        }
-
     }
-
 
     //선택한 일기 삭제
     fun DeletePost(id:Int){
@@ -87,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
                 " ON diary_posts.category_id = diary_categorys.category_id WHERE diary_posts.content LIKE '%${searchKW}%' " +
                 "ORDER BY reporting_date DESC;"
         cursor = sqldb.rawQuery(sql,null)
-        Log.d("db","${cursor.count}")
+        Log.d("테스트",sql)
 
         if (cursor.moveToNext()) { // 저장된 글이 있다면
             var id : Int = 0
@@ -122,7 +115,7 @@ class SearchActivity : AppCompatActivity() {
             } while (cursor.moveToNext())
             sqldb.close()
         } else { // 저장된 글이 없다면
-            Toast.makeText(this, "저장된 일기가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
         }
         return mydiaryData
     }

@@ -64,13 +64,15 @@
             android:id="@+id/diary_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:maxHeight="400dp" />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/action_diaryEdit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -79,7 +81,7 @@
                     android:id="@+id/diary_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="10dp"
+                    android:layout_margin="16dp"
                     android:text="작성된 일기가 없습니다." />
             </LinearLayout>
         </ScrollView>
