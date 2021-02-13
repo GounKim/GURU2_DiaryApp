@@ -101,11 +101,14 @@ class DiaryViewEdit : AppCompatActivity() {
         // DiaryView에서 postId 값 가져오기
         postID = intent.getIntExtra("postID", 0)
         newDate = intent.getIntExtra("newDate", -1)
+
+        //글 가져오기
+        if(postID > 0 ) {
+            loadDiary()
+        }
+
         date_tv.text = newDate.toString()
 
-        if(postID > 0 ) {  // 등록된 글이 있다면
-            loadDiary() // 해당 글 가져오기
-        }
 
         // 하단의 메뉴 선택될 때 호출될 리스너 등록
         diary_bnv.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -176,28 +179,9 @@ class DiaryViewEdit : AppCompatActivity() {
         var weather : Int = DiaryData().saveWeatherID(descWeather)
         var category_id : Int = 0
         var content = diary_et.text.toString()
-        val image = image_preview.drawable
-        var byteArray : ByteArray ?= null
 
-        try {
-            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
-            val bitmapDrawable = image as BitmapDrawable?
-            val bitmap = bitmapDrawable?.bitmap
-            val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            byteArray = stream.toByteArray()
-        } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-            Log.d("image null", "이미지 저장 안함")
-        }
+        sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);")
 
-        if(byteArray == null) { // 저장하려는 사진이 없을 경우
-            sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather',$category_id,'$content',null);")
-        } else { // bindblob은 null 값을 파라미터로 받을 수 없음
-            var insQuery : String = "INSERT INTO diary_posts VALUES (null, $reporting_date, $weather, $category_id,'$content', null);"
-            var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
-            stmt.bindBlob(1, byteArray)
-            stmt.execute()
-        }
     }
 
     // 일기 내용 불러오기
