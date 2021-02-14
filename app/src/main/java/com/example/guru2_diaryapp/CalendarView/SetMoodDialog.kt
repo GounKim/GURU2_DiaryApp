@@ -36,6 +36,7 @@ class SetMoodDialog (nd: Int): DialogFragment() {
         var levelArray = arrayOf("Bad", "SoSo", "Good", "Sick", "Surprise")
         builder.setItems(levelArray, DialogInterface.OnClickListener { dialog, which ->
             mCallback.onInputedData(which + 1, newDate)
+            Log.d("확인","${which+1},$newDate")
             dismiss()
         })
 
