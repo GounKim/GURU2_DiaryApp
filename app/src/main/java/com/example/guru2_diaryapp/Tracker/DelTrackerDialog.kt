@@ -3,19 +3,14 @@ package com.example.guru2_diaryapp.Tracker
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
-import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 import java.lang.RuntimeException
-import java.sql.Types.NULL
 
 class DelTrackerDialog : DialogFragment() {
 
