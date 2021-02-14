@@ -3,19 +3,13 @@ package com.example.guru2_diaryapp.CalendarView
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
-import androidx.core.content.ContextCompat
-import com.example.guru2_diaryapp.MainActivity
-import com.example.guru2_diaryapp.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
-import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 class OnDayDeco(context: Context) : DayViewDecorator {
     var date: CalendarDay = CalendarDay.today()
