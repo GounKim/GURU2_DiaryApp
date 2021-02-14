@@ -215,8 +215,6 @@ class MainActivity : AppCompatActivity(),
                 } else if (habit == "mood"){ //mood 항목이라면
                     setMoodImage(result)
                 }
-            } else {
-                moodImage.setImageResource(R.drawable.ic__mood_add)
             }
 
             for(i in habitBtns){
@@ -225,7 +223,6 @@ class MainActivity : AppCompatActivity(),
 
             cursor.close()
             sqldb.close()
-
             bottomSheetDialog.show()
         }
     }
