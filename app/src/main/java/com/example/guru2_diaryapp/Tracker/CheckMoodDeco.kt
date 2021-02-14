@@ -10,7 +10,7 @@ import java.util.*
 
 class CheckMoodDeco (context: Context, date: CalendarDay, mood: Int) : DayViewDecorator {
     val drawableBad: Drawable = context?.getDrawable(R.drawable.ic_mood_bad)!!
-    val drawableSoso: Drawable = context?.getDrawable(R.drawable.ic_mood_soso_main)!!
+    val drawableSoso: Drawable = context?.getDrawable(R.drawable.ic_mood_soso)!!
     val drawableGood: Drawable = context?.getDrawable(R.drawable.ic_mood_good)!!
     val drawableSur: Drawable = context?.getDrawable(R.drawable.ic_mood_surprise)!!
     val drawableSick: Drawable = context?.getDrawable(R.drawable.ic_mood_sick)!!

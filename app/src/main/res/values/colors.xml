@@ -15,5 +15,12 @@
     <color name="brown_4">#E3CBB1</color>
     <color name="brown_5">#733E1F</color>
 
+    <color name="bad">#ff5555</color>
+    <color name="soso">#fca70a</color>
+    <color name="good">#ace5f0</color>
+    <color name="sick">#33CC33</color>
+    <color name="surprise">#990099</color>
+
+
     <color name="main_color">#b3c6e7</color>
 </resources>
