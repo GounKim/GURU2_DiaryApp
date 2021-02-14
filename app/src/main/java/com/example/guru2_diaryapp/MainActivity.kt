@@ -281,6 +281,7 @@ class MainActivity : AppCompatActivity(),
             var gapTime = curTime - backBtnTime
 
             if(gapTime in 0..2000){
+                android.os.Process.killProcess(android.os.Process.myPid())
                 super.onBackPressed()
             }else{
                 backBtnTime = curTime
