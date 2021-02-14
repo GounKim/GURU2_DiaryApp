@@ -46,7 +46,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
         prefs = getDefaultSharedPreferences(activity)
-        //editor = prefs.edit()
 
         theme = this!!.findPreference("theme_preferences_key")!!
         date = this!!.findPreference("date_list")!!
