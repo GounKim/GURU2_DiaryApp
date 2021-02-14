@@ -1,7 +1,6 @@
 package com.example.guru2_diaryapp.diaryView
 
 import android.content.Intent
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -18,8 +17,6 @@ import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.R
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 class DiaryView : AppCompatActivity() {

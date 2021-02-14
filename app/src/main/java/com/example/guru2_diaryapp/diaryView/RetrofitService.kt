@@ -3,7 +3,6 @@ package com.example.guru2_diaryapp.diaryView
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 // 날씨 관련 인터페이스

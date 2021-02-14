@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.fragment.app.DialogFragment
 
 class SetMoodDialog (nd: Int): DialogFragment() {
