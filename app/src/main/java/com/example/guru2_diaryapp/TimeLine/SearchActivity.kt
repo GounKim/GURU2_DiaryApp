@@ -22,7 +22,7 @@ class SearchActivity : AppCompatActivity() {
 
     //DB
     lateinit var myDBHelper: MyDBHelper
-    lateinit var sqldb: SQLiteDatabase
+    lateinit var sqlitedb: SQLiteDatabase
     lateinit var cursor: Cursor
 
     //타임라인
@@ -74,20 +74,20 @@ class SearchActivity : AppCompatActivity() {
 
     //선택한 일기 삭제
     fun DeletePost(id:Int){
-        sqldb = myDBHelper.writableDatabase
-        sqldb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
-        sqldb.close()
+        sqlitedb = myDBHelper.writableDatabase
+        sqlitedb.execSQL("DELETE FROM diary_posts WHERE post_id = $id")
+        sqlitedb.close()
     }
 
     //추가로 글 불러오기
     private fun PageDown():ArrayList<DiaryData>{
         var mydiaryData = ArrayList<DiaryData>()
-        sqldb = myDBHelper.readableDatabase
+        sqlitedb = myDBHelper.readableDatabase
 
         var sql = "SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys" +
                 " ON diary_posts.category_id = diary_categorys.category_id WHERE diary_posts.content LIKE '%${searchKW}%' " +
                 "ORDER BY reporting_date DESC;"
-        cursor = sqldb.rawQuery(sql,null)
+        cursor = sqlitedb.rawQuery(sql,null)
 
         if (cursor.moveToNext()) { // 저장된 글이 있다면
             var id : Int = 0
@@ -120,7 +120,7 @@ class SearchActivity : AppCompatActivity() {
                     mydiaryData.add (DiaryData( id, date, weather, category, content, null))
                 }
             } while (cursor.moveToNext())
-            sqldb.close()
+            sqlitedb.close()
         } else { // 저장된 글이 없다면
             Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
         }

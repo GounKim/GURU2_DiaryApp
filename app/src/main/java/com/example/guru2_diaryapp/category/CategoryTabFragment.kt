@@ -17,7 +17,7 @@ import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class CategoryTabFragment : Fragment() {
 
-    lateinit var sqldb: SQLiteDatabase
+    lateinit var sqlitedb: SQLiteDatabase
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var categoryRecyclerViewAdapter: CategoryRecyclerViewAdapter
@@ -51,9 +51,9 @@ class CategoryTabFragment : Fragment() {
         var myDiaryData = ArrayList<DiaryData>()
         var cursor: Cursor
 
-        sqldb = dbHelper.writableDatabase
+        sqlitedb = dbHelper.writableDatabase
 
-        cursor = sqldb.rawQuery(
+        cursor = sqlitedb.rawQuery(
                 "SELECT * FROM diary_posts WHERE category_id = ${category.first} ORDER BY reporting_date DESC;",
                 null)
 
@@ -78,7 +78,7 @@ class CategoryTabFragment : Fragment() {
         }
 
         cursor.close()
-        sqldb.close()
+        sqlitedb.close()
 
         return myDiaryData
     }
