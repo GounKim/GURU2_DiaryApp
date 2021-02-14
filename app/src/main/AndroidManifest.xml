@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GURU2_DiaryApp"
         android:usesCleartextTraffic="true"> <!-- 앱 내 http 주소 사용 가능-->
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.LoginActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -36,6 +37,7 @@
         <!-- Intro -->
         <activity
             android:name=".IntroActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/IntroTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,23 +46,31 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".category.CategoryActivity" />
+        <activity android:name=".category.CategoryActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Tracker.Tracker"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".TimeLine.SearchActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".TimeLine.TimeLineView"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".diaryView.DiaryView"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Settings.SettingsActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"/>
 
 
         <activity
             android:name=".diaryView.DiaryViewEdit"
+            android:screenOrientation="portrait"
             android:parentActivityName=".diaryView.DiaryView" />
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
