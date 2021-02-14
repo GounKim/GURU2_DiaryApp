@@ -5,6 +5,6 @@
         android:right="10dp"
         android:top="10dp"
         android:bottom="10dp"/>
-    <stroke android:width="2dp" android:color="@color/brown_5"/>
+    <stroke android:width="2dp" android:color="?attr/colorAccent"/>
 <!--둥근 테두리를 적용하기 위해 만든 리소스 파일-->
 </shape>
