@@ -24,13 +24,10 @@ class CategoryRecyclerViewAdapter(var dataSet : ArrayList<DiaryData>, var contex
         fun bind( id:Int , position : Int) {
             diary_title.text = data[position].content
 
-            //이미지가 있을 경우에는 그것으로. 없을 경우에는 기본 이미지로 설정한다.
-
             //클릭 리스너를 달아준다.
             itemView.setOnClickListener {
                 itemClick(id,position)
             }
-
         }
     }
 

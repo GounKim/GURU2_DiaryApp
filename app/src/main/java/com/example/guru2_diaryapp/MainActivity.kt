@@ -2,18 +2,20 @@ package com.example.guru2_diaryapp;
 
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.*
+import com.example.guru2_diaryapp.Settings.SettingsActivity
 import com.example.guru2_diaryapp.TimeLine.SearchActivity
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
 import com.example.guru2_diaryapp.Tracker.Tracker
@@ -52,6 +54,9 @@ class MainActivity : AppCompatActivity(),
     var newDate : Int = 0
     var postID : Int = 0
 
+    //뒤로가기 앱 종료
+    private var backBtnTime: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -82,6 +87,10 @@ class MainActivity : AppCompatActivity(),
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
+        //mood check 리스너 등록
+        moodImage.setOnClickListener {
+            setMoodShow(newDate)
+        }
 
         // 달력 생성
         calendarView.state().edit()
@@ -91,7 +100,7 @@ class MainActivity : AppCompatActivity(),
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit()
         calendarView.setCurrentDate(Date(System.currentTimeMillis()))
-        calendarView.setDateSelected(Date(System.currentTimeMillis()),true)
+        calendarView.setDateSelected(Date(System.currentTimeMillis()), true)
         calendarView.addDecorator(SundDayDeco())
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco(this))
@@ -111,7 +120,7 @@ class MainActivity : AppCompatActivity(),
             cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                     "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
-             //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
+            //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             // 그전에 만들어진 category view들 없애기
             categoryLayout.removeAllViews()
@@ -132,10 +141,10 @@ class MainActivity : AppCompatActivity(),
                     val category = TextView(this)
                     category.text = categoryText
                     category.gravity = 1
-                    categoryLayout.addView(category,0)
+                    categoryLayout.addView(category, 0)
                     categories.add(category)
                     i++
-                } while(cursor.moveToNext())
+                } while (cursor.moveToNext())
             } else { // 작성된 글이 없을때
                 categoryLayout.visibility == View.VISIBLE
                 moodImage.visibility = View.VISIBLE
@@ -160,53 +169,58 @@ class MainActivity : AppCompatActivity(),
             }
 
             // 트래커 영역
-            cursor = sqldb.rawQuery("SELECT * FROM habit_lists;", null)
-
             mainTrackerLayout.removeAllViews()
+            moodImage.setImageResource(R.drawable.ic__mood_add)
 
+
+            //버튼과 어떤 항목이 몇번째에 저장되어있는지 저장
             var habitBtns = ArrayList<Button>()
-            var countBtn = 0
-            var habit : String = ""
+            var habit_lists = ArrayList<String>()
+
+            //체크중인 전체 항목 리스트 로드. 0번째 mood 레코드 스킵.
+            cursor = sqldb.rawQuery("SELECT * FROM habit_lists;", null)
+            cursor.moveToFirst()
 
             while (cursor.moveToNext()) {
-                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                var btnHabbit: Button = Button(this)
 
-                if (habit != "mood") {  // 무드아닌 habit 버튼 생성
-                    var btnHabbit: Button = Button(this)
-                    btnHabbit.text = habit
-                    var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100)
-                    lp.setMargins(0, 0, 0, 10)
-                    btnHabbit.layoutParams = lp
+                btnHabbit.text = habit
 
-                    changeButton(btnHabbit, habit, newDate) // db정보에 맞게
-                    mainTrackerLayout.addView(btnHabbit)
-
-                    habitBtns.add(btnHabbit)
-                    countBtn++
+                //결과 체크창 리스너
+                btnHabbit.setOnClickListener{
+                    show(btnHabbit,habit,newDate)
                 }
-            }
-            for (x in 0..countBtn-1) {
-                habitBtns[x].setOnClickListener() {
-                    show(habitBtns[x], habit, newDate) // 달성치 사용자입력받기
-                }
+
+                var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100)
+                lp.setMargins(0, 0, 0, 10)
+                btnHabbit.layoutParams = lp
+
+                //배열에 저장
+                habit_lists.add(habit)
+                habitBtns.add(btnHabbit)
             }
 
+            //해당 날짜에 체크된 기록 로드
+            cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists " +
+                    "WHERE reporting_date = $newDate;",null)
 
-            // mood 설정
-            cursor = sqldb.rawQuery("SELECT habit, check_result FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
+            while (cursor.moveToNext()){
+                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                var result = cursor.getInt(cursor.getColumnIndex("check_result"))
 
-            if(cursor.moveToFirst()){
-                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
-                if (habit == "mood") {
-                    var moodCheck = cursor.getInt(cursor.getColumnIndex("check_result"))
-                    setMoodImage(moodCheck)
+                if (habit != "mood" && habit_lists.size >= 1) {
+                    // 무드아닌 habit 버튼 생성
+                    changeButton(habitBtns[habit_lists.indexOf(habit)], result) // db정보에 맞게
+                } else if (habit == "mood"){ //mood 항목이라면
+                    setMoodImage(result)
                 }
             } else {
                 moodImage.setImageResource(R.drawable.ic__mood_add)
             }
 
-            moodImage.setOnClickListener {
-                setMoodShow(newDate)
+            for(i in habitBtns){
+                mainTrackerLayout.addView(i)
             }
 
             cursor.close()
@@ -266,12 +280,20 @@ class MainActivity : AppCompatActivity(),
             drawerLayout.closeDrawers()
         }
         else {
-            super.onBackPressed()
+            var curTime = System.currentTimeMillis()
+            var gapTime = curTime - backBtnTime
+
+            if(gapTime in 0..2000){
+                super.onBackPressed()
+            }else{
+                backBtnTime = curTime
+                Toast.makeText(this,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     // 요일 구하기
-    fun getDayName(year : Int, month : Int, day : Int): String {
+    fun getDayName(year: Int, month: Int, day: Int): String {
         val str_day = arrayOf("일", "월", "화", "수", "목", "금", "토")
         var month_day = Array<Int>(12) {31}
         var total_day = 0
@@ -289,7 +311,7 @@ class MainActivity : AppCompatActivity(),
 
         // 월
         for(i in 1..month-1 step 1) {
-            total_day += month_day[i-1]
+            total_day += month_day[i - 1]
         }
 
         // 일
@@ -303,63 +325,52 @@ class MainActivity : AppCompatActivity(),
     // 트래커 habit 달성도 채크 선택창(dialog) 띄우기
     private fun show(btn: Button, habit: String, newDate: Int) {
         val newFragment = CheckTrakerDialog(btn, habit, newDate)
-        newFragment.show(supportFragmentManager,"dialog")
+        newFragment.show(supportFragmentManager, "dialog")
     }
 
     // 사용자가 클릭한 habit 달성도 db반영
     override fun onInputedData(habitLevel: Int, button: Button, habit: String, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
-        val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT habit FROM habit_check_lists WHERE reporting_date = '$newDate' AND habit = '$habit';",null)
-        if (!cursor.moveToFirst()) { // 레코드가 비어있다면
-            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, '$habit', $habitLevel);") // 새로 추가
-        } else {
-            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $habitLevel")
+        try {
+            sqldb.execSQL("INSERT INTO habit_check_lists VALUES ($newDate,'$habit',$habitLevel);")
+            Toast.makeText(this,"체크가 완료되었습니다.",Toast.LENGTH_SHORT).show()
+        }catch (e: SQLiteConstraintException){
+            sqldb.execSQL(
+                "UPDATE habit_check_lists SET check_result = $habitLevel " +
+                        "WHERE reporting_date = $newDate AND habit = '$habit';"
+            )
+            Toast.makeText(this,"수정이 완료되었습니다.",Toast.LENGTH_SHORT).show()
         }
-        changeButton(button, habit, newDate)
-        cursor.close()
+        sqldb.close()
+        changeButton(button, habitLevel)
     }
 
     // db의 habit달성도를 버튼색으로 반영
-    fun changeButton(button: Button, habit: String, newDate: Int) {
-        val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
-
-        while(cursor.moveToNext()) {
-            var str_habit = cursor.getString(cursor.getColumnIndex("habit"))
-
-            if (str_habit == habit) {
-                when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
-                    0 -> button.setBackgroundResource(R.drawable.button_not_today)
-                    1 -> button.setBackgroundResource(R.drawable.button_bad)
-                    2 -> button.setBackgroundResource(R.drawable.button_soso)
-                    3 -> button.setBackgroundResource(R.drawable.button_good)
-                }
-                //cursor.moveToLast()
-                break
-            }
+    fun changeButton(button: Button, result:Int) {
+        when (result) {
+            0 -> button.setBackgroundResource(R.drawable.button_not_today)
+            1 -> button.setBackgroundResource(R.drawable.button_bad)
+            2 -> button.setBackgroundResource(R.drawable.button_soso)
+            3 -> button.setBackgroundResource(R.drawable.button_good)
         }
-
-        cursor.close()
     }
 
     // mood 설정
     private fun setMoodShow(newDate: Int) {
         val newFragment = SetMoodDialog(newDate)
-        newFragment.show(supportFragmentManager,"dialog")
+        newFragment.show(supportFragmentManager, "dialog")
     }
-    override fun onInputedData(mood: Int, newDate: Int) {
+    override fun onInputedData(result: Int, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
-        val cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT check_result FROM habit_check_lists WHERE habit = 'mood' AND reporting_date = '$newDate';",null)
+        try {
+            sqldb.execSQL("INSERT INTO habit_check_lists VALUES ($newDate,'mood',$result);")
+            Toast.makeText(this,"체크가 완료되었습니다.",Toast.LENGTH_SHORT).show()
+        } catch (e: SQLiteConstraintException){
+            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $result " +
+                    "WHERE reporting_date = $newDate AND habit = 'mood';")
+        }
 
-        if (!cursor.moveToFirst()) {    // 해당 날짜에 해당하는 mood가 존재x
-            sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, 'mood', $mood);")
-        }
-        else {  // 해당 날짜에 해당하는 mood가 존재
-            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $mood WHERE reporting_date = $newDate;")
-        }
-        cursor.close()
+        sqldb.close()
         bottomSheetDialog.dismiss()
     }
 

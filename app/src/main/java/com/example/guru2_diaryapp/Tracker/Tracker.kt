@@ -1,34 +1,26 @@
 package com.example.guru2_diaryapp.Tracker
 
 
-import android.app.ListActivity
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.NetworkOnMainThreadException
 import android.util.Log
 import android.view.*
 import android.view.Gravity.CENTER
-import android.view.View.GONE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
-import androidx.core.view.isInvisible
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.SaturdayDeco
 import com.example.guru2_diaryapp.CalendarView.SundDayDeco
-import com.example.guru2_diaryapp.MainActivity
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
-import com.example.guru2_diaryapp.SettingsActivity
+import com.example.guru2_diaryapp.Settings.SettingsActivity
 import com.example.guru2_diaryapp.TimeLine.SearchActivity
-import com.google.android.gms.common.internal.constants.ListAppsActivityContract
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
@@ -247,9 +239,13 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
-        refresh()
-    }
+         try {
+            sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
+            refresh()
+         }catch (e: SQLiteConstraintException){
+             Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT).show()
+         }
+     }
 
     // 삭제 창 띄우기
     private fun delShow() {
@@ -269,7 +265,7 @@ class Tracker : AppCompatActivity(),
             refresh()
         }
         else {
-            Toast.makeText(this, "없는 habit입니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "없는 항목입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -14,6 +14,7 @@ class CheckMoodDeco (context: Context, date: CalendarDay, mood: Int) : DayViewDe
     val drawableGood: Drawable = context?.getDrawable(R.drawable.ic_mood_good)!!
     val drawableSur: Drawable = context?.getDrawable(R.drawable.ic_mood_surprise)!!
     val drawableSick: Drawable = context?.getDrawable(R.drawable.ic_mood_sick)!!
+    val drawableAdd: Drawable = context?.getDrawable(R.drawable.ic__mood_add)!!
     var myDay = date
     var myMood = mood
 
@@ -28,6 +29,7 @@ class CheckMoodDeco (context: Context, date: CalendarDay, mood: Int) : DayViewDe
             3 -> view?.setBackgroundDrawable(drawableGood)
             4 -> view?.setBackgroundDrawable(drawableSick)
             5 -> view?.setBackgroundDrawable(drawableSur)
+            else -> view?.setBackgroundDrawable(drawableAdd)
         }
     }
 

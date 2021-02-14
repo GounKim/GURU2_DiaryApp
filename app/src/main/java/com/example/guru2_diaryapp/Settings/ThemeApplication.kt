@@ -1,4 +1,4 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.Settings
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate

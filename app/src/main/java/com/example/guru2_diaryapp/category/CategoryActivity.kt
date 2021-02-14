@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.viewpager2.widget.ViewPager2
-import com.example.guru2_diaryapp.DiaryData
 import com.example.guru2_diaryapp.MyDBHelper
 import com.example.guru2_diaryapp.R
 import com.google.android.material.tabs.TabLayout
@@ -23,7 +22,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 class CategoryActivity : AppCompatActivity() {
 
     lateinit var myDBHelper: MyDBHelper
-    lateinit var sqldb:SQLiteDatabase
+    lateinit var sqlitedb:SQLiteDatabase
     lateinit var categoryTabFragmentAdapter: CategoryTabFragmentAdapter
 
     lateinit var viewPager2: ViewPager2
@@ -33,7 +32,6 @@ class CategoryActivity : AppCompatActivity() {
 
     //카테고리 정보 저장 페어
     var tabList = ArrayList<Pair<Int, String>>()
-    var timeLineData = ArrayList<DiaryData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,10 +64,10 @@ class CategoryActivity : AppCompatActivity() {
 
     //카테고리 정보 조회 , 생성
     fun loadCategory(){
-        sqldb = myDBHelper.readableDatabase
+        sqlitedb = myDBHelper.readableDatabase
 
         var cursor: Cursor
-        cursor = sqldb.rawQuery("SELECT * FROM diary_categorys;",null)
+        cursor = sqlitedb.rawQuery("SELECT * FROM diary_categorys;",null)
 
         while(cursor.moveToNext()){
             var id = cursor.getInt(cursor.getColumnIndex("category_id"))
@@ -78,7 +76,7 @@ class CategoryActivity : AppCompatActivity() {
         }
 
         cursor.close()
-        sqldb.close()
+        sqlitedb.close()
 
         categoryTabFragmentAdapter = CategoryTabFragmentAdapter(myDBHelper,this,tabList)
         viewPager2.adapter = categoryTabFragmentAdapter
@@ -109,10 +107,10 @@ class CategoryActivity : AppCompatActivity() {
                     var name = category_name.text.toString()
 
                     if(name != null) {
-                        sqldb = myDBHelper.writableDatabase
+                        sqlitedb = myDBHelper.writableDatabase
 
                         try {
-                            sqldb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
+                            sqlitedb.execSQL("INSERT INTO diary_categorys VALUES (null,'$name');")
                             Toast.makeText(applicationContext, "$name 가 생성되었습니다.",
                                     Toast.LENGTH_SHORT).show()
 
@@ -120,7 +118,7 @@ class CategoryActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, "카테고리명이 중복됩니다.",
                                     Toast.LENGTH_SHORT).show()
                         } finally {
-                            sqldb.close()
+                            sqlitedb.close()
                         }
 
                     }else{
@@ -147,9 +145,10 @@ class CategoryActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                     return false
                 }
-
-                val tabList = Array<String>(tabList.size,{i->tabList[i].second})    //삭제 가능한 카테고리 리스트
+                var tabList_id = Array<Int>(tabList.size,{i -> tabList[i].first})
+                val tabList = Array<String>(tabList.size,{i -> tabList[i].second})    //삭제 가능한 카테고리 리스트
                 var selected:String? = null                                         //선택된 카테고리
+                var selected_id:Int? = null
 
                 //선택창
                 var alert:AlertDialog.Builder = AlertDialog.Builder(this)
@@ -157,18 +156,22 @@ class CategoryActivity : AppCompatActivity() {
                 alert.setSingleChoiceItems(tabList,0, DialogInterface.OnClickListener{
                     dialog, which ->
                     selected = tabList[which]
+                    selected_id = tabList_id[which]
                 })
 
                 alert.create()
 
                 alert.setPositiveButton("삭제") { dialog, which ->
 
-                    if (selected != null) {
-                        sqldb = myDBHelper.writableDatabase
-                        sqldb.execSQL("DELETE FROM diary_categorys WHERE category_name = '$selected';")
+                    if( selected_id == 0) {
+                        Toast.makeText(this,"기본 카테고리는 삭제할 수 없습니다.",Toast.LENGTH_SHORT).show()
+                    }else if (selected != null) {
+                        sqlitedb = myDBHelper.writableDatabase
+                        sqlitedb.execSQL("DELETE FROM diary_categorys WHERE category_name = '$selected';")
+                        sqlitedb.execSQL("UPDATE diary_posts SET category_id = 0 WHERE category_id = $selected_id; ")
                         Toast.makeText(applicationContext, "$selected 카테고리가 삭제되었습니다.",
                                 Toast.LENGTH_SHORT).show()
-                        sqldb.close()
+                        sqlitedb.close()
 
                     } else{
                         Toast.makeText(applicationContext, "선택하지 않아 취소되었습니다.",
@@ -186,7 +189,7 @@ class CategoryActivity : AppCompatActivity() {
             }
 
             R.id.action_rename_cate ->{
-                val tabList = Array<String>(tabList.size,{i->tabList[i].second})
+                val tabList = Array<String>(tabList.size) { i -> tabList[i].second }
                 var selected:String? = null
 
                 //수정할 카테고리 이름을 입력받을 창
@@ -201,10 +204,10 @@ class CategoryActivity : AppCompatActivity() {
 
                     if (newName != null){
 
-                        sqldb = myDBHelper.writableDatabase
+                        sqlitedb = myDBHelper.writableDatabase
 
                         try {
-                            sqldb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
+                            sqlitedb.execSQL("UPDATE diary_categorys SET category_name ='$newName' " +
                                     "WHERE category_name = '$selected';")
                             Toast.makeText(applicationContext, "$selected 가 $newName 로 변경되었습니다.",
                                     Toast.LENGTH_SHORT).show()
@@ -214,7 +217,7 @@ class CategoryActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT).show()
 
                         }finally {
-                            sqldb.close()
+                            sqlitedb.close()
                         }
 
                     }else{
