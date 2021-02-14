@@ -18,7 +18,6 @@ import java.util.*
 import kotlin.coroutines.coroutineContext
 
 class OnDayDeco(context: Context) : DayViewDecorator {
-    //val drawable: Drawable = context?.getDrawable(R.drawable.ic_mood_good)!!
     var date: CalendarDay = CalendarDay.today()
 
     fun OnDayDeco() {
@@ -33,7 +32,6 @@ class OnDayDeco(context: Context) : DayViewDecorator {
         view?.addSpan(StyleSpan(Typeface.BOLD))
         view?.addSpan(RelativeSizeSpan(1.5f))
         view?.addSpan(ForegroundColorSpan(Color.parseColor("#733E1F")))
-        //view?.setBackgroundDrawable(drawable)
     }
 
     fun setDate(date: Date) {
