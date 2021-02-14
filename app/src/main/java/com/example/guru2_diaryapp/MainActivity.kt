@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.guru2_diaryapp.CalendarView.*
+import com.example.guru2_diaryapp.Settings.SettingsActivity
 import com.example.guru2_diaryapp.TimeLine.SearchActivity
 import com.example.guru2_diaryapp.TimeLine.TimeLineView
 import com.example.guru2_diaryapp.Tracker.Tracker
