@@ -21,9 +21,9 @@ class CheckDeco (context: Context, date: CalendarDay, check: Int) : DayViewDecor
 
     override fun decorate(view: DayViewFacade?) {
         when(mycheck) {
-            0 -> view?.setBackgroundDrawable(drawableBad)
-            1 -> view?.setBackgroundDrawable(drawableSoso)
-            2 -> view?.setBackgroundDrawable(drawableGood)
+            1 -> view?.setBackgroundDrawable(drawableBad)
+            2 -> view?.setBackgroundDrawable(drawableSoso)
+            3 -> view?.setBackgroundDrawable(drawableGood)
         }
 
         //view?.setDaysDisabled(true)
