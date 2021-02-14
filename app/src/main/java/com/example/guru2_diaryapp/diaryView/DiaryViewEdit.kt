@@ -186,7 +186,7 @@ class DiaryViewEdit : AppCompatActivity() {
         val image = image_preview.drawable
         var byteArray : ByteArray ?= null
 
-        //try {
+
             // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
@@ -198,15 +198,13 @@ class DiaryViewEdit : AppCompatActivity() {
 
             bitmap?.compress(Bitmap.CompressFormat.PNG, 40, stream)
             byteArray = stream.toByteArray()
-        //} catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
-         //   Log.d("image null", "이미지 저장 안함")
-        //}
+
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
             sqllitedb.execSQL("INSERT INTO diary_posts VALUES (null,'$reporting_date','$weather',0,'$content',null)")
         } else { // bindblob은 null 값을 파라미터로 받을 수 없음
             var insQuery : String = "INSERT INTO diary_posts (post_id, reporting_date, weather, category_id, content, img_file) " +
-                    "VALUES (null, $reporting_date, $weather, 0,'$content', ?)" // 다이어리 추가 삭제 기능이 완성될때까지 카테고리 id 잠시 0으로 해둘게요
+                    "VALUES (null, $reporting_date, $weather, 0,'$content', ?)"
             var stmt : SQLiteStatement = sqllitedb.compileStatement(insQuery)
             stmt.bindBlob(1, byteArray)
             stmt.execute()
@@ -260,7 +258,7 @@ class DiaryViewEdit : AppCompatActivity() {
             val bitmapDrawable = image as BitmapDrawable?
             val bitmap = bitmapDrawable?.bitmap
             val stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 0, stream)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 70, stream)
             byteArray = stream.toByteArray()
         } catch (cce: ClassCastException) { // 사진을 따로 저장안할 경우
             Log.d("image null", "이미지 저장 안함")
@@ -504,18 +502,5 @@ class DiaryViewEdit : AppCompatActivity() {
         sqllitedb.close()
         return myCategory
     }
-//
-//    private fun categorySelect(){
-//        var categorys = getCategoryName()
-//        var alert: AlertDialog.Builder = AlertDialog.Builder(this)
-//        val categorys_List = Array<String>(categorys.size,{i->categorys[i].second})
-//        var selected:String? = null
-//        alert.setSingleChoiceItems(categorys_List,0, DialogInterface.OnClickListener{
-//            dialog, which ->
-//            selected = categorys_List[which]
-//        })
-//
-//        alert.create()
-//
-//    }
+
 }

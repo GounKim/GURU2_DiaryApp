@@ -22,7 +22,6 @@ class DiaryData {
         this.imgs = imgs
     }
 
-    // 공유 드라이브에 올려둔 날씨 파일 참고
     // db에서 날씨 불러올때 사용
     fun setWeatherDesc(weather: Int) : String {
         if(weather == 1) {
