@@ -96,6 +96,12 @@ class MainActivity : AppCompatActivity(),
         calendarView.addDecorator(SaturdayDeco())
         calendarView.addDecorator(OnDayDeco(this))
 
+        //무드쪽 리스너 등록
+        moodImage.setOnClickListener {
+            setMoodShow(newDate)
+        }
+
+
         // 달력 Date 클릭시
         calendarView.setOnDateChangedListener { widget, date, selected ->
 
@@ -107,7 +113,7 @@ class MainActivity : AppCompatActivity(),
             selectDate = "${year}.${month}.${day}.(${getDayName(year, month, day)})"
 
             sqldb = myDBHelper.readableDatabase
-            var cursor: Cursor
+            var cursor:Cursor
             cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                     "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
@@ -120,7 +126,6 @@ class MainActivity : AppCompatActivity(),
             var i : Int = 0
 
             if(cursor.moveToFirst()) { // 작성된 글이 하나 이상일때
-                i = 0
                 do{
                     var categoryText = cursor.getString(cursor.getColumnIndex("category_name"))
                     postID = cursor.getInt(cursor.getColumnIndex("post_id"))
@@ -159,58 +164,62 @@ class MainActivity : AppCompatActivity(),
                 }
             }
 
-            // 트래커 영역
-            cursor = sqldb.rawQuery("SELECT * FROM habit_lists;", null)
+            // 무드 기본 세팅 후 해당 날짜의 기록 불러오기
+            //체크중인 habit list와 결과
+            var habit_lists = ArrayList<String>(0)
+            var habitBtns = ArrayList<Button>(0)
 
             mainTrackerLayout.removeAllViews()
+            moodImage.setImageResource(R.drawable.ic__mood_add)
 
-            var habitBtns = ArrayList<Button>()
-            var countBtn = 0
-            var habit : String = ""
+            // habit list 정보 순서대로 불러와 버튼 생성
+            cursor = sqldb.rawQuery("SELECT * FROM habit_lists ORDER BY habit_id;", null)
 
-            while (cursor.moveToNext()) {
-                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+            //mood 항목은 habit list에서 제외. 테이블이 생성되지 안핬다면 건너뛰기
+            if(cursor.moveToFirst()){
 
-                if (habit != "mood") {  // 무드아닌 habit 버튼 생성
+                while(cursor.moveToNext()){
+                    var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
                     var btnHabbit: Button = Button(this)
-                    btnHabbit.text = habit
+
                     var lp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 100)
                     lp.setMargins(0, 0, 0, 10)
+
                     btnHabbit.layoutParams = lp
+                    btnHabbit.text = habit
 
-                    changeButton(btnHabbit, habit, newDate) // db정보에 맞게
-                    mainTrackerLayout.addView(btnHabbit)
-
+                    // 버튼 터치시 결과 체크창 팝업
+                    btnHabbit.setOnClickListener() {
+                        show(btnHabbit, habit , newDate)
+                    }
+                    habit_lists.add(habit)
                     habitBtns.add(btnHabbit)
-                    countBtn++
-                }
-            }
-            for (x in 0..countBtn-1) {
-                habitBtns[x].setOnClickListener() {
-                    show(habitBtns[x], habit, newDate) // 달성치 사용자입력받기
                 }
             }
 
+            cursor = sqldb.rawQuery("SELECT * FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
 
-            // mood 설정
-            cursor = sqldb.rawQuery("SELECT habit, check_result FROM habit_check_lists WHERE reporting_date = '$newDate';", null)
+            while(cursor.moveToNext()){
+                var habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                var result = cursor.getInt(cursor.getColumnIndex("check_result"))
 
-            if(cursor.moveToFirst()){
-                habit = cursor.getString(cursor.getColumnIndex("habit")).toString()
+                //무드면 무드 아이콘 변경 메소드를, 해빗이면 해빗 버튼 변경 메소드를 실행
                 if (habit == "mood") {
-                    var moodCheck = cursor.getInt(cursor.getColumnIndex("check_result"))
-                    setMoodImage(moodCheck)
+                    setMoodImage(result)
+                } else {
+                    var i = habit_lists.indexOf(habit)
+                    changeButton(habitBtns[i],habit,result) //항목명으로 위젯 인덱스를 찾아서 메소드 실행
                 }
-            } else {
-                moodImage.setImageResource(R.drawable.ic__mood_add)
-            }
-
-            moodImage.setOnClickListener {
-                setMoodShow(newDate)
             }
 
             cursor.close()
             sqldb.close()
+
+            //버튼 색상 반영
+
+            for(i in habitBtns) {
+                mainTrackerLayout.addView(i)
+            }
 
             bottomSheetDialog.show()
         }
@@ -347,6 +356,7 @@ class MainActivity : AppCompatActivity(),
         val newFragment = SetMoodDialog(newDate)
         newFragment.show(supportFragmentManager,"dialog")
     }
+
     override fun onInputedData(mood: Int, newDate: Int) {
         sqldb = myDBHelper.writableDatabase
         val cursor: Cursor
@@ -356,7 +366,7 @@ class MainActivity : AppCompatActivity(),
             sqldb.execSQL("INSERT INTO habit_check_lists VALUES($newDate, 'mood', $mood);")
         }
         else {  // 해당 날짜에 해당하는 mood가 존재
-            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $mood WHERE reporting_date = $newDate;")
+            sqldb.execSQL("UPDATE habit_check_lists SET check_result = $mood WHERE reporting_date = $newDate AND habit = 'mood';")
         }
         cursor.close()
         bottomSheetDialog.dismiss()
