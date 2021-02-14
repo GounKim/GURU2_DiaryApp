@@ -7,11 +7,14 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.NetworkOnMainThreadException
 import android.util.Log
 import android.view.*
 import android.view.Gravity.CENTER
+import android.view.View.GONE
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
@@ -244,9 +247,13 @@ class Tracker : AppCompatActivity(),
     // 추가
     override fun onInputedData(habitTitle: String) {
         sqlitedb = myDBHelper.writableDatabase
-        sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
-        refresh()
-    }
+         try {
+            sqlitedb.execSQL("INSERT INTO habit_lists VALUES(NULL, '$habitTitle', null);")
+            refresh()
+         }catch (e: SQLiteConstraintException){
+             Toast.makeText(this,"이미 추가된 항목입니다.",Toast.LENGTH_SHORT).show()
+         }
+     }
 
     // 삭제 창 띄우기
     private fun delShow() {
