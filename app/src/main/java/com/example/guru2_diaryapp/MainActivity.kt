@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity(),
         moodImage = bottomSheetDialog.findViewById<ImageView>(R.id.moodImage)!!
         mainTrackerLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.maintrackerLayout)!!
 
+        //mood check 리스너 등록
         moodImage.setOnClickListener {
             setMoodShow(newDate)
         }
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity(),
             cursor = sqldb.rawQuery("SELECT * FROM diary_posts LEFT OUTER JOIN diary_categorys " +
                     "ON diary_posts.category_id = diary_categorys.category_id WHERE reporting_date =  $newDate", null)
 
-             //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
+            //SELECT (얻을 컬럼) FROM 테이블명1 INNER JOIN 테이블명2 ON (조인 조건);
 
             // 그전에 만들어진 category view들 없애기
             categoryLayout.removeAllViews()
@@ -143,7 +144,7 @@ class MainActivity : AppCompatActivity(),
                     categoryLayout.addView(category, 0)
                     categories.add(category)
                     i++
-                } while(cursor.moveToNext())
+                } while (cursor.moveToNext())
             } else { // 작성된 글이 없을때
                 categoryLayout.visibility == View.VISIBLE
                 moodImage.visibility = View.VISIBLE

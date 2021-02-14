@@ -33,7 +33,6 @@ class CategoryActivity : AppCompatActivity() {
 
     //카테고리 정보 저장 페어
     var tabList = ArrayList<Pair<Int, String>>()
-    var timeLineData = ArrayList<DiaryData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,9 +146,10 @@ class CategoryActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                     return false
                 }
-
-                val tabList = Array<String>(tabList.size,{i->tabList[i].second})    //삭제 가능한 카테고리 리스트
+                var tabList_id = Array<Int>(tabList.size,{i -> tabList[i].first})
+                val tabList = Array<String>(tabList.size,{i -> tabList[i].second})    //삭제 가능한 카테고리 리스트
                 var selected:String? = null                                         //선택된 카테고리
+                var selected_id:Int? = null
 
                 //선택창
                 var alert:AlertDialog.Builder = AlertDialog.Builder(this)
@@ -157,15 +157,19 @@ class CategoryActivity : AppCompatActivity() {
                 alert.setSingleChoiceItems(tabList,0, DialogInterface.OnClickListener{
                     dialog, which ->
                     selected = tabList[which]
+                    selected_id = tabList_id[which]
                 })
 
                 alert.create()
 
                 alert.setPositiveButton("삭제") { dialog, which ->
 
-                    if (selected != null) {
+                    if( selected_id == 0) {
+                        Toast.makeText(this,"기본 카테고리는 삭제할 수 없습니다.",Toast.LENGTH_SHORT).show()
+                    }else if (selected != null) {
                         sqldb = myDBHelper.writableDatabase
                         sqldb.execSQL("DELETE FROM diary_categorys WHERE category_name = '$selected';")
+                        sqldb.execSQL("UPDATE diary_posts SET category_id = 0 WHERE category_id = $selected_id; ")
                         Toast.makeText(applicationContext, "$selected 카테고리가 삭제되었습니다.",
                                 Toast.LENGTH_SHORT).show()
                         sqldb.close()
@@ -186,7 +190,7 @@ class CategoryActivity : AppCompatActivity() {
             }
 
             R.id.action_rename_cate ->{
-                val tabList = Array<String>(tabList.size,{i->tabList[i].second})
+                val tabList = Array<String>(tabList.size) { i -> tabList[i].second }
                 var selected:String? = null
 
                 //수정할 카테고리 이름을 입력받을 창
