@@ -78,6 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="16dp"
+            android:background="@drawable/search_border"
             android:ellipsize="end"
             android:gravity="top"
             android:hint="일기를 작성하세요" />
@@ -88,7 +89,7 @@
         android:id="@+id/diary_bnv"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/main_color"
+        android:background="?attr/colorAccent"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
