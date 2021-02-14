@@ -343,6 +343,7 @@ class MainActivity : AppCompatActivity(),
     // db의 habit달성도를 버튼색으로 반영
     fun changeButton(button: Button, result:Int) {
         when (result) {
+            0 -> button.setBackgroundResource(R.drawable.button_not_today)
             1 -> button.setBackgroundResource(R.drawable.button_bad)
             2 -> button.setBackgroundResource(R.drawable.button_soso)
             3 -> button.setBackgroundResource(R.drawable.button_good)
