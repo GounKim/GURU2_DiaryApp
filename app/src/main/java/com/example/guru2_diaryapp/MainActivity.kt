@@ -281,8 +281,9 @@ class MainActivity : AppCompatActivity(),
             var gapTime = curTime - backBtnTime
 
             if(gapTime in 0..2000){
+                moveTaskToBack(true)
+                finishAndRemoveTask()
                 android.os.Process.killProcess(android.os.Process.myPid())
-                super.onBackPressed()
             }else{
                 backBtnTime = curTime
                 Toast.makeText(this,"뒤로가기 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
