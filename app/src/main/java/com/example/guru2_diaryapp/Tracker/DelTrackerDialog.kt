@@ -3,7 +3,6 @@ package com.example.guru2_diaryapp.Tracker
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button

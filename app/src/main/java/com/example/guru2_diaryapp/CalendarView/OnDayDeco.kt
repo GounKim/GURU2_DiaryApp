@@ -14,10 +14,6 @@ import java.util.*
 class OnDayDeco(context: Context) : DayViewDecorator {
     var date: CalendarDay = CalendarDay.today()
 
-    fun OnDayDeco() {
-       date = CalendarDay.today()
-    }
-
     override fun shouldDecorate(day: CalendarDay?): Boolean {
         return day!!.equals(date)
     }
@@ -26,9 +22,5 @@ class OnDayDeco(context: Context) : DayViewDecorator {
         view?.addSpan(StyleSpan(Typeface.BOLD))
         view?.addSpan(RelativeSizeSpan(1.5f))
         view?.addSpan(ForegroundColorSpan(Color.parseColor("#733E1F")))
-    }
-
-    fun setDate(date: Date) {
-        this.date = CalendarDay.from(date)
     }
 }

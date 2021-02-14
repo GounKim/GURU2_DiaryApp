@@ -25,11 +25,5 @@ class CheckDeco (context: Context, date: CalendarDay, check: Int) : DayViewDecor
             2 -> view?.setBackgroundDrawable(drawableSoso)
             3 -> view?.setBackgroundDrawable(drawableGood)
         }
-
-        //view?.setDaysDisabled(true)
-    }
-
-    fun setDate(date: Date) {
-        this.myDay = CalendarDay.from(date)
     }
 }
