@@ -330,6 +330,7 @@ class MainActivity : AppCompatActivity(),
 
             if (str_habit == habit) {
                 when (cursor.getString(cursor.getColumnIndex("check_result")).toInt()) {
+                    0 -> button.setBackgroundResource(R.drawable.button_not_today)
                     1 -> button.setBackgroundResource(R.drawable.button_bad)
                     2 -> button.setBackgroundResource(R.drawable.button_soso)
                     3 -> button.setBackgroundResource(R.drawable.button_good)
