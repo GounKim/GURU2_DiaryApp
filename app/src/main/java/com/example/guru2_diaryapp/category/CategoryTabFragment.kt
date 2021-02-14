@@ -4,6 +4,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,7 @@ import com.example.guru2_diaryapp.diaryView.DiaryView
 
 class CategoryTabFragment : Fragment() {
 
-    lateinit var sqldb: SQLiteDatabase
+    lateinit var sqlitedb: SQLiteDatabase
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var categoryRecyclerViewAdapter: CategoryRecyclerViewAdapter
@@ -34,11 +35,22 @@ class CategoryTabFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)  {
         //카테고리별 글 생성
         recyclerView = view.findViewById(R.id.rvName)
-        categoryRecyclerViewAdapter = CategoryRecyclerViewAdapter(dataSet,view.context,recyclerView){
-            id, num ->
-            var intent = Intent(view.context, DiaryView::class.java)
-            intent.putExtra("postID",id)
-            startActivity(intent)
+        try{
+            categoryRecyclerViewAdapter = CategoryRecyclerViewAdapter(dataSet,view.context,recyclerView){
+                id, num ->
+                var intent = Intent(view.context, DiaryView::class.java)
+                intent.putExtra("postID",id)
+                startActivity(intent)
+            }
+        }catch (e:UninitializedPropertyAccessException){
+            dataSet = ArrayList<DiaryData>()
+            categoryRecyclerViewAdapter = CategoryRecyclerViewAdapter(dataSet,view.context,recyclerView){
+                id, num ->
+                var intent = Intent(view.context, DiaryView::class.java)
+                intent.putExtra("postID",id)
+                startActivity(intent)
+            }
+            Log.d("CategoryTabFragment","lateinit property dataSet has not been initialized")
         }
 
         recyclerView.adapter = categoryRecyclerViewAdapter
@@ -51,9 +63,9 @@ class CategoryTabFragment : Fragment() {
         var myDiaryData = ArrayList<DiaryData>()
         var cursor: Cursor
 
-        sqldb = dbHelper.writableDatabase
+        sqlitedb = dbHelper.writableDatabase
 
-        cursor = sqldb.rawQuery(
+        cursor = sqlitedb.rawQuery(
                 "SELECT * FROM diary_posts WHERE category_id = ${category.first} ORDER BY reporting_date DESC;",
                 null)
 
@@ -78,7 +90,7 @@ class CategoryTabFragment : Fragment() {
         }
 
         cursor.close()
-        sqldb.close()
+        sqlitedb.close()
 
         return myDiaryData
     }

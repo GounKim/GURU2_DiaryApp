@@ -1,9 +1,10 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.Settings
 
 import android.app.UiModeManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.example.guru2_diaryapp.R
 import java.security.InvalidParameterException
 
 // 테마 변경 파일

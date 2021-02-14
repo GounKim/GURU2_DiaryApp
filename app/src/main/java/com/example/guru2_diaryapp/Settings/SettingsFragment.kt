@@ -1,4 +1,4 @@
-package com.example.guru2_diaryapp
+package com.example.guru2_diaryapp.Settings
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
+import com.example.guru2_diaryapp.R
 
 // 환경설정 기능 구현 파일
 @SuppressLint("ResourceType")

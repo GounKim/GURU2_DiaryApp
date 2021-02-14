@@ -44,7 +44,7 @@ class TimeLineView : AppCompatActivity() {
 
             TimeLineData.addAll(PageDown())
             recyclerViewAdapter = TimeLineRecyclerViewAdapter(TimeLineData,this, timeline_rv){
-                data, num ->  Toast.makeText(this,"ID: ${data.id}",Toast.LENGTH_SHORT).show()
+                data, num ->
                 var intent = Intent(this, DiaryView::class.java)
                 intent.putExtra("postID", data.id)
                 startActivity(intent)
