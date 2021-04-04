@@ -184,17 +184,17 @@ class DiaryViewEdit : AppCompatActivity() {
         var byteArray : ByteArray ?= null
 
 
-            // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
-            val bitmapDrawable = image as BitmapDrawable?
-            val bitmap = bitmapDrawable?.bitmap
-            val stream = ByteArrayOutputStream()
-            if(bitmap != null) {
-                var resize = Bitmap.createScaledBitmap(bitmap, 300, 200, false)
-                resize.compress(Bitmap.CompressFormat.PNG, 40, stream)
-            }
+        // 이미지 파일을 Bitmap 파일로, Bitmap 파일을 byteArray로 변환시켜서 BLOB 형으로 DB에 저장
+        val bitmapDrawable = image as BitmapDrawable?
+        val bitmap = bitmapDrawable?.bitmap
+        val stream = ByteArrayOutputStream()
+        if(bitmap != null) {
+            var resize = Bitmap.createScaledBitmap(bitmap, 300, 200, false)
+            resize.compress(Bitmap.CompressFormat.PNG, 40, stream)
+        }
 
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 40, stream)
-            byteArray = stream.toByteArray()
+        bitmap?.compress(Bitmap.CompressFormat.PNG, 40, stream)
+        byteArray = stream.toByteArray()
 
 
         if(byteArray == null) { // 저장하려는 사진이 없을 경우
